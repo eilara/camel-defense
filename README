@@ -1,10 +1,18 @@
 A very simple Perl SDL tower defense game.
 
+Status:
+
+   Can place towers and start waves.
+
+Next task:
+
+   Add towers firing on creeps and creeps dying
+
 Requires:
 
-aliased
-SDL
-Moose
-MooseX::Types
+   aliased
+   SDL
+   Moose
+   MooseX::Types
 
 

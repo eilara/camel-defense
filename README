@@ -1,0 +1,10 @@
+A very simple Perl SDL tower defense game.
+
+Requires:
+
+aliased
+SDL
+Moose
+MooseX::Types
+
+

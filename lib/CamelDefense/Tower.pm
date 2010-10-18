@@ -23,7 +23,7 @@ has world => (
     handles  => [qw(compute_cell_center aim)],
 );
 
-has laser_color     => (is => 'ro', isa => Num, default => 0xFF0000);
+has laser_color     => (is => 'ro', isa => Num, default => 0xFF0000FF);
 has cool_off_period => (is => 'ro', isa => Num, default => 1.0);
 has fire_period     => (is => 'ro', isa => Num, default => 0.5);
 
@@ -63,9 +63,9 @@ sub render {
     if (my $target = $self->current_target) {
         my $sprite = $self->sprite;
         $surface->draw_line(
-            [$sprite->x, $sprite->y],
-            [$target->x, $target->y],i
-            $self->laser_color,
+            [$sprite->x + $sprite->w/2, $sprite->y + $sprite->h/2],
+            [$target->x, $target->y],
+            $self->laser_color, 1,
         );
     }
 }

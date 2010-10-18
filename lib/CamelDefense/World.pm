@@ -177,7 +177,13 @@ sub children {
 
 sub aim {
     my ($self, $sx, $sy) = @_;
-    return undef;
+    my @waves = @{ $self->waves };
+    return unless @waves;
+    # hack - fires at 1st creep of 1st wave, should take range into
+    # account and fire at 1st creep of all waves which is in range
+    my @creeps = @{ $waves[0]->creeps };
+    return unless @creeps;
+    return $creeps[0];
 }
 
 1;

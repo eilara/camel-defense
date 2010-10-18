@@ -134,8 +134,7 @@ sub render {
     my $self = shift;
     my $surface = $self->app;
     $self->grid->render($surface);
-    $_->render($surface) for @{ $self->towers };
-    $_->render($surface) for @{ $self->waves };
+    $_->render($surface) for $self->children;
 }
 
 sub render_cursor {
@@ -145,7 +144,7 @@ sub render_cursor {
 
 sub move {
     my ($self, $dt) = @_;
-    $_->move($dt) for @{ $self->waves };
+    $_->move($dt) for $self->children;
 }
 
 sub can_build {
@@ -167,7 +166,12 @@ sub build_tower {
         y    => $y,
     );
     $grid->add_tower($x, $y);
-};
+}
+
+sub children {
+    my $self = shift;
+    return (@{ $self->waves }, @{ $self->towers });
+}
 
 1;
 

@@ -16,9 +16,11 @@ has app => (is => 'ro', required => 1, isa => App, handles => [qw(w h stop)]);
 has [qw(spacing waypoints creep_vel creep_size inter_creep_wait)] =>
     (is => 'ro', required => 1);
 
-has grid   => (is => 'ro', lazy_build => 1, isa => Grid, handles => [qw(points_px)]);
 has cursor => (is => 'ro', lazy_build => 1, isa => Cursor);
 has state  => (is => 'ro', lazy_build => 1, isa => StateMachine);
+has grid   => (is => 'ro', lazy_build => 1, isa => Grid, handles => [qw(
+    points_px compute_cell_center
+)]);
 
 has towers => (
     is       => 'ro',
@@ -161,9 +163,9 @@ sub build_tower {
     my $grid = $self->grid;
     my ($x, $y) = ($cursor->x, $cursor->y);
     push @{ $self->towers }, Tower->new(
-        grid => $grid,
-        x    => $x,
-        y    => $y,
+        world => $self,
+        x     => $x,
+        y     => $y,
     );
     $grid->add_tower($x, $y);
 }
@@ -171,6 +173,11 @@ sub build_tower {
 sub children {
     my $self = shift;
     return (@{ $self->waves }, @{ $self->towers });
+}
+
+sub aim {
+    my ($self, $sx, $sy) = @_;
+    return undef;
 }
 
 1;

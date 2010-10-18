@@ -4,7 +4,7 @@ use Moose;
 use MooseX::Types::Moose qw(Num Int);
 use Time::HiRes qw(time);
 use aliased 'SDLx::Sprite';
-use aliased 'CamelDefense::Grid';
+use aliased 'CamelDefense::World';
 use aliased 'CamelDefense::Creep';
 
 has [qw(x y)] => (is => 'rw', required => 1, isa => Num);
@@ -16,11 +16,11 @@ has sprite => (
     handles    => [qw(load draw)],
 );
 
-has grid => (
+has world => (
     is       => 'ro',
     required => 1,
-    isa      => Grid,
-    handles  => [qw(compute_cell_center)],
+    isa      => World,
+    handles  => [qw(compute_cell_center aim)],
 );
 
 has laser_color     => (is => 'ro', isa => Num, default => 0xFF0000);
@@ -45,9 +45,10 @@ sub move {
     my $cool_off_period = $self->cool_off_period;
     my $fire_period     = $self->fire_period;
     my $diff            = time - $last_fire;
+
     # tower is either waiting for target, firing, or cooling off
     if ($diff >= $cool_off_period + $fire_period) { # waiting
-        if (my $target = $self->aim) {
+        if (my $target = $self->aim($self->x, $self->y)) {
             $self->current_target($target);
             $self->last_fire_time(time);
         }
@@ -61,12 +62,12 @@ sub render {
     $self->draw($surface);
     if (my $target = $self->current_target) {
         my $sprite = $self->sprite;
-        $surface->draw_line([$sprite->x, $sprite->y], [$target->x, $target->y], $self->laser_color);
+        $surface->draw_line(
+            [$sprite->x, $sprite->y],
+            [$target->x, $target->y],i
+            $self->laser_color,
+        );
     }
-}
-
-sub aim {
-    undef;
 }
 
 1;

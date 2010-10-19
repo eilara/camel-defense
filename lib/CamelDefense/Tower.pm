@@ -26,6 +26,7 @@ has world => (
 has laser_color     => (is => 'ro', isa => Num, default => 0xFF0000FF);
 has cool_off_period => (is => 'ro', isa => Num, default => 1.0);
 has fire_period     => (is => 'ro', isa => Num, default => 0.5);
+has damage          => (is => 'ro', isa => Num, default => 10);
 
 has last_fire_time  => (is => 'rw', isa => Num, default => sub { time });
 has current_target  => (is => 'rw');
@@ -47,12 +48,11 @@ sub move {
     my $diff            = time - $last_fire;
 
     # tower is either waiting for target, firing, or cooling off
-    if ($diff >= $cool_off_period + $fire_period) { # waiting
+    if ($diff >= $cool_off_period + $fire_period) {
         if (my $target = $self->aim($self->x, $self->y)) {
-            $self->current_target($target);
-            $self->last_fire_time(time);
+            $self->fire($target);
         }
-    } elsif ($diff >= $fire_period) { # cooling off
+    } elsif ($diff >= $fire_period) {
         $self->current_target(undef);
     }
 }
@@ -60,14 +60,26 @@ sub move {
 sub render {
     my ($self, $surface) = @_;
     $self->draw($surface);
+    # render laser to creep
     if (my $target = $self->current_target) {
-        my $sprite = $self->sprite;
-        $surface->draw_line(
-            [$sprite->x + $sprite->w/2, $sprite->y + $sprite->h/2],
-            [$target->x, $target->y],
-            $self->laser_color, 1,
-        );
+#        if ($target->is_alive) {
+            my $sprite = $self->sprite;
+            $surface->draw_line(
+                [$sprite->x + $sprite->w/2, $sprite->y + $sprite->h/2],
+                [$target->x, $target->y],
+                $self->laser_color, 1,
+            );
+#        } else {
+#            $self->current_target(undef);
+#        }
     }
+}
+
+sub fire {
+    my ($self, $target) = @_;
+    $target->hit($self->damage);
+    $self->current_target($target);
+    $self->last_fire_time(time);
 }
 
 1;

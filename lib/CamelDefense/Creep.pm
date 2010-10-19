@@ -12,6 +12,7 @@ has color        => (is => 'ro', required => 1, isa => Int, default => 0xFFFFFFF
 has idx          => (is => 'ro', required => 1, isa => Int); # index in wave
 has waypoints    => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
 has waypoint_idx => (is => 'rw', required => 1, isa => Int, default => 0);
+has hp           => (is => 'rw', required => 1, isa => Int, default => 10);
 
 sub BUILD() {
     my $self = shift;
@@ -23,6 +24,8 @@ sub BUILD() {
 # assumes creep only moves in vertical or horizontal direction, no angles
 sub move {
     my ($self, $dt) = @_;
+    return unless $self->is_alive;
+
     my $wpi = $self->waypoint_idx;
     my @wps = @{ $self->waypoints };
     return if $wpi == $#wps;                # no more waypoints
@@ -58,6 +61,13 @@ sub render {
     $surface->draw_rect([$x, $y, $s, $s], $self->color);
     $surface->draw_gfx_text([$x+2, $y+2], 0x000000FF, $self->idx);
 }
+
+sub hit {
+    my ($self, $damage) = @_;
+    $self->hp($self->hp - $damage);
+}
+
+sub is_alive { shift->hp > 0 }    
 
 1;
 

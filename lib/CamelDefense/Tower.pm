@@ -81,6 +81,7 @@ sub move {
     } else {
         die "Unknown state: $state";
     }
+}
 
 #        init
 #            tick event

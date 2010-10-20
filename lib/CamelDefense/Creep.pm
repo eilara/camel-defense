@@ -12,7 +12,7 @@ has color        => (is => 'ro', required => 1, isa => Int, default => 0xFFFFFFF
 has idx          => (is => 'ro', required => 1, isa => Int); # index in wave
 has waypoints    => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
 has waypoint_idx => (is => 'rw', required => 1, isa => Int, default => 0);
-has hp           => (is => 'rw', required => 1, isa => Int, default => 10);
+has hp           => (is => 'rw', required => 1, isa => Num, default => 10);
 
 sub BUILD() {
     my $self = shift;

@@ -1,7 +1,7 @@
 package CamelDefense::Tower;
 
 use Moose;
-use MooseX::Types::Moose qw(Num Int);
+use MooseX::Types::Moose qw(Num Str);
 use Time::HiRes qw(time);
 use aliased 'SDLx::Sprite';
 use aliased 'CamelDefense::World';
@@ -24,12 +24,14 @@ has world => (
 );
 
 has laser_color     => (is => 'ro', isa => Num, default => 0xFF0000FF);
-has cool_off_period => (is => 'ro', isa => Num, default => 1.0);
-has fire_period     => (is => 'ro', isa => Num, default => 0.5);
-has damage          => (is => 'ro', isa => Num, default => 10);
+has cool_off_period => (is => 'ro', isa => Num, default => 0.5);
+has fire_period     => (is => 'ro', isa => Num, default => 1.0);
+has damage_per_sec  => (is => 'ro', isa => Num, default => 10);
 
-has last_fire_time  => (is => 'rw', isa => Num, default => sub { time });
-has current_target  => (is => 'rw');
+has last_fire_time  => (is => 'rw', isa => Num, default => 0);
+has state           => (is => 'rw', isa => Str, default => 'init');
+
+has [qw(current_target last_damage_update)] => (is => 'rw');
 
 sub _build_sprite {
     my $self = shift;
@@ -46,23 +48,80 @@ sub move {
     my $cool_off_period = $self->cool_off_period;
     my $fire_period     = $self->fire_period;
     my $diff            = time - $last_fire;
+    my $state           = $self->state;
 
-    # tower is either waiting for target, firing, or cooling off
-    if ($diff >= $cool_off_period + $fire_period) {
+# HACK: this should be in a state machine
+
+    if ($state eq 'init') {
         if (my $target = $self->aim($self->x, $self->y)) {
-            $self->fire($target);
+            $self->current_target($target);
+            $self->last_damage_update(time);
+            $self->last_fire_time(time);
+            $self->state('firing');
         }
-    } elsif ($diff >= $fire_period) {
-        $self->current_target(undef);
+    } elsif ($state eq 'firing') {
+        my $target = $self->current_target;
+        if ($target->is_alive) {
+            my $damage_period = time - $self->last_damage_update;
+            my $damage = $self->damage_per_sec * $damage_period;
+            $self->last_damage_update(time);
+            $target->hit($damage);
+        } else {
+            $self->current_target(undef);
+            $self->state('cooling');
+        }
+        if ($diff >= $fire_period) {
+            $self->current_target(undef);
+            $self->state('cooling');
+        }
+    } elsif ($state eq 'cooling') {
+        if ($diff >= $cool_off_period + $fire_period) {
+            $self->state('init');
+        }
+    } else {
+        die "Unknown state: $state";
     }
-}
+
+#        init
+#            tick event
+#                live tower in range?
+#                    aim
+#                    set current target
+#                    set last damage update
+#                    set last start fire time
+#                    state = firing
+#                else stay in seeking
+#        firing
+#            fire period over?
+#                state = cooloff
+#                hit target for remaining damage
+#                unset target and last damage update
+#            else
+#               current target still alive and in range?
+#                   current target still in range?
+#                        calc damage from last damage update
+#                        set last damage update
+#                        stay in firing
+#                   else
+#                       aim
+#                       set current target
+#                       set last damage update
+#                       dont set last start fire time
+#                       stay in firing
+#        cooling off
+#            cooling off period over?
+#                
+#            else
+#                stay in cooling off
+
 
 sub render {
     my ($self, $surface) = @_;
     $self->draw($surface);
     # render laser to creep
-    if (my $target = $self->current_target) {
+    if ($self->state eq 'firing') {
 #        if ($target->is_alive) {
+            my $target = $self->current_target;
             my $sprite = $self->sprite;
             $surface->draw_line(
                 [$sprite->x + $sprite->w/2, $sprite->y + $sprite->h/2],
@@ -73,13 +132,6 @@ sub render {
 #            $self->current_target(undef);
 #        }
     }
-}
-
-sub fire {
-    my ($self, $target) = @_;
-    $target->hit($self->damage);
-    $self->current_target($target);
-    $self->last_fire_time(time);
 }
 
 1;

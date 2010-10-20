@@ -82,7 +82,7 @@ sub _build_state {
                         next_state => $can_build,
                     },
                     mouse_button_up => {
-                        next_state => 'init',
+                        next_state => 'place_tower',
                         code       => $build_tower,
                     },
                 },
@@ -92,6 +92,9 @@ sub _build_state {
                 events => {
                     mouse_motion => {
                         next_state => $can_build,
+                    },
+                    space_key_up => {
+                        next_state => 'init',
                     },
                 },
             },

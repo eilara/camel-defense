@@ -67,7 +67,12 @@ sub move {
         }
     } elsif ($state eq 'firing') {
         my $target = $self->current_target;
-        if ($target && $target->is_alive) {
+        if (
+            $target &&
+            $target->is_alive &&
+            $target->is_in_range
+                ($self->center_x, $self->center_y, $self->range)
+        ) {
             my $damage_period = time - $self->last_damage_update;
             my $damage = $self->damage_per_sec * $damage_period;
             $self->last_damage_update(time);

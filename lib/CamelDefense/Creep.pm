@@ -2,7 +2,7 @@ package CamelDefense::Creep;
 
 use Moose;
 use MooseX::Types::Moose qw(Num Int ArrayRef);
-use CamelDefense::Util qw(analyze_right_angle_line);
+use CamelDefense::Util qw(analyze_right_angle_line distance);
 
 # x y hold creep center coordinates
 has [qw(x y)]    => (is => 'rw', required => 1, isa => Num, default => 0);
@@ -67,7 +67,12 @@ sub hit {
     $self->hp($self->hp - $damage);
 }
 
-sub is_alive { shift->hp > 0 }    
+sub is_alive { shift->hp > 0 }
+
+sub is_in_range {
+    my ($self, $x, $y, $range) = @_;
+    return distance($self->x, $self->y, $x, $y) <= $range;
+}
 
 1;
 

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use base 'Exporter';
 
-our @EXPORT_OK = qw(analyze_right_angle_line);
+our @EXPORT_OK = qw(analyze_right_angle_line distance);
 
 sub analyze_right_angle_line {
     my ($x1, $y1, $x2, $y2) = @_;
@@ -17,6 +17,11 @@ sub analyze_right_angle_line {
                               $y1 <= $y2? 1: -1;
 
     return ($is_horizontal, $dir);
+}
+
+sub distance {
+    my ($x1, $y1, $x2, $y2) = @_;
+    return sqrt( ($x1 - $x2)**2 + ($y1 - $y2)**2 );
 }
 
 1;

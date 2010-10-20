@@ -11,7 +11,7 @@ has [qw(w h spacing)] =>
     ( is => 'ro', required => 1, isa => Int);
 
 has [qw(grid_color bg_color waypoints_color path_color)] =>
-    (is => 'ro', isa => Int);
+    (is => 'rw', isa => Int);
 
 has waypoints => (is => 'ro', required => 1);
 
@@ -39,13 +39,15 @@ sub _build_markers {
     my $self = shift;
     my $grid_color = $self->grid_color;
     my $bg_color = $self->bg_color;
-    return Markers->new(
+    my $markers = Markers->new(
         w       => $self->w,
         h       => $self->h,
         spacing => $self->spacing,
         (defined($grid_color)? (color => $grid_color):()),
         (defined($bg_color)? (bg_color => $bg_color):()),
     );
+    $self->grid_color($markers->color); # in case someone wants to know the grid color
+    return $markers;
 }
 
 sub _build_waypoint_list {
@@ -98,9 +100,13 @@ sub can_build {
     return !$cell->has_contents;
 }
 
-sub render {
+sub render_markers {
     my ($self, $surface) = @_;
     $self->markers->render($surface);
+}
+
+sub render {
+    my ($self, $surface) = @_;
     $self->waypoint_list->render($surface);
 }
 

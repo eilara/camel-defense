@@ -19,7 +19,7 @@ has [qw(spacing waypoints creep_vel creep_size inter_creep_wait)] =>
 has cursor => (is => 'ro', lazy_build => 1, isa => Cursor);
 has state  => (is => 'ro', lazy_build => 1, isa => StateMachine);
 has grid   => (is => 'ro', lazy_build => 1, isa => Grid, handles => [qw(
-    points_px compute_cell_center
+    points_px compute_cell_center grid_color
 )]);
 
 has towers => (
@@ -138,6 +138,9 @@ sub handle_event {
 sub render {
     my $self = shift;
     my $surface = $self->app;
+    my $grid_color = $self->grid_color;
+    $self->grid->render_markers($surface);
+    $_->render_range($surface, $grid_color) for @{ $self->towers };
     $self->grid->render($surface);
     $_->render($surface) for $self->children;
 }
@@ -179,15 +182,24 @@ sub children {
 }
 
 sub aim {
-    my ($self, $sx, $sy) = @_;
+    my ($self, $sx, $sy, $range) = @_;
     for my $wave (@{ $self->waves }) {
         for my $creep (@{ $wave->creeps }) {
-            if ($creep->is_alive) {
+            if (
+                $creep->is_alive &&
+                (_distance($sx, $sy, $creep->x, $creep->y) <= $range)
+            ) {
                 return $creep;
             }
         }
     }
 }
+
+sub _distance {
+    my ($x1, $y1, $x2, $y2) = @_;
+    return sqrt( ($x1 - $x2)**2 + ($y1 - $y2)**2 );
+}
+
 
 1;
 

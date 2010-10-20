@@ -13,7 +13,7 @@ has sprite => (
     is         => 'ro',
     lazy_build => 1,
     isa        => Sprite, 
-    handles    => [qw(load draw)],
+    handles    => [qw(load draw w h)],
 );
 
 has world => (
@@ -27,11 +27,15 @@ has laser_color     => (is => 'ro', isa => Num, default => 0xFF0000FF);
 has cool_off_period => (is => 'ro', isa => Num, default => 0.5);
 has fire_period     => (is => 'ro', isa => Num, default => 0.5);
 has damage_per_sec  => (is => 'ro', isa => Num, default => 15);
+has range           => (is => 'ro', isa => Num, default => 100); # in pixels
 
 has last_fire_time  => (is => 'rw', isa => Num, default => 0);
 has state           => (is => 'rw', isa => Str, default => 'init');
 
 has [qw(current_target last_damage_update)] => (is => 'rw');
+
+sub center_x { $_[0]->sprite->x + $_[0]->w/2 }
+sub center_y { $_[0]->sprite->y + $_[0]->h/2 }
 
 sub _build_sprite {
     my $self = shift;
@@ -55,7 +59,7 @@ sub move {
 #       this logic is too complex for me to grok easily. help.
 
     if ($state eq 'init') {
-        if (my $target = $self->aim($self->x, $self->y)) {
+        if (my $target = $self->aim($self->center_x, $self->center_y, $self->range)) {
             $self->current_target($target);
             $self->last_damage_update(time);
             $self->last_fire_time(time);
@@ -69,7 +73,7 @@ sub move {
             $self->last_damage_update(time);
             $target->hit($damage);
         } else {
-            if (my $target = $self->aim($self->x, $self->y)) {
+            if (my $target = $self->aim($self->center_x, $self->center_y, $self->range)) {
                 $self->current_target($target);
                 $self->last_damage_update(time);
             } else {
@@ -89,6 +93,16 @@ sub move {
     }
 }
 
+sub render_range {
+    my ($self, $surface, $color) = @_;
+    my $sprite = $self->sprite;
+    $surface->draw_circle(
+        [$self->center_x, $self->center_y],
+        $self->range,
+        $color,
+    );
+}
+
 sub render {
     my ($self, $surface) = @_;
     $self->draw($surface);
@@ -98,7 +112,7 @@ sub render {
         if ($target && $target->is_alive) {
             my $sprite = $self->sprite;
             $surface->draw_line(
-                [$sprite->x + $sprite->w/2, $sprite->y + $sprite->h/2],
+                [$self->center_x, $self->center_y],
                 [$target->x, $target->y],
                 $self->laser_color, 1,
             );

@@ -1,12 +1,17 @@
 A very simple Perl SDL tower defense game.
 
-Status:
+To run:
 
-   Can place towers and start waves.
+> cd camel-defense/eg
+> perl 06-world.pl
 
-Next task:
+What works:
 
-   Add towers firing on creeps and creeps dying
+   Can place towers and start waves. Towers fire lasers at creeps within range. Creeps die.
+
+Next tasks:
+
+   Towers cost money. Waves are not infinite. Creeps display their health.
 
 Requires:
 

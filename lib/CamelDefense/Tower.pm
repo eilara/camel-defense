@@ -32,10 +32,13 @@ has range           => (is => 'ro', isa => Num, default => 100); # in pixels
 has last_fire_time  => (is => 'rw', isa => Num, default => 0);
 has state           => (is => 'rw', isa => Str, default => 'init');
 
-has [qw(current_target last_damage_update)] => (is => 'rw');
+has [qw(current_target last_damage_update center_x center_y)] => (is => 'rw');
 
-sub center_x { $_[0]->sprite->x + $_[0]->w/2 }
-sub center_y { $_[0]->sprite->y + $_[0]->h/2 }
+sub BUILD {
+    my $self = shift;
+    $self->center_x($self->sprite->x + $self->w/2);
+    $self->center_y($self->sprite->y + $self->h/2);
+}
 
 sub _build_sprite {
     my $self = shift;

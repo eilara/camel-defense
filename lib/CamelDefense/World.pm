@@ -5,7 +5,6 @@ use SDL::Events;
 use SDL::Mouse;
 use MooseX::Types::Moose qw(ArrayRef);
 use aliased 'SDLx::App';
-use CamelDefense::Util qw(distance);
 use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::StateMachine';
 use aliased 'CamelDefense::Cursor';
@@ -188,7 +187,7 @@ sub aim {
         for my $creep (@{ $wave->creeps }) {
             if (
                 $creep->is_alive &&
-                (distance($sx, $sy, $creep->x, $creep->y) <= $range)
+                $creep->is_in_range($sx, $sy, $range)
             ) {
                 return $creep;
             }

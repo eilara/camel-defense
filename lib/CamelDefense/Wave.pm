@@ -38,8 +38,8 @@ sub make_creep {
         waypoints => $self->waypoints,
         v         => $self->creep_vel,
         size      => $self->creep_size,
-        (defined $c? (color => $c): ()),
         idx       => $creep_idx,
+        (defined $c? (color => $c): ()),
     );
 }
 

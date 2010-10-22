@@ -96,6 +96,7 @@ sub move_handler {
 
 sub show_handler {
     my $dt = shift;
+    $grid->render_markers($app);
     $grid->render($app);
     $_->render($app) for @waves;
     $app->draw_gfx_text

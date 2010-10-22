@@ -37,6 +37,7 @@ $app->run;
 
 sub show_handler {
     my $dt = shift;
+    $grid->render_markers($app);
     $grid->render($app);
     $app->update;
 }

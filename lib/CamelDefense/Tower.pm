@@ -14,6 +14,7 @@ has world => (
     handles  => [qw(compute_cell_center aim)],
 );
 
+has image_file      => (is => 'ro', isa => Str, default => '../data/tower.png');
 has laser_color     => (is => 'ro', isa => Num, default => 0xFF0000FF);
 has cool_off_period => (is => 'ro', isa => Num, default => 0.5);
 has fire_period     => (is => 'ro', isa => Num, default => 0.5);

@@ -4,7 +4,7 @@ use Moose::Role;
 use MooseX::Types::Moose qw(Num);
 use aliased 'SDLx::Sprite';
 
-requires 'compute_cell_center';
+requires 'compute_cell_center', 'image_file';
 
 has [qw(x y)] => (is => 'rw', required => 1, isa => Num);
 
@@ -26,7 +26,7 @@ sub BUILD {
 sub _build_sprite {
     my $self = shift;
     my $center = $self->compute_cell_center($self->x, $self->y);
-    my $sprite = Sprite->new(image => '../data/tower.png');
+    my $sprite = Sprite->new(image => $self->image_file);
     $sprite->x($center->[0] - $sprite->w/2);
     $sprite->y($center->[1] - $sprite->h/2);
     return $sprite;

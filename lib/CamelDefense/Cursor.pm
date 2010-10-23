@@ -1,27 +1,15 @@
 package CamelDefense::Cursor;
 
 use Moose;
-use MooseX::Types::Moose qw(Bool Int Str);
-use aliased 'SDLx::Sprite';
-
-has sprite => (
-    is         => 'ro',
-    lazy_build => 1,
-    isa        => Sprite, 
-    handles    => [qw(x y load draw)],
-);
+use MooseX::Types::Moose qw(Bool Str);
 
 has state => (is => 'rw', required => 1, isa => Str, default => 'normal');
 
 has is_visible => (is => 'rw', required => 1, isa => Bool, default => 0);
 
-sub _build_sprite {
-    return Sprite->new(
-        image => '../data/normal.png',
-        x     => 0,
-        y     => 0,
-    );        
-}
+with 'CamelDefense::Role::Sprite';
+
+sub init_image_file { '../data/normal.png' }
 
 sub change_to {
     my ($self, $new_state) = @_;
@@ -29,10 +17,10 @@ sub change_to {
     $self->load("../data/$new_state.png");
 }
 
-sub render {
-    my ($self, $surface) = @_;
-    $self->draw($surface) if $self->is_visible;
-}
+around render => sub {
+    my ($orig, $self, $surface) = @_;
+    $orig->($self, $surface) if $self->is_visible;
+};
 
 1;
 

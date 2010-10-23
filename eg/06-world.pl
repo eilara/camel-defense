@@ -17,8 +17,8 @@ my $app = App->new(
 
 my $world = World->new(
     app              => $app,
-    spacing          => 24,
-    creep_size       => 17,
+    spacing          => 32,
+    creep_size       => 23,
     creep_vel        => 10,
     inter_creep_wait => 0.6,
     waypoints        => [

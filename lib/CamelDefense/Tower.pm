@@ -14,7 +14,6 @@ has world => (
     handles  => [qw(compute_cell_center aim)],
 );
 
-has image_file      => (is => 'ro', isa => Str, default => '../data/tower.png');
 has laser_color     => (is => 'ro', isa => Num, default => 0xFF0000FF);
 has cool_off_period => (is => 'ro', isa => Num, default => 0.5);
 has fire_period     => (is => 'ro', isa => Num, default => 0.5);
@@ -27,6 +26,8 @@ has state           => (is => 'rw', isa => Str, default => 'init');
 has [qw(current_target last_damage_update)] => (is => 'rw');
 
 with 'CamelDefense::Role::GridAlignedSprite';
+
+sub init_image_file { '../data/tower.png' }
 
 sub move {
     my ($self, $dt)     = @_;

@@ -5,7 +5,6 @@ use MooseX::Types::Moose qw(Num Int ArrayRef);
 use List::Util qw(min max);
 use aliased 'CamelDefense::Grid::Markers';
 use aliased 'CamelDefense::Waypoints';
-use aliased 'CamelDefense::Cursor';
 
 has [qw(w h spacing)] =>
     ( is => 'ro', required => 1, isa => Int);

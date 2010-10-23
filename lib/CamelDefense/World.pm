@@ -123,8 +123,7 @@ sub handle_event {
 
     } elsif ($e->type == SDL_MOUSEMOTION) {
         my ($x, $y) = ($e->motion_x, $e->motion_y);
-        $self->cursor->x($x);
-        $self->cursor->y($y);
+        $self->cursor->xy([$x, $y]);
         $state->handle_event('mouse_motion');
 
     } elsif ($e->type == SDL_MOUSEBUTTONUP) {
@@ -158,7 +157,7 @@ sub move {
 sub can_build {
     my $self = shift;
     my $cursor = $self->cursor;
-    return $self->grid->can_build($cursor->x, $cursor->y)?
+    return $self->grid->can_build(@{$cursor->xy})?
         'place_tower':
         'cant_place_tower';
 }
@@ -167,11 +166,10 @@ sub build_tower {
     my $self = shift;
     my $cursor = $self->cursor;
     my $grid = $self->grid;
-    my ($x, $y) = ($cursor->x, $cursor->y);
+    my ($x, $y) = @{$cursor->xy};
     push @{ $self->towers }, Tower->new(
         world => $self,
-        x     => $x,
-        y     => $y,
+        xy    => [$x, $y],
     );
     $grid->add_tower($x, $y);
 }

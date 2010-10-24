@@ -61,7 +61,7 @@ sub _update_sprite_xy {
 sub compute_sprite_xy {
     my ($self, $sprite) = @_;
     return (@{ $self->xy });
-};
+}
 
 sub render {
     my ($self, $surface) = @_;

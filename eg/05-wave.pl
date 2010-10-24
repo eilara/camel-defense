@@ -12,7 +12,6 @@ $|=1;
 my ($app_w, $app_h)  = (640, 480);
 my $creep_vel        = 15;         # creep velocity
 my $inter_creep_wait = 0.6;        # time to wait between creep births in seconds
-my $creep_size       = 31;         # pixel size of one creep
 
 my $app = SDLx::App->new(
     title  => 'Wave Example',
@@ -38,23 +37,16 @@ my $grid = Grid->new(
 
 my @wave_defs = ({
     creep_vel        => $creep_vel,
-    creep_size       => $creep_size,
     inter_creep_wait => $inter_creep_wait,
 }, {
     creep_vel        => $creep_vel * 2,
-    creep_size       => $creep_size - 6,
     inter_creep_wait => $inter_creep_wait * 0.9,
-    creep_color      => 0xFF0000FF,
 }, {
     creep_vel        => $creep_vel * 2.7,
-    creep_size       => $creep_size - 12,
     inter_creep_wait => $inter_creep_wait * 0.8,
-    creep_color      => 0x0000FFFF,
 }, {
     creep_vel        => $creep_vel * 3.5,
-    creep_size       => $creep_size - 18,
     inter_creep_wait => $inter_creep_wait * 0.6,
-    creep_color      => 0x00FF00FF,
 });
 
 my @waves;

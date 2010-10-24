@@ -5,7 +5,7 @@ use MooseX::Types::Moose qw(Num Int ArrayRef);
 use Time::HiRes qw(time);
 use aliased 'CamelDefense::Creep';
 
-has [qw(creep_size creep_vel waypoints)] => (is => 'ro', required => 1);
+has [qw(creep_vel waypoints)] => (is => 'ro', required => 1);
 
 has creep_color => (is => 'ro');
 
@@ -37,7 +37,6 @@ sub make_creep {
     return Creep->new(
         waypoints => $self->waypoints,
         v         => $self->creep_vel,
-        size      => $self->creep_size,
         idx       => $creep_idx,
         (defined $c? (color => $c): ()),
     );

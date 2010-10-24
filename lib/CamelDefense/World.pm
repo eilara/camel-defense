@@ -13,7 +13,7 @@ use aliased 'CamelDefense::Wave';
 
 has app => (is => 'ro', required => 1, isa => App, handles => [qw(w h stop)]);
 
-has [qw(spacing waypoints creep_vel creep_size inter_creep_wait)] =>
+has [qw(spacing waypoints creep_vel inter_creep_wait)] =>
     (is => 'ro', required => 1);
 
 has cursor => (is => 'ro', lazy_build => 1, isa => Cursor);
@@ -105,7 +105,6 @@ sub start_wave {
     my $self = shift;
     push @{ $self->waves }, Wave->new(
         creep_vel        => $self->creep_vel,
-        creep_size       => $self->creep_size,
         inter_creep_wait => $self->inter_creep_wait,
         waypoints        => $self->points_px,
     );

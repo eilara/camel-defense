@@ -1,5 +1,8 @@
 package CamelDefense::Role::GridAlignedSprite;
 
+# a role for a visual object which has a sprite
+# and that sprite is aligned to a grid
+
 use Moose::Role;
 use MooseX::Types::Moose qw(Num);
 
@@ -19,7 +22,7 @@ sub compute_sprite_xy {
     my ($self, $sprite) = @_;
     my $center = $self->compute_cell_center(@{ $self->xy });
     return ($center->[0] - $sprite->w/2, $center->[1] - $sprite->h/2);
-};
+}
 
 1;
 

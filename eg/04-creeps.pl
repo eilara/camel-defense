@@ -12,7 +12,6 @@ use aliased 'CamelDefense::Creep';
 my ($app_w, $app_h)  = (640, 480);
 my $creep_vel        = 20;         # creep velocity
 my $inter_creep_wait = 0.5;        # time to wait between creep births in seconds
-my $creep_size       = 21;         # pixel size of one creep
 
 my $app = SDLx::App->new(
     title  => 'Creep Example',
@@ -23,7 +22,7 @@ my $app = SDLx::App->new(
 my $grid = Grid->new(
     w         => $app_w,
     h         => $app_h,
-    spacing   => 26,
+    spacing   => 30,
     waypoints => [
         [0.50, 0.00],
         [0.50, 0.25],
@@ -53,7 +52,6 @@ sub move_handler {
         push @creeps, Creep->new(
             waypoints => $grid->points_px,
             v         => $creep_vel,
-            size      => $creep_size,
             idx       => ++$creep_idx,
         );
     }

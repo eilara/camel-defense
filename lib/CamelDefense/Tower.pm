@@ -100,7 +100,7 @@ after render => sub {
             my $sprite = $self->sprite;
             $surface->draw_line(
                 [$self->center_x, $self->center_y],
-                [$target->x, $target->y],
+                $target->xy,
                 $self->laser_color, 1,
             );
         } else {

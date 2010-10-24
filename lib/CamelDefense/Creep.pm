@@ -56,9 +56,12 @@ sub move {
 
 after render => sub {
     my ($self, $surface) = @_;
+
 #    my $hp = sprintf("%.1f", $self->hp);
 #    $surface->draw_gfx_text([$self->sprite_x+2, $self->sprite_y+2], 0x000000FF, $hp);
 #    $surface->draw_gfx_text([$self->sprite_x+2, $self->sprite_y+2], 0x000000FF, $self->idx);
+
+    # add health bar
     my $hp_ratio = $self->hp_ratio;
     my ($x, $y) = ($self->sprite_x, $self->sprite_y - 7);
     my $w = $self->w;

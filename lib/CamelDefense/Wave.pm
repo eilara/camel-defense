@@ -7,7 +7,7 @@ use aliased 'CamelDefense::Creep';
 
 has [qw(creep_vel waypoints)] => (is => 'ro', required => 1);
 
-has creep_color => (is => 'ro');
+has image_file => (is => 'ro');
 
 has inter_creep_wait => (is => 'ro', required => 1, isa => Num);
 
@@ -30,15 +30,15 @@ sub move {
 
 sub make_creep {
     my $self = shift;
-    my $c = $self->creep_color;
     my $creep_idx = $self->next_creep_idx;
+    my $image = $self->image_file;
     $self->next_creep_idx($creep_idx + 1);
     $self->last_creep_birth(time);
     return Creep->new(
         waypoints => $self->waypoints,
         v         => $self->creep_vel,
         idx       => $creep_idx,
-        (defined $c? (color => $c): ()),
+        (defined $image? (image_file => $image): ()),
     );
 }
 

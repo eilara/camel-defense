@@ -30,15 +30,16 @@ sub move {
 
 sub make_creep {
     my $self = shift;
+    my $image     = $self->image_file;
+    my $v         = $self->creep_vel;
     my $creep_idx = $self->next_creep_idx;
-    my $image = $self->image_file;
     $self->next_creep_idx($creep_idx + 1);
     $self->last_creep_birth(time);
     return Creep->new(
         waypoints => $self->waypoints,
-        v         => $self->creep_vel,
         idx       => $creep_idx,
         (defined $image? (image_file => $image): ()),
+        (defined $v? (v => $v): ()),
     );
 }
 

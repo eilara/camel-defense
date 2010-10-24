@@ -12,6 +12,12 @@ has marks => (
     handles  => [qw(spacing compute_cell_center_from_ratio)],
 );
 
+has waypoints => ( # waypoints specified as ratio of surface size
+    is       => 'ro',
+    required => 1,
+    isa      => ArrayRef[ArrayRef[Num]],
+);
+
 has waypoint_color => (
     is       => 'ro',
     required => 1,
@@ -21,12 +27,6 @@ has waypoint_color => (
 
 has path_color =>
     (is => 'ro', required => 1, isa => Int, default => 0x3F3F3FFF);
-
-has waypoints => ( # waypoints specified as ratio of surface size
-    is       => 'ro',
-    required => 1,
-    isa      => ArrayRef[ArrayRef[Num]],
-);
 
 has points_px => ( # center of waypoints in px
     is         => 'ro',

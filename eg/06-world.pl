@@ -29,6 +29,10 @@ my $world = World->new(
         [0.50, 0.75],
         [0.50, 0.95],
     ],
+    grid_args => [
+        marks_args         => [bg_color   => 0x180202FF],
+        waypoint_list_args => [path_color => 0x141400FF],
+    ],
 );
 
 $app->add_event_handler(\&event_handler);

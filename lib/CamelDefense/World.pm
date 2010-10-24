@@ -17,13 +17,8 @@ has app =>
 has [qw(waypoints creep_vel inter_creep_wait)] =>
     (is => 'ro', required => 1);
 
-has spacing => (is => 'ro');
-
 has cursor => (is => 'ro', lazy_build => 1, isa => Cursor);
 has state  => (is => 'ro', lazy_build => 1, isa => StateMachine);
-has grid   => (is => 'ro', lazy_build => 1, isa => Grid, handles => [qw(
-    points_px compute_cell_center grid_color
-)]);
 
 has towers => (
     is       => 'ro',
@@ -39,25 +34,27 @@ has waves => (
     default  => sub { [] },
 );
 
+with 'MooseX::Role::BuildInstanceOf' => {target => Grid, prefix => 'grid'};
+has '+grid' => (handles => [qw(
+    points_px compute_cell_center grid_color add_tower
+)]);
+around merge_grid_args => sub {
+    my ($orig, $self) = @_;
+    my %args = $self->$orig;
+    return (
+        marks_args =>
+            [w => $self->w, h => $self->h, @{$args{marks_args} ||= []}],
+        waypoint_list_args =>
+            [waypoints => $self->waypoints, @{$args{waypoint_list_args} ||= []}],
+    );
+};
+
 sub BUILD {
     my $self = shift;
     SDL::Mouse::show_cursor(SDL_DISABLE);
     $self->app->add_event_handler(sub { $self->handle_event(@_) });
     $self->app->add_show_handler(sub { $self->render(@_) });
     $self->app->add_move_handler(sub { $self->move(@_) });
-}
-
-sub _build_grid {
-    my $self = shift;
-    my $spacing = $self->spacing;
-    return Grid->new(
-        marks_args => [
-            w => $self->w,
-            h => $self->h,
-            (defined($spacing)? (spacing => $spacing): ()),
-        ], 
-        waypoint_list_args => [waypoints => $self->waypoints],
-    );
 }
 
 sub _build_cursor { Cursor->new }
@@ -170,13 +167,12 @@ sub can_build {
 sub build_tower {
     my $self = shift;
     my $cursor = $self->cursor;
-    my $grid = $self->grid;
     my ($x, $y) = @{$cursor->xy};
     push @{ $self->towers }, Tower->new(
         world => $self,
         xy    => [$x, $y],
     );
-    $grid->add_tower($x, $y);
+    $self->add_tower($x, $y);
 }
 
 sub children {

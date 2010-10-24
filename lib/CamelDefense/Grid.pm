@@ -6,74 +6,26 @@ use List::Util qw(min max);
 use aliased 'CamelDefense::Grid::Markers';
 use aliased 'CamelDefense::Waypoints';
 
-has [qw(w h)] =>
-    ( is => 'ro', required => 1, isa => Int);
-
-has [qw( spacing grid_color bg_color waypoints_color path_color)] =>
-    (is => 'rw', isa => Int);
-
-has waypoints => (is => 'ro', required => 1);
-
 has cells => (
     is         => 'ro',
     lazy_build => 1,
     isa        => ArrayRef[ArrayRef['Grid::Cell']],
 );
 
-has markers => (
-    is         => 'ro',
-    lazy_build => 1,
-    isa        => Markers,
-    handles    => [qw(row_marks col_marks find_cell compute_cell_center)],
-);
+with 'MooseX::Role::BuildInstanceOf' => {target => Markers, prefix => 'marks'};
+has '+marks' => (handles => [qw(
+    grid_color
+    row_marks col_marks
+    find_cell compute_cell_center
+)]);
 
-has waypoint_list => (
-    is         => 'ro',
-    lazy_build => 1,
-    isa        => Waypoints,
-    handles    => [qw(points_px)],
-);
-
-sub _build_markers {
-    my $self = shift;
-    my $grid_color = $self->grid_color;
-    my $bg_color = $self->bg_color;
-    my $spacing = $self->spacing;
-    my $markers = Markers->new(
-        w       => $self->w,
-        h       => $self->h,
-
-        $self->add_if_defined(
-            ['spacing'],
-            [grid_color => 'color'],
-            [bg_color   => 'bg_color'],
-        ),
-    );
-    $self->grid_color($markers->color); # in case someone wants to know the grid color
-    return $markers;
-}
-
-sub add_if_defined {
-    my ($self, @attrs) = @_;
-    return map {
-        my ($my_name, $delegate_name) = @$_;
-        $delegate_name = $my_name unless defined $delegate_name;
-        my $val = $self->$my_name;
-        (defined($val)? ($delegate_name => $val): ());
-    } @attrs;
-}
-
-sub _build_waypoint_list {
-    my $self = shift;
-    my $waypoints_color = $self->waypoints_color;
-    my $path_color = $self->path_color;
-    return Waypoints->new(
-        markers => $self->markers,
-        points  => $self->waypoints,
-        (defined($waypoints_color)? (color => $waypoints_color):()),
-        (defined($path_color)? (path_color => $path_color):()),
-    );
-}
+with 'MooseX::Role::BuildInstanceOf' =>
+    {target => Waypoints, prefix => 'waypoint_list'};
+has '+waypoint_list' => (handles => [qw(points_px)]);
+around merge_waypoint_list_args => sub {
+    my ($orig, $self) = @_;
+    return (marks => $self->marks, $self->$orig);
+};
 
 sub _build_cells {
     my $self = shift;
@@ -115,7 +67,7 @@ sub can_build {
 
 sub render_markers {
     my ($self, $surface) = @_;
-    $self->markers->render($surface);
+    $self->marks->render($surface);
 }
 
 sub render {

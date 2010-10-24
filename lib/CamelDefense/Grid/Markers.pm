@@ -17,7 +17,7 @@ has spacing => (
     default  => 32,
 );
 
-has color => (
+has grid_color => (
     is       => 'ro',
     required => 1,
     isa      => Int,
@@ -80,7 +80,7 @@ sub compute_cell_center_from_ratio {
 
 sub render {
     my ($self, $surface) = @_;
-    my ($w, $h, $c) = ($self->w, $self->h, $self->color);
+    my ($w, $h, $c) = ($self->w, $self->h, $self->grid_color);
     $surface->draw_rect([0, 0, $w, $h], $self->bg_color);
     $surface->draw_line([$_, 0], [$_, $h], $c, 0) for @{ $self->col_marks };
     $surface->draw_line([0, $_], [$w, $_], $c, 0) for @{ $self->row_marks };

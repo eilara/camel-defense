@@ -16,17 +16,22 @@ my $app = SDLx::App->new(
 );
 
 my $grid = Grid->new(
-    w         => $app_w,
-    h         => $app_h,
-    spacing   => 39,
-    waypoints => [
-        [0.00, 0.30],
-        [0.30, 0.30],
-        [0.30, 0.60],
-        [0.10, 0.60],
-        [0.10, 0.45],
-        [0.15, 0.45],
-        [0.15, 0.50],
+    marks_args => [
+        w        => $app_w,
+        h        => $app_h,
+        spacing  => 24,
+    ],
+    waypoint_list_args => [
+        waypoint_color => 0xFFFF00FF,
+        waypoints => [
+            [0.00, 0.30],
+            [0.30, 0.30],
+            [0.30, 0.60],
+            [0.10, 0.60],
+            [0.10, 0.45],
+            [0.15, 0.45],
+            [0.15, 0.50],
+        ],
     ],
 );
 

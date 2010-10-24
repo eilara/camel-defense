@@ -16,8 +16,8 @@ my $app = SDLx::App->new(
 );
 
 my $markers = Markers->new(
-    w       => $app_w,
-    h       => $app_h,
+    w => $app_w,
+    h => $app_h,
 );
 
 $app->add_event_handler(sub { $_[1]->stop if $_[0]->type == SDL_QUIT });

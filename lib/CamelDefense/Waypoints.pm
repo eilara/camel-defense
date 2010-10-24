@@ -5,14 +5,14 @@ use MooseX::Types::Moose qw(Num Int ArrayRef);
 use aliased 'CamelDefense::Grid::Markers';
 use CamelDefense::Util qw(analyze_right_angle_line);
 
-has markers => (
+has marks => (
     is       => 'ro',
     required => 1,
     isa      => Markers,
     handles  => [qw(spacing compute_cell_center_from_ratio)],
 );
 
-has color => (
+has waypoint_color => (
     is       => 'ro',
     required => 1,
     isa      => Int,
@@ -22,7 +22,7 @@ has color => (
 has path_color =>
     (is => 'ro', required => 1, isa => Int, default => 0x3F3F3FFF);
 
-has points => ( # waypoints specified as ratio of surface size
+has waypoints => ( # waypoints specified as ratio of surface size
     is       => 'ro',
     required => 1,
     isa      => ArrayRef[ArrayRef[Num]],
@@ -38,14 +38,14 @@ sub _build_points_px {
     my $self = shift;
     return [map
         { $self->compute_cell_center_from_ratio(@$_) }
-        @{ $self->points }
+        @{ $self->waypoints }
     ];
 }
 
 sub render {
     my ($self, $surface) = @_;
     my @centers = @{ $self->points_px };
-    my $c = $self->color;
+    my $c = $self->waypoint_color;
     my $path_c = $self->path_color;
     my $s = $self->spacing;
     my ($i, @last_waypoint_xy);

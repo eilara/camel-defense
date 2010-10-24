@@ -19,5 +19,6 @@ Requires:
    SDL
    Moose
    MooseX::Types
+   MooseX::Role::BuildInstanceOf
 
 

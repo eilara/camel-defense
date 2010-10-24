@@ -51,10 +51,12 @@ sub _build_grid {
     my $self = shift;
     my $spacing = $self->spacing;
     return Grid->new(
-        w         => $self->w,
-        h         => $self->h,
-        waypoints => $self->waypoints,
-        (defined($spacing)? (spacing => $spacing): ()),
+        marks_args => [
+            w => $self->w,
+            h => $self->h,
+            (defined($spacing)? (spacing => $spacing): ()),
+        ], 
+        waypoint_list_args => [waypoints => $self->waypoints],
     );
 }
 

@@ -23,8 +23,8 @@ my $markers = Markers->new(
 );
 
 my $waypoints = Waypoints->new(
-    markers   => $markers,
-    points    => [
+    marks     => $markers,
+    waypoints => [
         [0.00, 0.30],
         [0.30, 0.30],
         [0.30, 0.60],

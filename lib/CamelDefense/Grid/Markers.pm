@@ -4,10 +4,17 @@ use Moose;
 use MooseX::Types::Moose qw(Int ArrayRef);
 use aliased 'CamelDefense::Grid::Axis';
 
-has [qw(w h spacing)] => (
+has [qw(w h)] => (
     is       => 'ro',
     required => 1,
     isa      => Int,
+);
+
+has spacing => (
+    is       => 'ro',
+    required => 1,
+    isa      => Int,
+    default  => 32,
 );
 
 has color => (

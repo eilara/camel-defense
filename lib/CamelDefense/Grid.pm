@@ -6,10 +6,10 @@ use List::Util qw(min max);
 use aliased 'CamelDefense::Grid::Markers';
 use aliased 'CamelDefense::Waypoints';
 
-has [qw(w h spacing)] =>
+has [qw(w h)] =>
     ( is => 'ro', required => 1, isa => Int);
 
-has [qw(grid_color bg_color waypoints_color path_color)] =>
+has [qw( spacing grid_color bg_color waypoints_color path_color)] =>
     (is => 'rw', isa => Int);
 
 has waypoints => (is => 'ro', required => 1);
@@ -38,15 +38,28 @@ sub _build_markers {
     my $self = shift;
     my $grid_color = $self->grid_color;
     my $bg_color = $self->bg_color;
+    my $spacing = $self->spacing;
     my $markers = Markers->new(
         w       => $self->w,
         h       => $self->h,
-        spacing => $self->spacing,
-        (defined($grid_color)? (color => $grid_color):()),
-        (defined($bg_color)? (bg_color => $bg_color):()),
+        $self->add_if_defined(
+            ['spacing'],
+            [grid_color => 'color'],
+            [bg_color   => 'bg_color'],
+        ),
     );
     $self->grid_color($markers->color); # in case someone wants to know the grid color
     return $markers;
+}
+
+sub add_if_defined {
+    my ($self, @attrs) = @_;
+    return map {
+        my ($my_name, $delegate_name) = @$_;
+        $delegate_name = $my_name unless defined $delegate_name;
+        my $val = $self->$my_name;
+        (defined($val)? ($delegate_name => $val): ());
+    } @attrs;
 }
 
 sub _build_waypoint_list {

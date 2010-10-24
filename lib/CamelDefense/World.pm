@@ -11,10 +11,13 @@ use aliased 'CamelDefense::Cursor';
 use aliased 'CamelDefense::Tower';
 use aliased 'CamelDefense::Wave';
 
-has app => (is => 'ro', required => 1, isa => App, handles => [qw(w h stop)]);
+has app =>
+    (is => 'ro', required => 1, isa => App, handles => [qw(w h stop)]);
 
-has [qw(spacing waypoints creep_vel inter_creep_wait)] =>
+has [qw(waypoints creep_vel inter_creep_wait)] =>
     (is => 'ro', required => 1);
+
+has spacing => (is => 'ro');
 
 has cursor => (is => 'ro', lazy_build => 1, isa => Cursor);
 has state  => (is => 'ro', lazy_build => 1, isa => StateMachine);
@@ -46,11 +49,12 @@ sub BUILD {
 
 sub _build_grid {
     my $self = shift;
+    my $spacing = $self->spacing;
     return Grid->new(
         w         => $self->w,
         h         => $self->h,
-        spacing   => $self->spacing,
         waypoints => $self->waypoints,
+        (defined($spacing)? (spacing => $spacing): ()),
     );
 }
 

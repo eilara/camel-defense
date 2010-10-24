@@ -19,7 +19,7 @@ my $app = SDLx::App->new(
 my $markers = Markers->new(
     w       => $app_w,
     h       => $app_h,
-    spacing => 25,
+    spacing => 23,
 );
 
 my $waypoints = Waypoints->new(

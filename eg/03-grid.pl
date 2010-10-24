@@ -18,7 +18,7 @@ my $app = SDLx::App->new(
 my $grid = Grid->new(
     w         => $app_w,
     h         => $app_h,
-    spacing   => 32,
+    spacing   => 39,
     waypoints => [
         [0.00, 0.30],
         [0.30, 0.30],

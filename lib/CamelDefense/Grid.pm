@@ -42,6 +42,7 @@ sub _build_markers {
     my $markers = Markers->new(
         w       => $self->w,
         h       => $self->h,
+
         $self->add_if_defined(
             ['spacing'],
             [grid_color => 'color'],

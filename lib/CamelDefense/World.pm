@@ -34,7 +34,7 @@ has waves => (
     default  => sub { [] },
 );
 
-with 'MooseX::Role::BuildInstanceOf' => {target => Grid, prefix => 'grid'};
+with 'MooseX::Role::BuildInstanceOf' => {target => Grid};
 has '+grid' => (handles => [qw(
     points_px compute_cell_center grid_color add_tower
 )]);
@@ -107,9 +107,11 @@ sub _build_state {
 sub start_wave {
     my $self = shift;
     push @{ $self->waves }, Wave->new(
-        creep_vel        => $self->creep_vel,
         inter_creep_wait => $self->inter_creep_wait,
-        waypoints        => $self->points_px,
+        creep_args       => [
+            v => $self->creep_vel,
+            waypoints => $self->points_px,
+        ],
     );
 }
 

@@ -40,20 +40,20 @@ my $grid = Grid->new(
 );
 
 my @wave_defs = ({
-    creep_vel        => $creep_vel,
     inter_creep_wait => $inter_creep_wait,
+    creep_args       => [v => $creep_vel],
 }, {
-    creep_vel        => $creep_vel * 2,
     inter_creep_wait => $inter_creep_wait * 0.9,
-    image_file       => '../data/tower.png',
+    creep_args       =>
+        [v => $creep_vel*2, image_file => '../data/tower.png'],
 }, {
-    creep_vel        => $creep_vel * 2.7,
     inter_creep_wait => $inter_creep_wait * 0.8,
-    image_file       => '../data/cant_place_tower.png',
+    creep_args       =>
+        [v => $creep_vel*2.7, image_file => '../data/cant_place_tower.png'],
 }, {
-    creep_vel        => $creep_vel * 3.5,
     inter_creep_wait => $inter_creep_wait * 0.6,
-    image_file       => '../data/place_tower.png',
+    creep_args       =>
+        [v => $creep_vel*3.5, image_file => '../data/place_tower.png'],
 });
 
 my @waves;
@@ -76,7 +76,8 @@ sub event_handler {
                 undef;
         if (defined $k) {
             my $def = $wave_defs[$k - 1];
-            push @waves, Wave->new(%$def, waypoints => $grid->points_px);
+            push @{$def->{creep_args}}, (waypoints => $grid->points_px);
+            push @waves, Wave->new(%$def);
         }
     }
 }

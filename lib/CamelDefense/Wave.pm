@@ -5,10 +5,6 @@ use MooseX::Types::Moose qw(Num Int ArrayRef);
 use Time::HiRes qw(time);
 use aliased 'CamelDefense::Creep';
 
-has [qw(creep_vel waypoints)] => (is => 'ro', required => 1);
-
-has image_file => (is => 'ro');
-
 has inter_creep_wait => (is => 'ro', required => 1, isa => Num);
 
 has last_creep_birth => (is => 'rw', isa => Num);
@@ -23,25 +19,22 @@ sub BUILD { shift->last_creep_birth(time) }
 sub move {
     my ($self, $dt) = @_;
     my @creeps = map { $_->move($dt) } @{ $self->creeps };
-    push(@creeps, $self->make_creep) if
+    push(@creeps, $self->creep) if
         time - $self->last_creep_birth > $self->inter_creep_wait;
     $self->creeps(\@creeps);
 }
 
-sub make_creep {
-    my $self = shift;
-    my $image     = $self->image_file;
-    my $v         = $self->creep_vel;
+with 'MooseX::Role::BuildInstanceOf' => {target => Creep, type => 'factory'};
+around merge_creep_args => sub {
+    my ($orig, $self) = @_;
     my $creep_idx = $self->next_creep_idx;
     $self->next_creep_idx($creep_idx + 1);
     $self->last_creep_birth(time);
-    return Creep->new(
-        waypoints => $self->waypoints,
-        idx       => $creep_idx,
-        (defined $image? (image_file => $image): ()),
-        (defined $v? (v => $v): ()),
+    return (
+        idx => $creep_idx,
+        $self->$orig,
     );
-}
+};
 
 sub render {
     my ($self, $surface) = @_;

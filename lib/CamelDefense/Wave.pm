@@ -14,6 +14,15 @@ has next_creep_idx => (is => 'rw', required => 1, isa => Int, default => 1);
 has creeps =>
     (is => 'rw', required => 1, isa => ArrayRef[Creep], default => sub { [] });
 
+with 'MooseX::Role::BuildInstanceOf' => {target => Creep, type => 'factory'};
+around merge_creep_args => sub {
+    my ($orig, $self) = @_;
+    my $creep_idx = $self->next_creep_idx;
+    $self->next_creep_idx($creep_idx + 1);
+    $self->last_creep_birth(time);
+    return (idx => $creep_idx, $self->$orig);
+};
+
 sub BUILD { shift->last_creep_birth(time) }    
 
 sub move {
@@ -23,18 +32,6 @@ sub move {
         time - $self->last_creep_birth > $self->inter_creep_wait;
     $self->creeps(\@creeps);
 }
-
-with 'MooseX::Role::BuildInstanceOf' => {target => Creep, type => 'factory'};
-around merge_creep_args => sub {
-    my ($orig, $self) = @_;
-    my $creep_idx = $self->next_creep_idx;
-    $self->next_creep_idx($creep_idx + 1);
-    $self->last_creep_birth(time);
-    return (
-        idx => $creep_idx,
-        $self->$orig,
-    );
-};
 
 sub render {
     my ($self, $surface) = @_;

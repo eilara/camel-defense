@@ -14,8 +14,7 @@ use aliased 'CamelDefense::Wave';
 has app =>
     (is => 'ro', required => 1, isa => App, handles => [qw(w h stop)]);
 
-has [qw(waypoints creep_vel inter_creep_wait)] =>
-    (is => 'ro', required => 1);
+has waypoints => (is => 'ro', required => 1);
 
 has cursor => (is => 'ro', lazy_build => 1, isa => Cursor);
 has state  => (is => 'ro', lazy_build => 1, isa => StateMachine);
@@ -41,12 +40,22 @@ has '+grid' => (handles => [qw(
 around merge_grid_args => sub {
     my ($orig, $self) = @_;
     my %args = $self->$orig;
+    my $marks_args         = delete($args{marks_args})         || [];
+    my $waypoint_list_args = delete($args{waypoint_list_args}) || [];
     return (
-        marks_args =>
-            [w => $self->w, h => $self->h, @{$args{marks_args} ||= []}],
+        marks_args => [w => $self->w, h => $self->h, @$marks_args],
         waypoint_list_args =>
-            [waypoints => $self->waypoints, @{$args{waypoint_list_args} ||= []}],
+            [waypoints => $self->waypoints, @$waypoint_list_args],
+        %args,
     );
+};
+
+with 'MooseX::Role::BuildInstanceOf' => {target => Wave, type => 'factory'};
+around merge_wave_args => sub {
+    my ($orig, $self) = @_;
+    my %args = $self->$orig;
+    push @{ $args{creep_args} ||= []}, (waypoints => $self->points_px);
+    return %args;
 };
 
 sub BUILD {
@@ -104,17 +113,6 @@ sub _build_state {
     });
 }
 
-sub start_wave {
-    my $self = shift;
-    push @{ $self->waves }, Wave->new(
-        inter_creep_wait => $self->inter_creep_wait,
-        creep_args       => [
-            v => $self->creep_vel,
-            waypoints => $self->points_px,
-        ],
-    );
-}
-
 sub handle_event {
     my ($self, $e) = @_;
     my $state = $self->state;
@@ -156,6 +154,11 @@ sub render_cursor {
 sub move {
     my ($self, $dt) = @_;
     $_->move($dt) for $self->children;
+}
+
+sub start_wave {
+    my $self = shift;
+    push @{ $self->waves }, $self->wave;
 }
 
 sub can_build {

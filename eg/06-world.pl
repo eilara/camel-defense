@@ -16,10 +16,18 @@ my $app = App->new(
 );
 
 my $world = World->new(
-    app              => $app,
-    creep_vel        => 10,
-    inter_creep_wait => 0.6,
-    waypoints        => [
+    app => $app,
+    grid_args => [
+        marks_args         => [bg_color   => 0x180202FF],
+        waypoint_list_args => [path_color => 0x141400FF],
+    ],
+    wave_args => [
+        inter_creep_wait => 0.6,
+        creep_args => [
+            v => 10,
+        ],
+    ],
+    waypoints => [
         [0.50, 0.00],
         [0.50, 0.25],
         [0.25, 0.25],
@@ -28,10 +36,6 @@ my $world = World->new(
         [0.75, 0.75],
         [0.50, 0.75],
         [0.50, 0.95],
-    ],
-    grid_args => [
-        marks_args         => [bg_color   => 0x180202FF],
-        waypoint_list_args => [path_color => 0x141400FF],
     ],
 );
 

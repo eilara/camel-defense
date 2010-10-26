@@ -13,7 +13,6 @@ sub compute_cell_center { shift->world->compute_cell_center(@_) }
 
 sub render_range {
     my ($self, $surface, $color) = @_;
-    my $sprite = $self->sprite;
     $surface->draw_circle(
         [$self->center_x, $self->center_y],
         $self->range,

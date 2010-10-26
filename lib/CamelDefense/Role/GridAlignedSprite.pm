@@ -21,6 +21,8 @@ sub BUILD {
 sub compute_sprite_xy {
     my ($self, $sprite) = @_;
     my $center = $self->compute_cell_center(@{ $self->xy });
+    $self->center_x($center->[0]);
+    $self->center_y($center->[1]);
     return ($center->[0] - $sprite->w/2, $center->[1] - $sprite->h/2);
 }
 

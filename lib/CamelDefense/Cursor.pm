@@ -32,7 +32,7 @@ sub change_to {
 around render => sub {
     my ($orig, $self, $surface) = @_;
     return unless $self->is_visible;
-    $self->shadow->render($surface) unless $self->state eq 'normal';
+    $self->shadow->render($surface) if $self->state ne 'normal';
     $orig->($self, $surface);
 };
 

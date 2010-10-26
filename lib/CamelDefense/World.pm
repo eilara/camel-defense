@@ -94,7 +94,7 @@ sub _build_state {
                         next_state => $can_build,
                     },
                     mouse_button_up => {
-                        next_state => 'place_tower',
+                        next_state => 'cant_place_tower',
                         code       => $build_tower,
                     },
                 },

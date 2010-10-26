@@ -1,5 +1,12 @@
 package CamelDefense::Grid;
 
+# the grid:
+#    * shows gridlines
+#    * shows waypoints
+#    * keeps the grid cells and answers the question "can I build on a cell?"
+#    * updates grid cells with items that are placed in them, waypoint,
+#      and path cells
+
 use Moose;
 use MooseX::Types::Moose qw(Num Int ArrayRef);
 use List::Util qw(min max);
@@ -12,6 +19,7 @@ has cells => (
     isa        => ArrayRef[ArrayRef['Grid::Cell']],
 );
 
+# a grid has markers which show the grid lines and handle translation xy -> cells
 with 'MooseX::Role::BuildInstanceOf' => {target => Markers, prefix => 'marks'};
 has '+marks' => (handles => [qw(
     grid_color
@@ -19,6 +27,8 @@ has '+marks' => (handles => [qw(
     find_cell compute_cell_center
 )]);
 
+# a grid has waypoints which can be queried by objects that need to move
+# through them
 with 'MooseX::Role::BuildInstanceOf' =>
     {target => Waypoints, prefix => 'waypoint_list'};
 has '+waypoint_list' => (handles => [qw(points_px)]);

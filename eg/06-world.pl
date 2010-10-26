@@ -25,7 +25,8 @@ my $world = World->new(
         inter_creep_wait => 0.6,
         creep_args       => [v => 10],
     ],
-    waypoints => [
+    tower_args => [fire_period => 1.0],
+    waypoints  => [
         [0.50, 0.00],
         [0.50, 0.25],
         [0.25, 0.25],

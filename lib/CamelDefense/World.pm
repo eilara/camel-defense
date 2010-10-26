@@ -19,20 +19,7 @@ has waypoints => (is => 'ro', required => 1);
 has cursor => (is => 'ro', lazy_build => 1, isa => Cursor);
 has state  => (is => 'ro', lazy_build => 1, isa => StateMachine);
 
-has towers => (
-    is       => 'ro',
-    required => 1,
-    isa      => ArrayRef[Tower],
-    default  => sub { [] },
-);
-
-has waves => (
-    is       => 'ro',
-    required => 1,
-    isa      => ArrayRef[Wave],
-    default  => sub { [] },
-);
-
+# the world has a grid
 with 'MooseX::Role::BuildInstanceOf' => {target => Grid};
 has '+grid' => (handles => [qw(
     points_px compute_cell_center grid_color add_tower
@@ -50,12 +37,34 @@ around merge_grid_args => sub {
     );
 };
 
+# the world creates and manages waves
+has waves => (
+    is       => 'ro',
+    required => 1,
+    isa      => ArrayRef[Wave],
+    default  => sub { [] },
+);
 with 'MooseX::Role::BuildInstanceOf' => {target => Wave, type => 'factory'};
 around merge_wave_args => sub {
     my ($orig, $self) = @_;
     my %args = $self->$orig;
     push @{ $args{creep_args} ||= []}, (waypoints => $self->points_px);
     return %args;
+};
+
+# the world creates and manages towers
+has towers => (
+    is       => 'ro',
+    required => 1,
+    isa      => ArrayRef[Tower],
+    default  => sub { [] },
+);
+with 'MooseX::Role::BuildInstanceOf' => {target => Tower, type => 'factory'};
+around merge_tower_args => sub {
+    my ($orig, $self) = @_;
+    my ($x, $y) = @{$self->cursor->xy};
+    $self->add_tower($x, $y);
+    return (world => $self, xy => [$x, $y], $self->$orig);
 };
 
 sub BUILD {
@@ -171,13 +180,7 @@ sub can_build {
 
 sub build_tower {
     my $self = shift;
-    my $cursor = $self->cursor;
-    my ($x, $y) = @{$cursor->xy};
-    push @{ $self->towers }, Tower->new(
-        world => $self,
-        xy    => [$x, $y],
-    );
-    $self->add_tower($x, $y);
+    push @{ $self->towers }, $self->tower;
 }
 
 sub children {

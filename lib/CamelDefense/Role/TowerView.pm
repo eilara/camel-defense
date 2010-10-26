@@ -16,7 +16,7 @@ sub render_range {
     $surface->draw_circle(
         [$self->center_x, $self->center_y],
         $self->range,
-        $color,
+        $color, 1,
     );
 }
 

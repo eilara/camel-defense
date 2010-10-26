@@ -23,9 +23,7 @@ my $world = World->new(
     ],
     wave_args => [
         inter_creep_wait => 0.6,
-        creep_args => [
-            v => 10,
-        ],
+        creep_args       => [v => 10],
     ],
     waypoints => [
         [0.50, 0.00],
@@ -46,7 +44,7 @@ $app->run;
 
 sub event_handler {
     my $e = shift;
-    $world->start_wave() if $e->type == SDL_KEYUP &&  $e->key_sym == SDLK_1;
+    $world->start_wave if $e->type == SDL_KEYUP &&  $e->key_sym == SDLK_1;
 }
 
 sub show_handler {

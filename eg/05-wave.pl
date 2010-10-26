@@ -49,11 +49,11 @@ my @wave_defs = ({
 }, {
     inter_creep_wait => $inter_creep_wait * 0.8,
     creep_args       =>
-        [v => $creep_vel*2.7, image_file => '../data/cant_place_tower.png'],
+        [v => $creep_vel*2.7, image_file => '../data/cursor_cant_place_tower.png'],
 }, {
     inter_creep_wait => $inter_creep_wait * 0.6,
     creep_args       =>
-        [v => $creep_vel*3.5, image_file => '../data/place_tower.png'],
+        [v => $creep_vel*3.5, image_file => '../data/cursor_place_tower.png'],
 });
 
 my @waves;

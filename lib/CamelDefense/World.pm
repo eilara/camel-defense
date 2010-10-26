@@ -66,7 +66,7 @@ sub BUILD {
     $self->app->add_move_handler(sub { $self->move(@_) });
 }
 
-sub _build_cursor { Cursor->new }
+sub _build_cursor { Cursor->new(world => shift) }
 
 sub _build_state {
     my $self        = shift;

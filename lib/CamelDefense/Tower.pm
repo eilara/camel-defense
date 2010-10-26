@@ -3,29 +3,19 @@ package CamelDefense::Tower;
 use Moose;
 use MooseX::Types::Moose qw(Num Str);
 use Time::HiRes qw(time);
-use aliased 'SDLx::Sprite';
-use aliased 'CamelDefense::World';
-use aliased 'CamelDefense::Creep';
-
-has world => (
-    is       => 'ro',
-    required => 1,
-    isa      => World,
-    handles  => [qw(compute_cell_center aim)],
-);
 
 has laser_color     => (is => 'ro', isa => Num, default => 0xFF0000FF);
 has cool_off_period => (is => 'ro', isa => Num, default => 0.5);
 has fire_period     => (is => 'ro', isa => Num, default => 0.5);
 has damage_per_sec  => (is => 'ro', isa => Num, default => 15);
-has range           => (is => 'ro', isa => Num, default => 100); # in pixels
 
 has last_fire_time  => (is => 'rw', isa => Num, default => 0);
 has state           => (is => 'rw', isa => Str, default => 'init');
 
 has [qw(current_target last_damage_update)] => (is => 'rw');
 
-with 'CamelDefense::Role::GridAlignedSprite';
+with 'CamelDefense::Role::TowerView';
+has '+world' => (handles => [qw(aim)]);
 
 sub init_image_file { '../data/tower.png' }
 
@@ -79,16 +69,6 @@ sub move {
     } else {
         die "Unknown state: $state";
     }
-}
-
-sub render_range {
-    my ($self, $surface, $color) = @_;
-    my $sprite = $self->sprite;
-    $surface->draw_circle(
-        [$self->center_x, $self->center_y],
-        $self->range,
-        $color,
-    );
 }
 
 after render => sub {

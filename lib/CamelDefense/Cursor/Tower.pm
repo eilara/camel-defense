@@ -20,7 +20,7 @@ sub change_to {
 after render => sub {
     my ($self, $surface) = @_;
     return unless $self->state eq 'place_tower';
-    $self->render_range($surface, 0x027202FF);
+    $self->render_range($surface, 0x02720250, 1);
 };
 
 1;

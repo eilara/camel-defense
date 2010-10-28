@@ -74,7 +74,14 @@ renderer
 you can still call render on world, or you can call render on a layer
 manager you create on it
 
+how to connect renderer to visual objects:
 
+1- give all visobjs the renderer, they render on it instead of app surface
+   - now everybody needs to know about the renderer
+   - cant display any visobj without creating and attaching a renderer
+
+2-same as 1, but objs dont render on the renderer. instead they just register
+   - not as bad as everybody needs to know renderer, but stil everybody needs to know how to register with it
 
 
 

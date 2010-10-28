@@ -1,5 +1,7 @@
 package CamelDefense::Grid::Markers;
 
+# draws grid markers and converts from xy -> cell index
+
 use Moose;
 use MooseX::Types::Moose qw(Int ArrayRef);
 use aliased 'CamelDefense::Grid::Axis';

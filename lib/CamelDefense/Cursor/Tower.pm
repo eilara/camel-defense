@@ -16,8 +16,8 @@ sub change_to {
         if $new_state ne 'normal';
 }
 
-# render tower range on top of everything when we can build here
-after render => sub {
+# render tower range on top of everything only when we can build here
+before render => sub {
     my ($self, $surface) = @_;
     return unless $self->state eq 'place_tower';
     $self->render_range($surface, 0x02720250, 1);

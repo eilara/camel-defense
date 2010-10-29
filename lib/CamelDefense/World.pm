@@ -8,8 +8,8 @@ use aliased 'SDLx::App';
 use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::StateMachine';
 use aliased 'CamelDefense::Cursor';
-use aliased 'CamelDefense::Tower';
-use aliased 'CamelDefense::Wave';
+use aliased 'CamelDefense::Tower::Manager' => 'TowerManager';
+use aliased 'CamelDefense::Wave::Manager'  => 'WaveManager';
 
 has app =>
     (is => 'ro', required => 1, isa => App, handles => [qw(w h stop)]);
@@ -37,34 +37,22 @@ around merge_grid_args => sub {
     );
 };
 
-# the world creates and manages waves
-has waves => (
-    is       => 'ro',
-    required => 1,
-    isa      => ArrayRef[Wave],
-    default  => sub { [] },
-);
-with 'MooseX::Role::BuildInstanceOf' => {target => Wave, type => 'factory'};
-around merge_wave_args => sub {
+# the world has a wave manager
+with 'MooseX::Role::BuildInstanceOf' =>
+    {target => WaveManager, prefix => 'wave_manager'};
+has '+wave_manager' => (handles => [qw(start_wave aim)]);
+around merge_wave_manager_args => sub {
     my ($orig, $self) = @_;
-    my %args = $self->$orig;
-    push @{ $args{creep_args} ||= []}, (waypoints => $self->points_px);
-    return %args;
+    return (world => $self, $self->$orig);
 };
 
-# the world creates and manages towers
-has towers => (
-    is       => 'ro',
-    required => 1,
-    isa      => ArrayRef[Tower],
-    default  => sub { [] },
-);
-with 'MooseX::Role::BuildInstanceOf' => {target => Tower, type => 'factory'};
-around merge_tower_args => sub {
+# the world has a tower manager
+with 'MooseX::Role::BuildInstanceOf' =>
+    {target => TowerManager, prefix => 'tower_manager'};
+has '+tower_manager' => (handles => [qw(build_tower)]);
+around merge_tower_manager_args => sub {
     my ($orig, $self) = @_;
-    my ($x, $y) = @{$self->cursor->xy};
-    $self->add_tower($x, $y);
-    return (world => $self, xy => [$x, $y], $self->$orig);
+    return (world => $self, cursor => $self->cursor, $self->$orig);
 };
 
 sub BUILD {
@@ -145,29 +133,29 @@ sub handle_event {
     }
 }
 
+sub move {
+    my ($self, $dt) = @_;
+    $_->move($dt) for $self->tower_manager, $self->wave_manager;
+}
+
 sub render {
     my $self = shift;
     my $surface = $self->app;
-    my $grid_color = $self->grid_color;
+    $self->render_bg;
+    $_->render($surface) for $self->tower_manager, $self->wave_manager;
+}
+
+sub render_bg {
+    my $self = shift;
+    my $surface = $self->app;
     $self->grid->render_markers($surface);
-    $_->render_range($surface, $grid_color) for @{ $self->towers };
+    $self->tower_manager->render_bg($surface);
     $self->grid->render($surface);
-    $_->render($surface) for $self->children;
 }
 
 sub render_cursor {
     my $self = shift;
     $self->cursor->render($self->app);
-}
-
-sub move {
-    my ($self, $dt) = @_;
-    $_->move($dt) for $self->children;
-}
-
-sub start_wave {
-    my $self = shift;
-    push @{ $self->waves }, $self->wave;
 }
 
 sub can_build {
@@ -176,30 +164,6 @@ sub can_build {
     return $self->grid->can_build(@{$cursor->xy})?
         'place_tower':
         'cant_place_tower';
-}
-
-sub build_tower {
-    my $self = shift;
-    push @{ $self->towers }, $self->tower;
-}
-
-sub children {
-    my $self = shift;
-    return (@{ $self->towers }, @{ $self->waves });
-}
-
-sub aim {
-    my ($self, $sx, $sy, $range) = @_;
-    for my $wave (@{ $self->waves }) {
-        for my $creep (@{ $wave->creeps }) {
-            if (
-                $creep->is_alive &&
-                $creep->is_in_range($sx, $sy, $range)
-            ) {
-                return $creep;
-            }
-        }
-    }
 }
 
 1;

@@ -51,22 +51,24 @@ Game objects, layers, and z-index in layer:
 
 Sorted by z-index:
 
-1 1 background
-1 2 markers
-1 3 tower range
-1 4 waypoints
-1 5 path
-1 6 tower sprite
-2 1 laser
-2 2 creep
-2 3 health bar
-2 4 cursor shadow range
-2 5 cursor shadow
-2 6 cursor sprite 
+1 1 background            markers
+1 2 markers               markers
+1 3 tower range           tower
+1 4 waypoints             waypoints
+1 5 path                  waypoints
+1 6 tower sprite          tower
+2 1 laser                 tower
+2 2 creep                 creep
+2 3 health bar            creep
+
+2 4 cursor shadow range   cursor
+2 5 cursor shadow         cursor
+2 6 cursor sprite         cursor
 
 Layers:
     1 - bg - redrawn every tower build/sell/upgrade
     2 - fg - redrawn every show handler
+    3 - cursor - ditto
 
 renderer
     has layer renderers for fg and bg
@@ -80,9 +82,25 @@ how to connect renderer to visual objects:
    - now everybody needs to know about the renderer
    - cant display any visobj without creating and attaching a renderer
 
-2-same as 1, but objs dont render on the renderer. instead they just register
+2- same as 1, but objs dont render on the renderer. instead they just register
    - not as bad as everybody needs to know renderer, but stil everybody needs to know how to register with it
+   - renderer calls render methods on objs
 
+3- renderer gets world, navigates, calls render, adds callback for dirtiness   
+   - bad demeter
+
+4- same as 3 but renderer gets world, which has role composite, navigates composition
+
+5- renderer adds to the specific classes that need rendering a role which has a BUILD
+   or better- adds role to objects in the composition
+
+6- add aspect on any constructor called where the parent object has call flow aspect
+   of code called from renderer init which is configed as world->new (problem
+   with laziness). advice registers the obj , giving layer and Z index by class
+   renderer keeps a heap of objects per layer sorted by z index
+
+   
+    
 
 
 

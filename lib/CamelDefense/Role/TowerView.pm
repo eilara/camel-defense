@@ -4,7 +4,8 @@ use Moose::Role;
 use MooseX::Types::Moose qw(Num Str);
 use aliased 'CamelDefense::World';
 
-has world => (is => 'ro', required => 1, isa => World);
+has world => (is => 'ro', required => 1, isa => World, weak_ref => 1);
+
 has range => (is => 'ro', isa => Num, default => 100); # in pixels
 
 with 'CamelDefense::Role::GridAlignedSprite';

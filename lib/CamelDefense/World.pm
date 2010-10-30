@@ -5,6 +5,7 @@ use SDL::Events;
 use SDL::Mouse;
 use MooseX::Types::Moose qw(ArrayRef);
 use aliased 'SDLx::App';
+use aliased 'SDLx::Surface';
 use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::StateMachine';
 use aliased 'CamelDefense::Cursor';
@@ -16,8 +17,14 @@ has app =>
 
 has waypoints => (is => 'ro', required => 1);
 
-has cursor => (is => 'ro', lazy_build => 1, isa => Cursor);
-has state  => (is => 'ro', lazy_build => 1, isa => StateMachine);
+has cursor     => (is => 'ro', lazy_build => 1, isa => Cursor);
+has state      => (is => 'ro', lazy_build => 1, isa => StateMachine);
+has bg_surface => (is => 'ro', lazy_build => 1, isa => Surface);
+
+sub _build_bg_surface {
+    my $self = shift;
+    return Surface->new(width => $self->w, height => $self->h);
+}
 
 # the world has a grid
 with 'MooseX::Role::BuildInstanceOf' => {target => Grid};
@@ -148,6 +155,27 @@ sub render {
 sub render_bg {
     my $self = shift;
     my $surface = $self->app;
+
+
+# TODO: would be better to redraw bg layer only when towers change but
+#       it looks choppy, needs to test FPS then check why the slowness
+
+# render background, refreshing it if needed
+#    my $bg_surface = $self->bg_surface;
+#    $self->refresh_bg($bg_surface) if $self->tower_manager->is_dirty;
+#    $bg_surface->blit($surface);
+
+    $self->refresh_bg($surface);
+
+    # now render foreground
+    $self->grid->render_markers($surface);
+    $self->tower_manager->render_bg($surface);
+    $self->grid->render($surface);
+}
+
+sub refresh_bg {
+    my ($self, $surface) = @_;
+    my $surface = $self->bg_surface;
     $self->grid->render_markers($surface);
     $self->tower_manager->render_bg($surface);
     $self->grid->render($surface);

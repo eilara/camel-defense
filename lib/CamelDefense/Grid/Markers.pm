@@ -30,7 +30,7 @@ has bg_color => (
     is       => 'ro',
     required => 1,
     isa      => Int,
-    default  => 0x0,
+    default  => 0x000000FF,
 );
 
 for my $ax (qw(x y)) {

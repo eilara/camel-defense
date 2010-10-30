@@ -5,9 +5,9 @@ use MooseX::Types::Moose qw(Bool Str);
 use aliased 'CamelDefense::Cursor::Tower';
 use aliased 'CamelDefense::World';
 
-has world      => (is => 'ro', required => 1, isa => World);
-has state      => (is => 'rw', required => 1, isa => Str , default => 'normal');
-has is_visible => (is => 'rw', required => 1, isa => Bool, default => 0);
+has world      => (is => 'ro', required => 1, isa => World, weak_ref => 1);
+has state      => (is => 'rw', required => 1, isa => Str  , default  => 'normal');
+has is_visible => (is => 'rw', required => 1, isa => Bool , default  => 0);
 
 # the shadow shows the tower about to be built in the cursor grid cell
 # it is attached to the cursor

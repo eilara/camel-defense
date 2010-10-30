@@ -26,6 +26,10 @@ Requires:
    
 -------------------------------------notes--------------------------------------
 
+TODO
+    check why bg layer refresh trick dont work
+    add FPS indicator
+    checks for creeps in range using better ds than list
 
 Game objects, layers, and z-index in layer:
 
@@ -64,6 +68,10 @@ Sorted by z-index:
 2 4 cursor shadow range   cursor
 2 5 cursor shadow         cursor
 2 6 cursor sprite         cursor
+
+
+
+
 
 Layers:
     1 - bg - redrawn every tower build/sell/upgrade

@@ -5,8 +5,9 @@ use MooseX::Types::Moose qw(ArrayRef);
 use aliased 'CamelDefense::Wave';
 use aliased 'CamelDefense::World';
 
-has world =>
-    (is => 'ro', required => 1, isa => World, handles => [qw(points_px)]);
+has world  => (is => 'ro', required => 1, isa => World, handles => [qw(
+    points_px
+)], weak_ref => 1);
 
 # the wave manager creates and manages waves
 has waves => (

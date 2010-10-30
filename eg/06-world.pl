@@ -18,11 +18,12 @@ my $app = App->new(
 my $world = World->new(
     app => $app,
     grid_args => [
-        marks_args         => [bg_color   => 0x180202FF],
-        waypoint_list_args => [path_color => 0x242400FF],
+        marks_args         => [bg_color   => 0x210606FF],
+        waypoint_list_args => [path_color => 0x202010FF],
     ],
     wave_manager_args => [
         wave_args => [
+            creep_count      => 10,
             inter_creep_wait => 0.5,
             creep_args       => [v => 10],
         ],

@@ -11,7 +11,7 @@ has world  => (is => 'ro', required => 1, isa => World, handles => [qw(
 
 # the wave manager creates and manages waves
 has waves => (
-    is       => 'ro',
+    is       => 'rw',
     required => 1,
     isa      => ArrayRef[Wave],
     default  => sub { [] },
@@ -31,7 +31,9 @@ sub render {
 
 sub move {
     my ($self, $dt) = @_;
-    $_->move($dt) for @{$self->waves};
+    my $wc = scalar @{$self->waves};
+    my @waves = map { $_->move($dt) } @{ $self->waves };
+    $self->waves(\@waves);
 }
 
 sub start_wave {

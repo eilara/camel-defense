@@ -14,7 +14,7 @@ has start_hp => (is => 'rw', isa => Num);
 
 with 'CamelDefense::Role::CenteredSprite';
 
-sub init_image_file { '../data/creep.png' }
+sub init_image_file { '../data/creep_normal.png' }
 
 sub BUILD() {
     my $self = shift;
@@ -24,13 +24,14 @@ sub BUILD() {
 }
 
 # assumes creep only moves in vertical or horizontal direction, no angles
+# returns empty list if creep is not alive, self if it is
 sub move {
     my ($self, $dt) = @_;
-    return unless $self->is_alive;
+    return () unless $self->is_alive;
 
     my $wpi = $self->waypoint_idx;
     my @wps = @{ $self->waypoints };
-    return if $wpi == $#wps;                # no more waypoints
+    return () if $wpi == $#wps;                # no more waypoints
 
     my $wp2       = $wps[$wpi + 1];         # next waypoint
     my ($x1, $y1) = @{ $self->xy };         # my pos
@@ -57,6 +58,7 @@ sub move {
 after render => sub {
     my ($self, $surface) = @_;
 
+# draws text of creep htp and index    
 #    my $hp = sprintf("%.1f", $self->hp);
 #    $surface->draw_gfx_text([$self->sprite_x+2, $self->sprite_y+2], 0x000000FF, $hp);
 #    $surface->draw_gfx_text([$self->sprite_x+2, $self->sprite_y+2], 0x000000FF, $self->idx);

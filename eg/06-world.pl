@@ -19,7 +19,7 @@ my $world = World->new(
     app => $app,
     grid_args => [
         marks_args         => [bg_color   => 0x180202FF],
-        waypoint_list_args => [path_color => 0x141400FF],
+        waypoint_list_args => [path_color => 0x242400FF],
     ],
     wave_manager_args => [
         wave_args => [

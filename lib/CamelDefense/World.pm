@@ -175,7 +175,6 @@ sub render_bg {
 
 sub refresh_bg {
     my ($self, $surface) = @_;
-    my $surface = $self->bg_surface;
     $self->grid->render_markers($surface);
     $self->tower_manager->render_bg($surface);
     $self->grid->render($surface);

@@ -7,8 +7,8 @@ use MooseX::Types::Moose qw(ArrayRef CodeRef);
 use aliased 'SDLx::App';
 use aliased 'SDLx::Surface';
 use aliased 'CamelDefense::Grid';
-use aliased 'CamelDefense::StateMachine';
 use aliased 'CamelDefense::Cursor';
+use aliased 'CamelDefense::World::State';
 use aliased 'CamelDefense::Tower::Manager' => 'TowerManager';
 use aliased 'CamelDefense::Wave::Manager'  => 'WaveManager';
 
@@ -21,7 +21,7 @@ has level_complete_handler =>
     (is => 'ro', required => 1, isa => CodeRef, default => sub { sub {} });
 
 has cursor     => (is => 'ro', lazy_build => 1, isa => Cursor);
-has state      => (is => 'ro', lazy_build => 1, isa => StateMachine);
+has state      => (is => 'ro', lazy_build => 1, isa => State);
 has bg_surface => (is => 'ro', lazy_build => 1, isa => Surface);
 
 sub _build_bg_surface {
@@ -59,7 +59,6 @@ around merge_wave_manager_args => sub {
 # the world has a tower manager
 with 'MooseX::Role::BuildInstanceOf' =>
     {target => TowerManager, prefix => 'tower_manager'};
-has '+tower_manager' => (handles => [qw(build_tower)]);
 around merge_tower_manager_args => sub {
     my ($orig, $self) = @_;
     return (world => $self, cursor => $self->cursor, $self->$orig);
@@ -76,48 +75,12 @@ sub BUILD {
 sub _build_cursor { Cursor->new(world => shift) }
 
 sub _build_state {
-    my $self        = shift;
-    my $can_build   = sub { $self->can_build };
-    my $build_tower = sub { $self->build_tower };
-
-    return StateMachine->new(
-        cursor => $self->cursor,
-        states => {
-            init => {
-                cursor => 'normal',
-                events => {
-                    space_key_up => {
-                        next_state => $can_build,
-                    },
-                },
-            },
-            place_tower => {
-                cursor => 'place_tower',
-                events => {
-                    space_key_up => {
-                        next_state => 'init',
-                    },
-                    mouse_motion => {
-                        next_state => $can_build,
-                    },
-                    mouse_button_up => {
-                        next_state => 'cant_place_tower',
-                        code       => $build_tower,
-                    },
-                },
-            },
-            cant_place_tower => {
-                cursor => 'cant_place_tower',
-                events => {
-                    mouse_motion => {
-                        next_state => $can_build,
-                    },
-                    space_key_up => {
-                        next_state => 'init',
-                    },
-                },
-            },
-    });
+    my $self = shift;
+    return State->new(
+        cursor        => $self->cursor,
+        grid          => $self->grid,
+        tower_manager => $self->tower_manager,
+    );
 }
 
 sub handle_event {
@@ -192,14 +155,6 @@ sub refresh_bg {
 sub render_cursor {
     my $self = shift;
     $self->cursor->render($self->app);
-}
-
-sub can_build {
-    my $self = shift;
-    my $cursor = $self->cursor;
-    return $self->grid->can_build(@{$cursor->xy})?
-        'place_tower':
-        'cant_place_tower';
 }
 
 1;

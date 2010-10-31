@@ -13,9 +13,16 @@ with 'CamelDefense::Role::GridAlignedSprite';
 sub compute_cell_center { shift->world->compute_cell_center(@_) }
 
 sub render_range {
-    my ($self, $surface, $color, $is_filled) = @_;
-    my $method = 'draw_circle'. ($is_filled? '_filled': '');
-    $surface->$method(
+    my ($self, $surface, $color, $area_color) = @_;
+
+    if ($area_color) {
+        $surface->draw_circle_filled(
+            [$self->center_x, $self->center_y],
+            $self->range,
+            $area_color,
+        );
+    }
+    $surface->draw_circle(
         [$self->center_x, $self->center_y],
         $self->range,
         $color,

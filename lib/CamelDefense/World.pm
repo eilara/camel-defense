@@ -145,9 +145,13 @@ sub handle_event {
 
 sub move {
     my ($self, $dt) = @_;
-    $self->level_complete_handler->()
-        if $self->is_level_complete;
-    $_->move($dt) for $self->tower_manager, $self->wave_manager;
+    $self->tower_manager->move($dt);
+    if ($self->is_level_complete) {
+    # TODO: should only be called once
+        $self->level_complete_handler->();
+    } else {
+        $self->wave_manager->move($dt);
+    }
 }
 
 sub render {

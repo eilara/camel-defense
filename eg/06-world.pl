@@ -9,6 +9,8 @@ use aliased 'CamelDefense::World';
 
 my ($app_w, $app_h)  = (640, 480);
 
+my $game_over;
+
 my $app = App->new(
     title  => 'World Example',
     width  => $app_w,
@@ -17,15 +19,31 @@ my $app = App->new(
 
 my $world = World->new(
     app => $app,
+    level_complete_handler => sub { $game_over = 1 },
     grid_args => [
         marks_args         => [bg_color   => 0x210606FF],
         waypoint_list_args => [path_color => 0x202010FF],
     ],
     wave_manager_args => [
-        wave_args => [
-            creep_count      => 10,
-            inter_creep_wait => 0.5,
-            creep_args       => [v => 10],
+        wave_defs => [
+            {
+                creep_count      => 4,
+                inter_creep_wait => 0.5,
+                creep_args       =>
+                    [v => 10],
+            },
+            {
+                creep_count      => 7,
+                inter_creep_wait => 0.2,
+                creep_args       =>
+                    [v => 20, image_file => '../data/creep_fast.png'],
+            },
+            {
+                creep_count      => 13,
+                inter_creep_wait => 0.3,
+                creep_args       =>
+                    [v => 5, image_file => '../data/creep_slow.png', hp => 20],
+            },
         ],
     ],
     tower_manager_args => [tower_args => [fire_period => 1.0]],
@@ -53,6 +71,11 @@ sub event_handler {
 
 sub show_handler {
     my $dt = shift;
+
+    if ($game_over) {
+        my $msg = "Game Over";
+        $app->draw_gfx_text([$app_w/2 - 40, $app_h/2 - 4], 0xFFFF00FF, $msg);
+    }
 
     my $msg1 = "Hit space to create a tower, then place it with your mouse and click";
     my $msg2 = "Hit space again before placing the tower to cancel the build";

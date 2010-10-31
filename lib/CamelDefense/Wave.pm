@@ -5,13 +5,11 @@ use MooseX::Types::Moose qw(Num Int ArrayRef);
 use Time::HiRes qw(time);
 use aliased 'CamelDefense::Creep';
 
-has creep_count => (is => 'ro', required => 1, isa => Int, default => 6);
-
-has inter_creep_wait => (is => 'ro', required => 1, isa => Num);
+has creep_count      => (is => 'ro', required => 1, isa => Int, default => 6);
+has inter_creep_wait => (is => 'ro', required => 1, isa => Num, default => 1);
 
 has last_creep_birth => (is => 'rw', isa => Num);
-
-has next_creep_idx => (is => 'rw', required => 1, isa => Int, default => 1);
+has next_creep_idx   => (is => 'rw', required => 1, isa => Int, default => 1);
 
 has creeps =>
     (is => 'rw', required => 1, isa => ArrayRef[Creep], default => sub { [] });
@@ -28,7 +26,7 @@ around merge_creep_args => sub {
 sub BUILD { shift->last_creep_birth(time) }    
 
 # returns empty list if wave has no more living creeps or creeps to be born
-# or self if it has
+# or self if it has such waves
 sub move {
     my ($self, $dt) = @_;
     my @creeps = map { $_->move($dt) } @{ $self->creeps };

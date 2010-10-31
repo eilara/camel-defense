@@ -1,13 +1,20 @@
 package CamelDefense::Wave::Manager;
 
 use Moose;
-use MooseX::Types::Moose qw(ArrayRef);
+use MooseX::Types::Moose qw(ArrayRef HashRef);
 use aliased 'CamelDefense::Wave';
 use aliased 'CamelDefense::World';
 
 has world  => (is => 'ro', required => 1, isa => World, handles => [qw(
     points_px
 )], weak_ref => 1);
+
+has wave_defs => (
+    is       => 'ro',
+    required => 1,
+    isa      => ArrayRef[HashRef],
+    default  => sub { [] },
+);
 
 # the wave manager creates and manages waves
 has waves => (
@@ -18,11 +25,21 @@ has waves => (
 );
 with 'MooseX::Role::BuildInstanceOf' => {target => Wave, type => 'factory'};
 around merge_wave_args => sub {
-    my ($orig, $self) = @_;
-    my %args = $self->$orig;
-    push @{ $args{creep_args} ||= []}, (waypoints => $self->points_px);
-    return %args;
+    my ($orig, $self)      = @_;
+    my %args               = $self->$orig;
+    my %wave_def           = %{ shift @{ $self->wave_defs }};
+    my %next_creep_def     = @{ delete($wave_def{creep_args}) || [] };
+    my %creep_args         = @{ $args{creep_args} ||= [] };
+    $creep_args{waypoints} = $self->points_px;
+    $args{creep_args}      = [%creep_args, %next_creep_def];
+    return (%args, %wave_def);
 };
+
+# no more wave defs or waves
+sub is_level_complete {
+    my $self = shift;
+    return (@{ $self->waves } + @{ $self->wave_defs })? 0: 1;
+}
 
 sub render {
     my ($self, $surface) = @_;
@@ -38,6 +55,7 @@ sub move {
 
 sub start_wave {
     my $self = shift;
+    return unless @{ $self->wave_defs };
     push @{ $self->waves }, $self->wave;
 }
 

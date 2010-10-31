@@ -31,17 +31,6 @@ TODO
     add FPS indicator
     checks for creeps in range using better ds than list
 
-Ideas    
-    do it on top of a satellite map, of where you live, let the mapping service do pathfinding
-    use sat map objects like cars for creeps
-    smart creeps split when they think you are juggling
-    smart creeps that can attack your towers if they think it will get them to the end faster
-    lose the health of the creep that got through, not 1 per creep
-    select your creeps from a palette
-    let you select target creep priority
-    make it more strategic by letting you pause and do anything while paused
-    visual style- action figures
-
 Game objects, layers, and z-index in layer:
 
     world
@@ -79,10 +68,16 @@ Sorted by z-index:
 2 4 cursor shadow range   cursor
 2 5 cursor shadow         cursor
 2 6 cursor sprite         cursor
-
-
-
-
+Ideas    
+    do it on top of a satellite map, of where you live, let the mapping service do pathfinding
+    use sat map objects like cars for creeps
+    smart creeps split when they think you are juggling
+    smart creeps that can attack your towers if they think it will get them to the end faster
+    lose the health of the creep that got through, not 1 per creep
+    select your creeps from a palette
+    let you select target creep priority
+    make it more strategic by letting you pause and do anything while paused
+    visual style- action figures
 
 Layers:
     1 - bg - redrawn every tower build/sell/upgrade

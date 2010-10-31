@@ -3,7 +3,7 @@ package CamelDefense::World;
 use Moose;
 use SDL::Events;
 use SDL::Mouse;
-use MooseX::Types::Moose qw(ArrayRef);
+use MooseX::Types::Moose qw(ArrayRef CodeRef);
 use aliased 'SDLx::App';
 use aliased 'SDLx::Surface';
 use aliased 'CamelDefense::Grid';
@@ -16,6 +16,9 @@ has app =>
     (is => 'ro', required => 1, isa => App, handles => [qw(w h stop)]);
 
 has waypoints => (is => 'ro', required => 1);
+
+has level_complete_handler =>
+    (is => 'ro', required => 1, isa => CodeRef, default => sub { sub {} });
 
 has cursor     => (is => 'ro', lazy_build => 1, isa => Cursor);
 has state      => (is => 'ro', lazy_build => 1, isa => StateMachine);
@@ -47,7 +50,7 @@ around merge_grid_args => sub {
 # the world has a wave manager
 with 'MooseX::Role::BuildInstanceOf' =>
     {target => WaveManager, prefix => 'wave_manager'};
-has '+wave_manager' => (handles => [qw(start_wave aim)]);
+has '+wave_manager' => (handles => [qw(start_wave aim is_level_complete)]);
 around merge_wave_manager_args => sub {
     my ($orig, $self) = @_;
     return (world => $self, $self->$orig);
@@ -142,6 +145,8 @@ sub handle_event {
 
 sub move {
     my ($self, $dt) = @_;
+    $self->level_complete_handler->()
+        if $self->is_level_complete;
     $_->move($dt) for $self->tower_manager, $self->wave_manager;
 }
 

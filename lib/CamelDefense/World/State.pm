@@ -40,7 +40,7 @@ sub _build_state {
             init => {
                 cursor => 'normal',
                 events => {
-                    space_key_up => {
+                    init_or_cancel_build_tower => {
                         next_state => $can_build,
                     },
                 },
@@ -48,13 +48,13 @@ sub _build_state {
             place_tower => {
                 cursor => 'place_tower',
                 events => {
-                    space_key_up => {
+                    init_or_cancel_build_tower => {
                         next_state => 'init',
                     },
                     mouse_motion => {
                         next_state => $can_build,
                     },
-                    mouse_button_up => {
+                    build_tower => {
                         next_state => 'cant_place_tower',
                         code       => $build_tower,
                     },
@@ -66,7 +66,7 @@ sub _build_state {
                     mouse_motion => {
                         next_state => $can_build,
                     },
-                    space_key_up => {
+                    init_or_cancel_build_tower => {
                         next_state => 'init',
                     },
                 },

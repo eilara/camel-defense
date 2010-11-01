@@ -21,7 +21,6 @@ has level_complete_handler =>
     (is => 'ro', required => 1, isa => CodeRef, default => sub { sub {} });
 
 has cursor     => (is => 'ro', lazy_build => 1, isa => Cursor);
-has state      => (is => 'ro', lazy_build => 1, isa => State);
 has bg_surface => (is => 'ro', lazy_build => 1, isa => Surface);
 
 sub _build_bg_surface {
@@ -64,6 +63,19 @@ around merge_tower_manager_args => sub {
     return (world => $self, cursor => $self->cursor, $self->$orig);
 };
 
+# the world has a state
+with 'MooseX::Role::BuildInstanceOf' =>
+    {target => State, prefix => 'state'};
+around merge_state_args => sub {
+    my ($orig, $self) = @_;
+    return (
+        cursor        => $self->cursor,
+        grid          => $self->grid,
+        tower_manager => $self->tower_manager,
+        $self->$orig,
+    );
+};
+
 sub BUILD {
     my $self = shift;
     SDL::Mouse::show_cursor(SDL_DISABLE);
@@ -74,15 +86,6 @@ sub BUILD {
 
 sub _build_cursor { Cursor->new(world => shift) }
 
-sub _build_state {
-    my $self = shift;
-    return State->new(
-        cursor        => $self->cursor,
-        grid          => $self->grid,
-        tower_manager => $self->tower_manager,
-    );
-}
-
 sub handle_event {
     my ($self, $e) = @_;
     my $state = $self->state;
@@ -91,7 +94,7 @@ sub handle_event {
         $self->stop;
 
     } elsif ($e->type == SDL_KEYUP && $e->key_sym == SDLK_SPACE) {
-        $state->handle_event('space_key_up');
+        $state->handle_event('init_or_cancel_build_tower');
 
     } elsif ($e->type == SDL_MOUSEMOTION) {
         my ($x, $y) = ($e->motion_x, $e->motion_y);
@@ -99,7 +102,7 @@ sub handle_event {
         $state->handle_event('mouse_motion');
 
     } elsif ($e->type == SDL_MOUSEBUTTONUP) {
-        $state->handle_event('mouse_button_up');
+        $state->handle_event('build_tower');
 
     } elsif ($e->type == SDL_APPMOUSEFOCUS) {
         $self->cursor->is_visible($e->active_gain);
@@ -110,7 +113,7 @@ sub move {
     my ($self, $dt) = @_;
     $self->tower_manager->move($dt);
     if ($self->is_level_complete) {
-    # TODO: should only be called once
+        # TODO: should only be called once not every move
         $self->level_complete_handler->();
     } else {
         $self->wave_manager->move($dt);
@@ -120,29 +123,10 @@ sub move {
 sub render {
     my $self = shift;
     my $surface = $self->app;
-    $self->render_bg;
-    $_->render($surface) for $self->tower_manager, $self->wave_manager;
-}
-
-sub render_bg {
-    my $self = shift;
-    my $surface = $self->app;
-
-
+    $self->refresh_bg($surface);
 # TODO: would be better to redraw bg layer only when towers change but
 #       it looks choppy, needs to test FPS then check why the slowness
-
-# render background, refreshing it if needed
-#    my $bg_surface = $self->bg_surface;
-#    $self->refresh_bg($bg_surface) if $self->tower_manager->is_dirty;
-#    $bg_surface->blit($surface);
-
-    $self->refresh_bg($surface);
-
-    # now render foreground
-    $self->grid->render_markers($surface);
-    $self->tower_manager->render_bg($surface);
-    $self->grid->render($surface);
+    $_->render($surface) for $self->tower_manager, $self->wave_manager;
 }
 
 sub refresh_bg {

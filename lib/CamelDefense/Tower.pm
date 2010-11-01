@@ -6,8 +6,8 @@ use Time::HiRes qw(time);
 
 has laser_color     => (is => 'ro', isa => Num, default => 0xFF0000FF);
 has cool_off_period => (is => 'ro', isa => Num, default => 0.5);
-has fire_period     => (is => 'ro', isa => Num, default => 0.5);
-has damage_per_sec  => (is => 'ro', isa => Num, default => 15);
+has fire_period     => (is => 'ro', isa => Num, default => 1.0);
+has damage_per_sec  => (is => 'ro', isa => Num, default => 10);
 
 has last_fire_time  => (is => 'rw', isa => Num, default => 0);
 has state           => (is => 'rw', isa => Str, default => 'init');
@@ -50,6 +50,7 @@ sub move {
             my $damage = $self->damage_per_sec * $damage_period;
             $self->last_damage_update(time);
             $target->hit($damage);
+            $self->current_target(undef) unless $target->is_alive;
         } else {
             if (my $target = $self->aim($self->center_x, $self->center_y, $self->range)) {
                 $self->current_target($target);

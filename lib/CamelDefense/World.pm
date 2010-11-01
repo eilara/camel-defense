@@ -1,8 +1,8 @@
 package CamelDefense::World;
 
 use Moose;
-use SDL::Events;
 use SDL::Mouse;
+use SDL::Events;
 use MooseX::Types::Moose qw(ArrayRef CodeRef);
 use aliased 'SDLx::App';
 use aliased 'SDLx::Surface';
@@ -77,6 +77,15 @@ around merge_state_args => sub {
     );
 };
 
+# the world has an event handler
+with 'MooseX::Role::BuildInstanceOf' =>
+    {target => EventHandler, prefix => 'event_handler'};
+has '+event_handler' => (handles => [qw(handle_event)]);
+around merge_event_handler_args => sub {
+    my ($orig, $self) = @_;
+    return (cursor => $self->cursor, state => $self->state, $self->$orig);
+};
+
 sub BUILD {
     my $self = shift;
     SDL::Mouse::show_cursor(SDL_DISABLE);
@@ -86,29 +95,6 @@ sub BUILD {
 }
 
 sub _build_cursor { Cursor->new(world => shift) }
-
-sub handle_event {
-    my ($self, $e) = @_;
-    my $state = $self->state;
-
-    if ($e->type == SDL_QUIT) {
-        $self->stop;
-
-    } elsif ($e->type == SDL_KEYUP && $e->key_sym == SDLK_SPACE) {
-        $state->handle_event('init_or_cancel_build_tower');
-
-    } elsif ($e->type == SDL_MOUSEMOTION) {
-        my ($x, $y) = ($e->motion_x, $e->motion_y);
-        $self->cursor->xy([$x, $y]);
-        $state->handle_event('mouse_motion');
-
-    } elsif ($e->type == SDL_MOUSEBUTTONUP) {
-        $state->handle_event('build_tower');
-
-    } elsif ($e->type == SDL_APPMOUSEFOCUS) {
-        $self->cursor->is_visible($e->active_gain);
-    }
-}
 
 sub move {
     my ($self, $dt) = @_;

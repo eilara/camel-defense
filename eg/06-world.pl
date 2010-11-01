@@ -66,7 +66,13 @@ $app->run;
 
 sub event_handler {
     my $e = shift;
-    $world->start_wave if $e->type == SDL_KEYUP &&  $e->key_sym == SDLK_1;
+    if ($e->type == SDL_QUIT) {
+        $app->stop;
+        exit;
+    }
+    $world->start_wave if
+        $e->type == SDL_KEYUP &&
+        $e->key_sym == SDLK_1;
 }
 
 sub show_handler {

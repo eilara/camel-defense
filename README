@@ -32,6 +32,11 @@ TODO
     checks for creeps in range using better ds than list
     when FPS is very low, compute damage on creep if it passed through range during
         fire time during the last dt, because it could have jumped
+    add intelligence getter on wave manager which answers how many waves left,
+        what creeps, etc.
+
+    rename Grid to Map?    
+        
 
 Game objects, layers, and z-index in layer:
 
@@ -70,6 +75,7 @@ Sorted by z-index:
 2 4 cursor shadow range   cursor
 2 5 cursor shadow         cursor
 2 6 cursor sprite         cursor
+
 Ideas    
     do it on top of a satellite map, of where you live, let the mapping service do pathfinding
     use sat map objects like cars for creeps

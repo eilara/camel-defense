@@ -9,6 +9,7 @@ use aliased 'SDLx::Surface';
 use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::Cursor';
 use aliased 'CamelDefense::World::State';
+use aliased 'CamelDefense::World::EventHandler';
 use aliased 'CamelDefense::Tower::Manager' => 'TowerManager';
 use aliased 'CamelDefense::Wave::Manager'  => 'WaveManager';
 

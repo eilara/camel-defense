@@ -36,6 +36,8 @@ TODO
         what creeps, etc.
 
     rename Grid to Map?    
+    composite waves for different creeps in a single wave
+    add $ with X on it for cursor shadow when building tower and no money
         
 
 Game objects, layers, and z-index in layer:

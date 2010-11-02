@@ -1,5 +1,9 @@
 package CamelDefense::Wave::Manager;
 
+# the wave manager keeps a set of wave definitions
+# every time a wave is requested with start_wave it shifts the
+# next wave def out of the definitions and creates a wave out of it
+
 use Moose;
 use MooseX::Types::Moose qw(ArrayRef HashRef);
 use aliased 'CamelDefense::Wave';

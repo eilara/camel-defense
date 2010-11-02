@@ -1,5 +1,7 @@
 package CamelDefense::Wave;
 
+# the wave creates creep_count creeps every inter creep wait seconds
+
 use Moose;
 use MooseX::Types::Moose qw(Num Int ArrayRef);
 use Time::HiRes qw(time);

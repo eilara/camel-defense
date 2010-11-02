@@ -1,5 +1,8 @@
 package CamelDefense::Role::TowerView;
 
+# a tower view is a grid aligned sprite which can draw its range
+# the cursor shadow and the tower object are tower views
+
 use Moose::Role;
 use MooseX::Types::Moose qw(Num Str);
 use aliased 'CamelDefense::Grid';

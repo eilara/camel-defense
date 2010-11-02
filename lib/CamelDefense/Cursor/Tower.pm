@@ -1,5 +1,9 @@
 package CamelDefense::Cursor::Tower;
 
+# the cursor tower shadow shows an outline of the tower to be build
+# or that can't be build currently
+# also renders the range of the proposed tower
+
 use Moose;
 use MooseX::Types::Moose qw(Str);
 

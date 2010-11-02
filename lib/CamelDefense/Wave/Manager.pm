@@ -3,11 +3,11 @@ package CamelDefense::Wave::Manager;
 use Moose;
 use MooseX::Types::Moose qw(ArrayRef HashRef);
 use aliased 'CamelDefense::Wave';
-use aliased 'CamelDefense::World';
+use aliased 'CamelDefense::Grid';
 
-has world  => (is => 'ro', required => 1, isa => World, handles => [qw(
+has grid  => (is => 'ro', required => 1, isa => Grid, handles => [qw(
     points_px
-)], weak_ref => 1);
+)]);
 
 has wave_defs => (
     is       => 'ro',

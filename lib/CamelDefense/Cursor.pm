@@ -3,9 +3,7 @@ package CamelDefense::Cursor;
 use Moose;
 use MooseX::Types::Moose qw(Bool Str);
 use aliased 'CamelDefense::Cursor::Tower';
-use aliased 'CamelDefense::World';
 
-has world      => (is => 'ro', required => 1, isa => World, weak_ref => 1);
 has state      => (is => 'rw', required => 1, isa => Str  , default  => 'normal');
 has is_visible => (is => 'rw', required => 1, isa => Bool , default  => 0);
 
@@ -15,7 +13,7 @@ with 'MooseX::Role::BuildInstanceOf' => {target => Tower, prefix => 'shadow'};
 has '+shadow' => (handles => [qw(points_px)]);
 around merge_shadow_args => sub {
     my ($orig, $self) = @_;
-    return (world => $self->world, xy => $self->xy, $self->$orig);
+    return (xy => $self->xy, $self->$orig);
 };
 
 with 'CamelDefense::Role::Sprite';

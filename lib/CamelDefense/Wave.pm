@@ -29,10 +29,10 @@ sub BUILD { shift->last_creep_birth(time) }
 # or self if it has such waves
 sub move {
     my ($self, $dt) = @_;
-    my @creeps = map { $_->move($dt) } @{ $self->creeps };
+    my @creeps       = map { $_->move($dt) } @{ $self->creeps };
     my $should_build = time - $self->last_creep_birth > $self->inter_creep_wait;
-    my $still_left = $self->creep_count - $self->next_creep_idx + 1;
-    my $not_enough = $still_left > 0;
+    my $still_left   = $self->creep_count - $self->next_creep_idx + 1;
+    my $not_enough   = $still_left > 0;
     push(@creeps, $self->creep) if $should_build && $not_enough;
     $self->creeps(\@creeps);
     return (($still_left + scalar @creeps)? $self: ());

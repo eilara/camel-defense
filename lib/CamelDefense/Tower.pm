@@ -3,11 +3,15 @@ package CamelDefense::Tower;
 use Moose;
 use MooseX::Types::Moose qw(Num Str);
 use Time::HiRes qw(time);
+use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 
-has laser_color     => (is => 'ro', isa => Num, default => 0xFF0000FF);
-has cool_off_period => (is => 'ro', isa => Num, default => 0.5);
-has fire_period     => (is => 'ro', isa => Num, default => 1.0);
-has damage_per_sec  => (is => 'ro', isa => Num, default => 10);
+has wave_manager =>
+    (is => 'ro', required => 1, isa => WaveManager, handles => [qw(aim)]);
+
+has laser_color     => (is => 'ro', required => 1, isa => Num, default => 0xFF0000FF);
+has cool_off_period => (is => 'ro', required => 1, isa => Num, default => 0.5);
+has fire_period     => (is => 'ro', required => 1, isa => Num, default => 1.0);
+has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 10);
 
 has last_fire_time  => (is => 'rw', isa => Num, default => 0);
 has state           => (is => 'rw', isa => Str, default => 'init');
@@ -15,7 +19,6 @@ has state           => (is => 'rw', isa => Str, default => 'init');
 has [qw(current_target last_damage_update)] => (is => 'rw');
 
 with 'CamelDefense::Role::TowerView';
-has '+world' => (handles => [qw(aim)]);
 
 sub init_image_file { '../data/tower.png' }
 

@@ -4,12 +4,15 @@ use Moose;
 use MooseX::Types::Moose qw(Bool ArrayRef);
 use aliased 'CamelDefense::Cursor';
 use aliased 'CamelDefense::Tower';
-use aliased 'CamelDefense::World';
+use aliased 'CamelDefense::Grid';
+use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
+
+has wave_manager => (is => 'ro', required => 1, isa => WaveManager);
 
 has cursor => (is => 'ro', required => 1, isa => Cursor);
-has world  => (is => 'ro', required => 1, isa => World, handles => [qw(
+has grid   => (is => 'ro', required => 1, isa => Grid, handles => [qw(
     grid_color add_tower
-)], weak_ref => 1);
+)]);
 
 # true if surface needs redraw because towers changed
 has is_dirty => (is => 'rw', required => 1, isa => Bool, default => 1);
@@ -27,7 +30,12 @@ around merge_tower_args => sub {
     my ($x, $y) = @{$self->cursor->xy};
     $self->add_tower($x, $y); # fills the tower cell in the grid
     $self->is_dirty(1);       # mark the bg layer as needing redraw
-    return (world => $self->world, xy => [$x, $y], $self->$orig);
+    return (
+        grid          => $self->grid,
+        wave_manager  => $self->wave_manager,
+        xy            => [$x, $y],
+        $self->$orig,
+    );
 };
 
 sub move {

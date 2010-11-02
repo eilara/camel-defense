@@ -32,7 +32,7 @@ sub _build_bg_surface {
 # the world has a grid
 with 'MooseX::Role::BuildInstanceOf' => {target => Grid};
 has '+grid' => (handles => [qw(
-    points_px compute_cell_center grid_color add_tower
+    compute_cell_center grid_color add_tower
 )]);
 around merge_grid_args => sub {
     my ($orig, $self) = @_;
@@ -53,7 +53,7 @@ with 'MooseX::Role::BuildInstanceOf' =>
 has '+wave_manager' => (handles => [qw(start_wave aim is_level_complete)]);
 around merge_wave_manager_args => sub {
     my ($orig, $self) = @_;
-    return (world => $self, $self->$orig);
+    return (grid => $self->grid, $self->$orig);
 };
 
 # the world has a tower manager
@@ -61,7 +61,12 @@ with 'MooseX::Role::BuildInstanceOf' =>
     {target => TowerManager, prefix => 'tower_manager'};
 around merge_tower_manager_args => sub {
     my ($orig, $self) = @_;
-    return (world => $self, cursor => $self->cursor, $self->$orig);
+    return (
+        wave_manager => $self->wave_manager,
+        grid         => $self->grid,
+        cursor       => $self->cursor,
+        $self->$orig,
+    );
 };
 
 # the world has a state
@@ -94,7 +99,8 @@ sub BUILD {
     $self->app->add_move_handler(sub { $self->move(@_) });
 }
 
-sub _build_cursor { Cursor->new(world => shift) }
+sub _build_cursor
+    { Cursor->new(shadow_args => [grid => shift->grid]) }
 
 sub move {
     my ($self, $dt) = @_;

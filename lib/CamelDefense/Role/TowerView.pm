@@ -2,15 +2,15 @@ package CamelDefense::Role::TowerView;
 
 use Moose::Role;
 use MooseX::Types::Moose qw(Num Str);
-use aliased 'CamelDefense::World';
+use aliased 'CamelDefense::Grid';
 
-has world => (is => 'ro', required => 1, isa => World, weak_ref => 1);
+has grid => (is => 'ro', required => 1, isa => Grid);
 
 has range => (is => 'ro', isa => Num, default => 100); # in pixels
 
 with 'CamelDefense::Role::GridAlignedSprite';
 
-sub compute_cell_center { shift->world->compute_cell_center(@_) }
+sub compute_cell_center { shift->grid->compute_cell_center(@_) }
 
 sub render_range {
     my ($self, $surface, $color, $area_color) = @_;

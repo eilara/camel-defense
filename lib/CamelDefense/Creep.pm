@@ -29,12 +29,13 @@ sub BUILD() {
 
 # assumes creep only moves in vertical or horizontal direction, no angles
 sub start {
-    my $self = shift;
-    my @wps = @{$self->waypoints};
-    my $wp1 = shift @wps;
+    my $self  = shift;
+    my @wps   = @{$self->waypoints};
+    my $wp1   = shift @wps;
     my $sleep = 1/$self->v;
+    my $xy    = $self->xy;
+
     $self->xy([@$wp1]);
-    my $xy = $self->xy;
     rest($sleep);
     for my $wp2 (@wps) {
         my ($is_horizontal, $dir, $is_forward) =
@@ -43,8 +44,9 @@ sub start {
                                                  ($wp2->[0]..$wp1->[0]):
                                     $is_forward? ($wp1->[1]..$wp2->[1]):
                                                  ($wp2->[1]..$wp1->[1]);
+        my $axis = 1 - $is_horizontal;
         for my $i (@range) {
-            $xy->[1 - $is_horizontal] += $dir;
+            $xy->[$axis] += $dir;
             $self->_update_sprite_xy;
             rest($sleep);
         }

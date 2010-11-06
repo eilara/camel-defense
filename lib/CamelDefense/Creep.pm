@@ -45,7 +45,6 @@ sub start {
             $self->xy->[1 - $is_horizontal] += $dir;
             $self->_update_sprite_xy;
             $self->rest_while_alive;
-            print "alive:".$self."\n";
         }
         $wp1 = $wp2;
     }
@@ -76,8 +75,9 @@ after render => sub {
 
 sub hit {
     my ($self, $damage) = @_;
-    $self->hp($self->hp - $damage);
-    $self->coro->cancel unless $self->is_alive;
+    my $hp = $self->hp - $damage;
+    $self->hp($hp);
+    $self->coro->cancel unless $hp > 0;
 }
 
 sub is_alive { shift->hp > 0 }

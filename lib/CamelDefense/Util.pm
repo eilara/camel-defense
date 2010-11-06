@@ -6,8 +6,6 @@ use base 'Exporter';
 
 our @EXPORT_OK = qw(analyze_right_angle_line distance);
 
-sub termi { shift->terminate }
-
 sub analyze_right_angle_line {
     my ($x1, $y1, $x2, $y2) = @_;
 

@@ -36,7 +36,7 @@ my $world = World->new(
     wave_manager_args => [
         wave_defs => [
             {
-                creep_count      => 1,
+                creep_count      => 6,
                 inter_creep_wait => 0.5,
                 creep_args       =>
                     [v => 200],

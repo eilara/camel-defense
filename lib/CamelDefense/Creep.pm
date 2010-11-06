@@ -2,7 +2,7 @@ package CamelDefense::Creep;
 
 use Moose;
 use Coro;
-use CamelDefense::Util qw(rest);
+use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Bool Num Int ArrayRef);
 use CamelDefense::Util qw(analyze_right_angle_line distance);
 
@@ -35,7 +35,7 @@ sub start {
     my $sleep = 1/$self->v;
     $self->xy([@$wp1]);
     my $xy = $self->xy;
-    rest($sleep);
+    sleep $sleep;
     for my $wp2 (@wps) {
         my ($is_horizontal, $dir, $is_forward) =
             analyze_right_angle_line(@$wp1, @$wp2);
@@ -43,18 +43,15 @@ sub start {
                                                  ($wp2->[0]..$wp1->[0]):
                                     $is_forward? ($wp1->[1]..$wp2->[1]):
                                                  ($wp2->[1]..$wp1->[1]);
+        my $axis = 1 - $is_horizontal;
         for my $i (@range) {
-            $xy->[1 - $is_horizontal] += $dir;
+            $xy->[$axis] += $dir;
             $self->_update_sprite_xy;
-            rest($sleep);
+            sleep $sleep;
         }
         $wp1 = $wp2;
     }
     $self->is_in_grid(0);
-}
-
-sub rest_while_alive {
-    my $self = shift;
 }
 
 after render => sub {

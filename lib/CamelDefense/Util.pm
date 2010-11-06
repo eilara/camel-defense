@@ -2,17 +2,9 @@ package CamelDefense::Util;
 
 use strict;
 use warnings;
-use AnyEvent;
 use base 'Exporter';
 
-our @EXPORT_OK = qw(analyze_right_angle_line distance rest);
-
-sub rest($) {
-   my $time = shift;
-   my $done = AnyEvent->condvar;
-   my $delay = AnyEvent->timer(after => $time, cb => sub { $done->send });
-   $done->recv;
-}
+our @EXPORT_OK = qw(analyze_right_angle_line distance);
 
 sub termi { shift->terminate }
 

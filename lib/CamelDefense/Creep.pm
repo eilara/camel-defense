@@ -32,8 +32,10 @@ sub start {
     my $self = shift;
     my @wps = @{$self->waypoints};
     my $wp1 = shift @wps;
+    my $sleep = 1/$self->v;
     $self->xy([@$wp1]);
-    $self->rest_while_alive;
+    my $xy = $self->xy;
+    rest($sleep);
     for my $wp2 (@wps) {
         my ($is_horizontal, $dir, $is_forward) =
             analyze_right_angle_line(@$wp1, @$wp2);
@@ -42,9 +44,9 @@ sub start {
                                     $is_forward? ($wp1->[1]..$wp2->[1]):
                                                  ($wp2->[1]..$wp1->[1]);
         for my $i (@range) {
-            $self->xy->[1 - $is_horizontal] += $dir;
+            $xy->[1 - $is_horizontal] += $dir;
             $self->_update_sprite_xy;
-            $self->rest_while_alive;
+            rest($sleep);
         }
         $wp1 = $wp2;
     }
@@ -53,7 +55,6 @@ sub start {
 
 sub rest_while_alive {
     my $self = shift;
-    rest(1/$self->v);
 }
 
 after render => sub {

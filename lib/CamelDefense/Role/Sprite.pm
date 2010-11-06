@@ -68,5 +68,19 @@ sub render {
     $self->draw($surface);
 }
 
+sub x {
+    my $self = shift;
+    return $self->xy->[0] unless @_;
+    my $x = shift;
+    $self->xy([$x, $self->xy->[1]]);
+}
+
+sub y {
+    my $self = shift;
+    return $self->xy->[1] unless @_;
+    my $y = shift;
+    $self->xy([$self->xy->[0], $y]);
+}
+
 1;
 

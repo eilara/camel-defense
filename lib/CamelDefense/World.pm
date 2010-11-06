@@ -12,9 +12,12 @@ use aliased 'CamelDefense::World::State';
 use aliased 'CamelDefense::World::EventHandler';
 use aliased 'CamelDefense::Tower::Manager' => 'TowerManager';
 use aliased 'CamelDefense::Wave::Manager'  => 'WaveManager';
+use aliased 'SDLx::Controller::Coro'       => 'Controller';
+
+has controller => (is => 'ro', required => 1, isa => Controller);
 
 has app =>
-    (is => 'ro', required => 1, isa => App, handles => [qw(w h stop)]);
+    (is => 'ro', required => 1, isa => App, handles => [qw(w h)]);
 
 has waypoints => (is => 'ro', required => 1);
 
@@ -94,9 +97,10 @@ around merge_event_handler_args => sub {
 sub BUILD {
     my $self = shift;
     SDL::Mouse::show_cursor(SDL_DISABLE);
-    $self->app->add_event_handler(sub { $self->handle_event(@_) });
-    $self->app->add_show_handler(sub { $self->render(@_) });
-    $self->app->add_move_handler(sub { $self->move(@_) });
+    my $c = $self->controller;
+    $c->add_event_handler(sub { $self->handle_event(@_) });
+    $c->add_show_handler(sub { $self->render(@_) });
+    $c->add_move_handler(sub { $self->move(@_) });
 }
 
 sub _build_cursor

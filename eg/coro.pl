@@ -6,13 +6,14 @@ use SDL::Video;
 use SDL::Events;
 use SDLx::App;
 use SDLx::Controller::Coro;
+use SDLx::Coro::REPL;
 use Coro;
 use Coro::EV;
 use AnyEvent;
 
 $|=1;
 
-my @balls;
+our $balls = []; # our not my so REPL can get it
 
 my ($app_w, $app_h) = (640, 480);
 my ($max_v, $min_v) = (450, 100);
@@ -23,6 +24,7 @@ my $app = SDLx::App->new(
    height => $app_h,
 );
 
+my $repl = SDLx::Coro::REPL::start();
 my $controller = SDLx::Controller::Coro->new;
 
 $controller->add_event_handler(sub {
@@ -49,7 +51,7 @@ $controller->run;
 
 sub show_handler {
     $app->draw_rect([0, 0, $app_w, $app_h], 0x0);
-    for my $ball (@balls) {
+    for my $ball (@$balls) {
         SDL::Video::fill_rect
             ($app, SDL::Rect->new($ball->{x}, $ball->{y}, 10, 10), $ball->{c});
     }
@@ -60,8 +62,8 @@ sub start_dance {
     my ($init_x, $init_y) = @_;
     async {
         my $c = SDL::Video::map_RGB($app->format, rand int 256,rand int 256,rand int 256);
-        my $ball = {x => $init_x, y => $init_y, c => $c};
-        push @balls, $ball;
+        my $ball = {x => $init_x, y => $init_y, c => $c, coro => $Coro::current};
+        push @$balls, $ball;
         while(1) {
            for ($min_v..$max_v) {
                $ball->{x}++;

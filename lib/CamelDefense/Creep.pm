@@ -1,64 +1,70 @@
 package CamelDefense::Creep;
 
 use Moose;
-use MooseX::Types::Moose qw(Num Int ArrayRef);
+use Coro;
+use Coro::Timer qw(sleep);
+use MooseX::Types::Moose qw(Bool Num Int ArrayRef);
 use CamelDefense::Util qw(analyze_right_angle_line distance);
 
 has v            => (is => 'ro', required => 1, isa => Num, default => 10);
 has idx          => (is => 'ro', required => 1, isa => Int); # index in wave
 has waypoints    => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
-has waypoint_idx => (is => 'rw', required => 1, isa => Int, default => 0);
 has hp           => (is => 'rw', required => 1, isa => Num, default => 10);
 
-has start_hp => (is => 'rw', isa => Num);
+has start_hp     => (is => 'rw', isa => Num);
+has is_in_grid   => (is => 'rw', required => 1, isa => Bool, default => 1);
+has is_exploding => (is => 'rw', required => 1, isa => Bool, default => 0);
+
+has coro => (is => 'rw');
 
 with 'CamelDefense::Role::CenteredSprite';
 
-sub init_image_file { '../data/creep_normal.png' }
+sub init_image_def { '../data/creep_normal.png' }
 
 sub BUILD() {
     my $self = shift;
-    my $wp = $self->waypoints->[0];
-    $self->xy([$wp->[0], $wp->[1]]);
+    $self->xy($self->waypoints->[0]);
     $self->start_hp($self->hp);
+    $self->coro(async { $self->start });
 }
 
 # assumes creep only moves in vertical or horizontal direction, no angles
-# returns empty list if creep is not alive, self if it is
-sub move {
-    my ($self, $dt) = @_;
-    return () unless $self->is_alive;
-
-    my $wpi = $self->waypoint_idx;
-    my @wps = @{ $self->waypoints };
-    return () if $wpi == $#wps;                # no more waypoints
-
-    my $wp2       = $wps[$wpi + 1];         # next waypoint
-    my ($x1, $y1) = @{ $self->xy };         # my pos
-    my ($x2, $y2) = ($wp2->[0], $wp2->[1]); # next waypoint pos
-
-    my ($is_horizontal, $dir) = analyze_right_angle_line($x1, $y1, $x2, $y2);
-
-    my $self_to_wp2    = $is_horizontal? $x2 - $x1: $y2 - $y1;
-    my $self_to_target = $self->v * $dt;
-    my $overshoot      = $self_to_target - abs $self_to_wp2;
-
-    if ($overshoot >= 0) { # overshoot
-        $self->xy([$x2, $y2]);
-        $self->waypoint_idx($wpi + 1);
-        return $self->move($dt * $overshoot / $self_to_target);
+sub start {
+    my $self  = shift;
+    my @wps   = @{$self->waypoints};
+    my $wp1   = shift @wps;
+    my $sleep = 1/$self->v;
+    $self->xy([@$wp1]);
+    my $xy = $self->xy;
+    sleep $sleep;
+    for my $wp2 (@wps) {
+        my ($is_horizontal, $dir, $is_forward) =
+            analyze_right_angle_line(@$wp1, @$wp2);
+        my @range = $is_horizontal? $is_forward? ($wp1->[0]..$wp2->[0]):
+                                                 ($wp2->[0]..$wp1->[0]):
+                                    $is_forward? ($wp1->[1]..$wp2->[1]):
+                                                 ($wp2->[1]..$wp1->[1]);
+        my $axis = 1 - $is_horizontal;
+        for my $i (@range) {
+            $xy->[$axis] += $dir;
+            $self->_update_sprite_xy;
+            sleep $sleep;
+        }
+        $wp1 = $wp2;
     }
+    $self->is_in_grid(0);
+}
 
-    if ($is_horizontal) { $self->xy([ $x1 + $dir * $self_to_target, $y1 ]) }
-    else                { $self->xy([ $x1, $y1 + $dir * $self_to_target ]) }
-
-    return $self;
+sub start_death {
+    my $self = shift;
+    sleep 1;
+    $self->is_exploding(0);
 }
 
 after render => sub {
     my ($self, $surface) = @_;
 
-# draws text of creep htp and index    
+# draws text of creep hp and index    
 #    my $hp = sprintf("%.1f", $self->hp);
 #    $surface->draw_gfx_text([$self->sprite_x+2, $self->sprite_y+2], 0x000000FF, $hp);
 #    $surface->draw_gfx_text([$self->sprite_x+2, $self->sprite_y+2], 0x000000FF, $self->idx);
@@ -74,10 +80,19 @@ after render => sub {
 
 sub hit {
     my ($self, $damage) = @_;
-    $self->hp($self->hp - $damage);
+    my $hp = $self->hp - $damage;
+    $self->hp($hp);
+    unless ($hp > 0) {
+        $self->is_exploding(1);
+        $self->coro->cancel;
+        async { $self->start_death };
+    }
 }
 
 sub is_alive { shift->hp > 0 }
+
+sub is_in_game # creep is in game if it needs to be drawn
+    { ($_[0]->is_alive || $_[0]->is_exploding) && $_[0]->is_in_grid }
 
 sub is_in_range {
     my ($self, $x, $y, $range) = @_;

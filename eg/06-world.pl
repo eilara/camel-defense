@@ -7,6 +7,12 @@ use SDL::Events;
 use aliased 'SDLx::App';
 use aliased 'CamelDefense::World';
 
+use aliased 'SDLx::Controller::Coro' => 'Controller';
+use Coro;
+use Coro::EV;
+use AnyEvent;
+$|=1;
+
 my ($app_w, $app_h)  = (640, 480);
 
 my $game_over;
@@ -17,32 +23,35 @@ my $app = App->new(
     height => $app_h,
 );
 
+my $controller = Controller->new;
+
 my $world = World->new(
-    app => $app,
+    app                    => $app,
+    controller             => $controller,
     level_complete_handler => sub { $game_over = 1 },
-    grid_args => [
+    grid_args              => [
         marks_args         => [bg_color   => 0x210606FF],
         waypoint_list_args => [path_color => 0x202010FF],
     ],
     wave_manager_args => [
         wave_defs => [
             {
-                creep_count      => 4,
+                creep_count      => 6,
                 inter_creep_wait => 0.5,
                 creep_args       =>
-                    [v => 10],
+                    [v => 200],
             },
             {
                 creep_count      => 7,
                 inter_creep_wait => 0.2,
                 creep_args       =>
-                    [v => 20, image_file => '../data/creep_fast.png'],
+                    [v => 300, image_file => '../data/creep_fast.png'],
             },
             {
                 creep_count      => 13,
                 inter_creep_wait => 0.3,
                 creep_args       =>
-                    [v => 5, image_file => '../data/creep_slow.png', hp => 20],
+                    [v => 100, image_file => '../data/creep_slow.png', hp => 20],
             },
         ],
     ],
@@ -59,10 +68,10 @@ my $world = World->new(
     ],
 );
 
-$app->add_event_handler(\&event_handler);
-$app->add_show_handler(\&show_handler);
+$controller->add_event_handler(\&event_handler);
+$controller->add_show_handler(\&show_handler);
 
-$app->run;
+$controller->run;
 
 sub event_handler {
     my $e = shift;

@@ -11,7 +11,7 @@ has state => (is => 'rw', isa => Str, default => 'place_tower');
 
 with 'CamelDefense::Role::TowerView';
 
-sub init_image_file { '../data/cursor_shadow_place_tower.png' }
+sub init_image_def { '../data/cursor_shadow_place_tower.png' }
 
 sub change_to {
     my ($self, $new_state) = @_;

@@ -4,6 +4,7 @@ use Moose;
 use MooseX::Types::Moose qw(Bool Str);
 use aliased 'CamelDefense::Cursor::Tower';
 
+# state is one of: normal, place_tower, cant_place_tower
 has state      => (is => 'rw', required => 1, isa => Str  , default  => 'normal');
 has is_visible => (is => 'rw', required => 1, isa => Bool , default  => 0);
 
@@ -17,22 +18,22 @@ around merge_shadow_args => sub {
 };
 
 with 'CamelDefense::Role::Sprite';
-
-sub init_image_def { '../data/cursor_normal.png' }
-
-=head
+with 'CamelDefense::Role::AnimatedSprite';
 
 sub init_image_def {{
     image     => '../data/cursor_animated.png',
-    sequences => 
+    size      => [32, 32],
+    sequences => [
+        normal           => [[0, 0]],
+        cant_place_tower => [[1, 0]],
+        place_tower      => [[2, 0]],
+    ],
 }}
-
-=cut
 
 sub change_to {
     my ($self, $new_state) = @_;
     $self->state($new_state);
-    $self->load("../data/cursor_${new_state}.png");
+    $self->sequence_animation($new_state);;
     $self->shadow->change_to($new_state);
 }
 

@@ -11,6 +11,7 @@ package CamelDefense::Role::Sprite;
 
 use Moose::Role;
 use MooseX::Types::Moose qw(Num Str ArrayRef);
+use aliased 'SDL::Rect';
 use aliased 'SDLx::Sprite';
 use aliased 'SDLx::Sprite::Animated';
 
@@ -57,9 +58,15 @@ sub _build_sprite {
 
 sub _build_animated_sprite {
     my ($self, $def) = @_;
-    return Animated->new(
-        image => $def->image,
+    my $size = $def->{size};
+    my $sprite = Animated->new(
+        image => $def->{image},
+        rect  => Rect->new(0, 0, $size->[0], $size->[1]),
     );
+    my $sequences = $def->{sequences};
+    $sprite->set_sequences(@$sequences);
+    $sprite->sequence($sequences->[0]);
+    return $sprite;
 }
 
 sub _update_sprite_xy {

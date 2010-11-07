@@ -7,16 +7,16 @@ use aliased 'SDLx::Sprite::Animated';
 
 requires 'sprite';
 
-has animated_sprite => (
+has sprite_as_animated => (
     is         => 'ro',
     lazy_build => 1,
     isa        => Animated, 
     handles    => {
-        set_sequences => 'set_sequences',
+        sequence_animation => 'sequence',
     },
 );
 
-sub _build_animated_sprite { shift->sprite }
+sub _build_sprite_as_animated { shift->sprite }
 
 1;
 

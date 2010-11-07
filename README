@@ -90,6 +90,9 @@ Ideas
     make it more strategic by letting you pause and do anything while paused
     visual style- action figures
     http://kalogirou.net/2005/08/10/multithreaded-game-scripting-with-stackless-python/
+    Tie::RangeHash QuadTree Array::IntSpan for keeping relationship between towers and creeps
+    http://search.cpan.org/~tels/Games-Console-0.04/lib/Games/Console.pm
+    http://conal.net/fran/tutorial.htm fran examples
 
 Layers:
     1 - bg - redrawn every tower build/sell/upgrade

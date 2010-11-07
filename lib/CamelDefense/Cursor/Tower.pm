@@ -10,13 +10,21 @@ use MooseX::Types::Moose qw(Str);
 has state => (is => 'rw', isa => Str, default => 'place_tower');
 
 with 'CamelDefense::Role::TowerView';
+with 'CamelDefense::Role::AnimatedSprite';
 
-sub init_image_def { '../data/cursor_shadow_place_tower.png' }
+sub init_image_def {{
+    image     => '../data/cursor_shadow.png',
+    size      => [15, 15],
+    sequences => [
+        place_tower      => [[0, 0]],
+        cant_place_tower => [[1, 0]],
+    ],
+}}
 
 sub change_to {
     my ($self, $new_state) = @_;
     $self->state($new_state);
-    $self->load("../data/cursor_shadow_${new_state}.png")
+    $self->sequence_animation($new_state)
         if $new_state ne 'normal';
 }
 

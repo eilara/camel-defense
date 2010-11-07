@@ -8,10 +8,10 @@ use Moose::Role;
 with 'CamelDefense::Role::Sprite' => { -excludes => ['compute_sprite_xy'] };
 
 sub compute_sprite_xy {
-    my ($self, $sprite) = @_;
+    my $self = shift;
     my ($x, $y) = @{ $self->xy };
     # sdl rect does int(), we want round
-    return ($x - $sprite->w / 2 + 0.5, $y - $sprite->h / 2 + 0.5);
+    return ($x - $self->w / 2 + 0.5, $y - $self->h / 2 + 0.5);
 }
 
 1;

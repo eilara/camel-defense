@@ -10,7 +10,7 @@ package CamelDefense::Role::Sprite;
 #   grid, etc.
 
 use Moose::Role;
-use MooseX::Types::Moose qw(Num Str ArrayRef);
+use MooseX::Types::Moose qw(Bool Int Num ArrayRef);
 use aliased 'SDL::Rect';
 use aliased 'SDLx::Sprite';
 use aliased 'SDLx::Sprite::Animated';
@@ -31,8 +31,6 @@ has sprite => (
     handles    => {
         load     => 'load',
         draw     => 'draw',
-        w        => 'w',
-        h        => 'h',
         sprite_x => 'x',
         sprite_y => 'y',
     },
@@ -44,15 +42,23 @@ has image_def => (
     default  => sub { shift->init_image_def },
 );
 
+has is_animated => (is => 'ro', lazy_build => 1, isa => Bool);
+has [qw(w h)]   => (is => 'ro', lazy_build => 1, isa => Int);
+
+sub BUILD {
+    my $self = shift;
+    my $sprite = $self->sprite;
+    my ($x, $y) = $self->compute_sprite_xy;
+    $sprite->x($x);
+    $sprite->y($y);
+}
+
 sub _build_sprite {
     my $self = shift;
     my $image_def = $self->image_def;
-    my $sprite = ref($image_def) eq 'HASH'?
+    my $sprite = $self->is_animated?
         $self->_build_animated_sprite($image_def):
-        Sprite->new(image => $self->image_def);
-    my ($x, $y) = $self->compute_sprite_xy($sprite);
-    $sprite->x($x);
-    $sprite->y($y);
+        Sprite->new(image => $image_def);
     return $sprite;
 }
 
@@ -69,16 +75,30 @@ sub _build_animated_sprite {
     return $sprite;
 }
 
+sub _build_is_animated { ref(shift->image_def) eq 'HASH' }
+
+sub _build_w {
+    my $self = shift;
+    return $self->is_animated? $self->image_def->{size}->[0]:
+                               $self->sprite->w;
+}
+
+sub _build_h {
+    my $self = shift;
+    return $self->is_animated? $self->image_def->{size}->[1]:
+                               $self->sprite->h;
+}
+
 sub _update_sprite_xy {
     my $self = shift;
-    my ($x, $y) = $self->compute_sprite_xy($self->sprite);
+    my ($x, $y) = $self->compute_sprite_xy;
     $self->sprite_x($x);
     $self->sprite_y($y);
 }
 
 # default implementation has sprite xy = self xy
 sub compute_sprite_xy {
-    my ($self, $sprite) = @_;
+    my $self = shift;
     return (@{ $self->xy });
 }
 

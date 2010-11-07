@@ -45,13 +45,13 @@ my $world = World->new(
                 creep_count      => 7,
                 inter_creep_wait => 0.2,
                 creep_args       =>
-                    [v => 300, image_file => '../data/creep_fast.png'],
+                    [v => 300, image_def => '../data/creep_fast.png'],
             },
             {
                 creep_count      => 13,
                 inter_creep_wait => 0.3,
                 creep_args       =>
-                    [v => 100, image_file => '../data/creep_slow.png', hp => 20],
+                    [v => 100, image_def => '../data/creep_slow.png', hp => 20],
             },
         ],
     ],

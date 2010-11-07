@@ -18,7 +18,16 @@ around merge_shadow_args => sub {
 
 with 'CamelDefense::Role::Sprite';
 
-sub init_image_file { '../data/cursor_normal.png' }
+sub init_image_def { '../data/cursor_normal.png' }
+
+=head
+
+sub init_image_def {{
+    image     => '../data/cursor_animated.png',
+    sequences => 
+}}
+
+=cut
 
 sub change_to {
     my ($self, $new_state) = @_;

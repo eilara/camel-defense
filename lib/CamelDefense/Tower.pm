@@ -20,7 +20,7 @@ has [qw(current_target last_damage_update)] => (is => 'rw');
 
 with 'CamelDefense::Role::TowerView';
 
-sub init_image_file { '../data/tower.png' }
+sub init_image_def { '../data/tower.png' }
 
 sub move {
     my ($self, $dt)     = @_;
@@ -108,7 +108,7 @@ sub start {
         my $start_fire_time = time;
         while (time - $start_fire_time <= $fire_period) {
             while (
-                $target->is_in_game &&
+                $target->is_alive &&
                 $target->is_in_range(@$xy, $range)
             ) {
             }

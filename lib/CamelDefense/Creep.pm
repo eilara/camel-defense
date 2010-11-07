@@ -6,19 +6,20 @@ use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Bool Num Int ArrayRef);
 use CamelDefense::Util qw(analyze_right_angle_line distance);
 
-has v         => (is => 'ro', required => 1, isa => Num, default => 10);
-has idx       => (is => 'ro', required => 1, isa => Int); # index in wave
-has waypoints => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
-has hp        => (is => 'rw', required => 1, isa => Num, default => 10);
+has v            => (is => 'ro', required => 1, isa => Num, default => 10);
+has idx          => (is => 'ro', required => 1, isa => Int); # index in wave
+has waypoints    => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
+has hp           => (is => 'rw', required => 1, isa => Num, default => 10);
 
-has start_hp   => (is => 'rw', isa => Num);
-has is_in_grid => (is => 'rw', required => 1, isa => Bool, default => 1);
+has start_hp     => (is => 'rw', isa => Num);
+has is_in_grid   => (is => 'rw', required => 1, isa => Bool, default => 1);
+has is_exploding => (is => 'rw', required => 1, isa => Bool, default => 0);
 
 has coro => (is => 'rw');
 
 with 'CamelDefense::Role::CenteredSprite';
 
-sub init_image_file { '../data/creep_normal.png' }
+sub init_image_def { '../data/creep_normal.png' }
 
 sub BUILD() {
     my $self = shift;
@@ -54,6 +55,12 @@ sub start {
     $self->is_in_grid(0);
 }
 
+sub start_death {
+    my $self = shift;
+    sleep 1;
+    $self->is_exploding(0);
+}
+
 after render => sub {
     my ($self, $surface) = @_;
 
@@ -75,11 +82,17 @@ sub hit {
     my ($self, $damage) = @_;
     my $hp = $self->hp - $damage;
     $self->hp($hp);
-    $self->coro->cancel unless $hp > 0;
+    unless ($hp > 0) {
+        $self->is_exploding(1);
+        $self->coro->cancel;
+        async { $self->start_death };
+    }
 }
 
 sub is_alive { shift->hp > 0 }
-sub is_in_game { $_[0]->is_alive && $_[0]->is_in_grid }
+
+sub is_in_game # creep is in game if it needs to be drawn
+    { ($_[0]->is_alive || $_[0]->is_exploding) && $_[0]->is_in_grid }
 
 sub is_in_range {
     my ($self, $x, $y, $range) = @_;

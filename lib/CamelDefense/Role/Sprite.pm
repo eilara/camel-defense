@@ -1,7 +1,10 @@
 package CamelDefense::Role::Sprite;
 
 # a role for a visual object which has a sprite
-# * answer init_image_file with path to image file
+# * answer init_image_def with path to image file or animation spec
+#   if it is a hash ref the sprite will be animated, in which case
+#   you may want to consume the AnimatedSprite role as well, and
+#   get delegation on some sprite animation methods
 # * answer compute_sprite_xy with sprite xy, which may not be the same
 #   self xy, because we may want this sprite centered on xy, aligned to
 #   grid, etc.
@@ -9,8 +12,9 @@ package CamelDefense::Role::Sprite;
 use Moose::Role;
 use MooseX::Types::Moose qw(Num Str ArrayRef);
 use aliased 'SDLx::Sprite';
+use aliased 'SDLx::Sprite::Animated';
 
-requires 'init_image_file';
+requires 'init_image_def';
 
 has xy => (
     is       => 'rw',
@@ -23,7 +27,6 @@ has xy => (
 has sprite => (
     is         => 'ro',
     lazy_build => 1,
-    isa        => Sprite, 
     handles    => {
         load     => 'load',
         draw     => 'draw',
@@ -34,20 +37,29 @@ has sprite => (
     },
 );
 
-has image_file => (
+has image_def => (
     is       => 'ro',
-    isa      => Str,
     required => 1,
-    default  => sub { shift->init_image_file },
+    default  => sub { shift->init_image_def },
 );
 
 sub _build_sprite {
     my $self = shift;
-    my $sprite = Sprite->new(image => $self->image_file);
+    my $image_def = $self->image_def;
+    my $sprite = ref($image_def) eq 'HASH'?
+        $self->_build_animated_sprite($image_def):
+        Sprite->new(image => $self->image_def);
     my ($x, $y) = $self->compute_sprite_xy($sprite);
     $sprite->x($x);
     $sprite->y($y);
     return $sprite;
+}
+
+sub _build_animated_sprite {
+    my ($self, $def) = @_;
+    return Animated->new(
+        image => $def->image,
+    );
 }
 
 sub _update_sprite_xy {

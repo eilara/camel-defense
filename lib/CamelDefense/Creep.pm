@@ -1,11 +1,15 @@
 package CamelDefense::Creep;
 
+# * is_alive - can be hit
+# * is_shown - needs to be drawn
+
 use Moose;
 use Coro;
 use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Bool Num Int Str ArrayRef);
 use CamelDefense::Util qw(analyze_right_angle_line distance);
 
+# kind: normal, fast, slow
 has kind         => (is => 'ro', required => 1, isa => Str, default => 'normal');
 has v            => (is => 'ro', required => 1, isa => Num, default => 10);
 has idx          => (is => 'ro', required => 1, isa => Int); # index in wave
@@ -29,6 +33,8 @@ sub init_image_def {
         sequences => [
             alive => [[0, 1]],
             death => [map { [$_, 0] } 0..6],
+            enter => [map { [6 - $_, 1] } 0..6],
+            leave => [map { [$_, 1] } 0..6],
         ],
     };
 }
@@ -67,9 +73,9 @@ sub start {
     $self->is_in_grid(0);
 }
 
-sub start_death {
+sub death_animation {
     my $self = shift;
-    my $sleep = 0.05;
+    my $sleep = 0.06;
     $self->sequence_animation('death');
     for my $frame (0..5) {
         sleep $sleep;
@@ -103,7 +109,7 @@ sub hit {
     $self->hp($hp);
     unless ($hp > 0) {
         $self->is_exploding(1);
-        async { $self->start_death };
+        async { $self->death_animation };
     }
 }
 

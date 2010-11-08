@@ -60,10 +60,10 @@ sub start {
     my @wps   = @{$self->waypoints};
     my $wp1   = shift @wps;
     my $sleep = 1/$self->v;
-    $self->enter_grid_animation;
+    $self->animate(enter_grid => 5, 0.06);
+    $self->is_alive(1);
     $self->xy([@$wp1]);
     my $xy = $self->xy;
-    $self->is_alive(1);
     sleep $sleep;
     for my $wp2 (@wps) {
         my ($is_horizontal, $dir, $is_forward) =
@@ -81,42 +81,7 @@ sub start {
         $wp1 = $wp2;
     }
     $self->is_alive(0);
-    $self->leave_grid_animation;
-    $self->is_shown(0);
-}
-
-sub enter_grid_animation {
-    my $self = shift;
-    my $sleep = 0.06;
-    $self->sequence_animation('enter_grid');
-    for my $frame (0..5) {
-        sleep $sleep;
-        $self->next_animation;
-    }
-    sleep $sleep;
-}
-
-sub leave_grid_animation {
-    my $self = shift;
-    my $sleep = 0.06;
-    $self->sequence_animation('leave_grid');
-    for my $frame (0..5) {
-        sleep $sleep;
-        $self->next_animation;
-    }
-    sleep $sleep;
-}
-
-sub death_animation {
-    my $self = shift;
-    my $sleep = 0.06;
-    $self->sequence_animation('death');
-    for my $frame (0..5) {
-        sleep $sleep;
-        $self->next_animation;
-    }
-    sleep $sleep;
-    $self->coro->cancel;
+    $self->animate(leave_grid => 5, 0.06);
     $self->is_shown(0);
 }
 
@@ -129,6 +94,7 @@ after render => sub {
 #    $surface->draw_gfx_text([$self->sprite_x+2, $self->sprite_y+2], 0x000000FF, $self->idx);
 
     # add health bar
+    # TODO: bar should shrink/grow when creep is animated
     my $hp_ratio = $self->hp_ratio;
     my ($x, $y) = ($self->sprite_x, $self->sprite_y - 7);
     my $w = $self->w;
@@ -143,7 +109,11 @@ sub hit {
     $self->hp($hp);
     unless ($hp > 0) {
         $self->is_alive(0);
-        async { $self->death_animation };
+        async {
+            $self->animate(death => 5, 0.06);
+            $self->coro->cancel;
+            $self->is_shown(0);
+        };
     }
 }
 

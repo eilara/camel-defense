@@ -23,7 +23,11 @@ Requires:
    MooseX::Types
    MooseX::Role::BuildInstanceOf
 
-   
+Credit:
+
+   Explosion sprites are from opengameart.org, attributed to:
+       "Iron Plague" art by Daniel Cook (Lostgarden.com)
+
 -------------------------------------notes--------------------------------------
 
 TODO

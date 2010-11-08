@@ -2,6 +2,12 @@ package CamelDefense::Creep;
 
 # * is_alive - can be hit
 # * is_shown - needs to be drawn
+#
+# - creep starts out: is_shown=1, is_alive=0
+# - after enter animation, creep is_shown=1, is_alive=1
+#   now it can be hit
+# - when starting death animation: is_shown=1, is_alive=0
+# - after death animation: is_shown=0, is_alive=0
 
 use Moose;
 use Coro;
@@ -10,15 +16,15 @@ use MooseX::Types::Moose qw(Bool Num Int Str ArrayRef);
 use CamelDefense::Util qw(analyze_right_angle_line distance);
 
 # kind: normal, fast, slow
-has kind         => (is => 'ro', required => 1, isa => Str, default => 'normal');
-has v            => (is => 'ro', required => 1, isa => Num, default => 10);
-has idx          => (is => 'ro', required => 1, isa => Int); # index in wave
-has waypoints    => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
-has hp           => (is => 'rw', required => 1, isa => Num, default => 10);
+has kind      => (is => 'ro', required => 1, isa => Str, default => 'normal');
+has v         => (is => 'ro', required => 1, isa => Num, default => 10);
+has idx       => (is => 'ro', required => 1, isa => Int); # index in wave
+has waypoints => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
+has hp        => (is => 'rw', required => 1, isa => Num, default => 10);
 
-has start_hp     => (is => 'rw', isa => Num);
-has is_in_grid   => (is => 'rw', required => 1, isa => Bool, default => 1);
-has is_exploding => (is => 'rw', required => 1, isa => Bool, default => 0);
+has start_hp  => (is => 'rw', isa => Num);
+has is_alive  => (is => 'rw', required => 1, isa => Bool, default => 0);
+has is_shown  => (is => 'rw', required => 1, isa => Bool, default => 1);
 
 has coro => (is => 'rw');
 
@@ -43,6 +49,7 @@ sub BUILD() {
     my $self = shift;
     $self->xy($self->waypoints->[0]);
     $self->start_hp($self->hp);
+    $self->is_alive(1);
     $self->coro(async { $self->start });
 }
 
@@ -70,7 +77,7 @@ sub start {
         }
         $wp1 = $wp2;
     }
-    $self->is_in_grid(0);
+    $self->is_shown(0);
 }
 
 sub death_animation {
@@ -83,7 +90,7 @@ sub death_animation {
     }
     sleep $sleep;
     $self->coro->cancel;
-    $self->is_exploding(0);
+    $self->is_shown(0);
 }
 
 after render => sub {
@@ -108,15 +115,10 @@ sub hit {
     my $hp = $self->hp - $damage;
     $self->hp($hp);
     unless ($hp > 0) {
-        $self->is_exploding(1);
+        $self->is_alive(0);
         async { $self->death_animation };
     }
 }
-
-sub is_alive { shift->hp > 0 }
-
-sub is_in_game # creep is in game if it needs to be drawn
-    { ($_[0]->is_alive || $_[0]->is_exploding) && $_[0]->is_in_grid }
 
 sub is_in_range {
     my ($self, $x, $y, $range) = @_;

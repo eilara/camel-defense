@@ -32,7 +32,7 @@ sub BUILD { shift->last_creep_birth(time) }
 sub move {
     my ($self, $dt) = @_;
     # TODO: should listen to channel of creep death broadcast on channel wave death
-    my @creeps       = grep { $_->is_in_game } @{ $self->creeps };
+    my @creeps       = grep { $_->is_shown } @{ $self->creeps };
     my $should_build = time - $self->last_creep_birth > $self->inter_creep_wait;
     my $still_left   = $self->creep_count - $self->next_creep_idx + 1;
     my $not_enough   = $still_left > 0;

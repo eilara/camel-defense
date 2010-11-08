@@ -3,9 +3,10 @@ package CamelDefense::Creep;
 use Moose;
 use Coro;
 use Coro::Timer qw(sleep);
-use MooseX::Types::Moose qw(Bool Num Int ArrayRef);
+use MooseX::Types::Moose qw(Bool Num Int Str ArrayRef);
 use CamelDefense::Util qw(analyze_right_angle_line distance);
 
+has kind         => (is => 'ro', required => 1, isa => Str, default => 'normal');
 has v            => (is => 'ro', required => 1, isa => Num, default => 10);
 has idx          => (is => 'ro', required => 1, isa => Int); # index in wave
 has waypoints    => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
@@ -18,8 +19,19 @@ has is_exploding => (is => 'rw', required => 1, isa => Bool, default => 0);
 has coro => (is => 'rw');
 
 with 'CamelDefense::Role::CenteredSprite';
+with 'CamelDefense::Role::AnimatedSprite';
 
-sub init_image_def { '../data/creep_normal.png' }
+sub init_image_def {
+    my $self = shift;
+    return {
+        image     => '../data/creep_'. $self->kind. '.png',
+        size      => [21, 21],
+        sequences => [
+            alive => [[0, 1]],
+            death => [map { [$_, 0] } 0..6],
+        ],
+    };
+}
 
 sub BUILD() {
     my $self = shift;
@@ -57,7 +69,14 @@ sub start {
 
 sub start_death {
     my $self = shift;
-    sleep 1;
+    my $sleep = 0.05;
+    $self->sequence_animation('death');
+    for my $frame (0..5) {
+        sleep $sleep;
+        $self->next_animation;
+    }
+    sleep $sleep;
+    $self->coro->cancel;
     $self->is_exploding(0);
 }
 
@@ -84,7 +103,6 @@ sub hit {
     $self->hp($hp);
     unless ($hp > 0) {
         $self->is_exploding(1);
-        $self->coro->cancel;
         async { $self->start_death };
     }
 }

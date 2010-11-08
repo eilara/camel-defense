@@ -45,14 +45,6 @@ has image_def => (
 has is_animated => (is => 'ro', lazy_build => 1, isa => Bool);
 has [qw(w h)]   => (is => 'ro', lazy_build => 1, isa => Int);
 
-sub BUILD {
-    my $self = shift;
-    my $sprite = $self->sprite;
-    my ($x, $y) = $self->compute_sprite_xy;
-    $sprite->x($x);
-    $sprite->y($y);
-}
-
 sub _build_sprite {
     my $self = shift;
     my $image_def = $self->image_def;

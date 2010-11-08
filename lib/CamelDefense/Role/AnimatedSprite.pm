@@ -13,6 +13,7 @@ has sprite_as_animated => (
     isa        => Animated, 
     handles    => {
         sequence_animation => 'sequence',
+        next_animation     => 'next',
     },
 );
 

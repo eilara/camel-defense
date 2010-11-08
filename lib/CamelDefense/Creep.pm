@@ -37,10 +37,10 @@ sub init_image_def {
         image     => '../data/creep_'. $self->kind. '.png',
         size      => [21, 21],
         sequences => [
-            alive => [[0, 1]],
-            death => [map { [$_, 0] } 0..6],
-            enter => [map { [6 - $_, 1] } 0..6],
-            leave => [map { [$_, 1] } 0..6],
+            alive      => [[0, 1]],
+            death      => [map { [$_, 0] } 0..6],
+            enter_grid => [map { [6 - $_, 1] } 0..6],
+            leave_grid => [map { [$_, 1] } 0..6],
         ],
     };
 }
@@ -49,7 +49,6 @@ sub BUILD() {
     my $self = shift;
     $self->xy($self->waypoints->[0]);
     $self->start_hp($self->hp);
-    $self->is_alive(1);
     $self->coro(async { $self->start });
 }
 
@@ -59,8 +58,10 @@ sub start {
     my @wps   = @{$self->waypoints};
     my $wp1   = shift @wps;
     my $sleep = 1/$self->v;
+    $self->enter_grid_animation;
     $self->xy([@$wp1]);
     my $xy = $self->xy;
+    $self->is_alive(1);
     sleep $sleep;
     for my $wp2 (@wps) {
         my ($is_horizontal, $dir, $is_forward) =
@@ -77,7 +78,30 @@ sub start {
         }
         $wp1 = $wp2;
     }
+    $self->leave_grid_animation;
     $self->is_shown(0);
+}
+
+sub enter_grid_animation {
+    my $self = shift;
+    my $sleep = 0.06;
+    $self->sequence_animation('enter_grid');
+    for my $frame (0..5) {
+        sleep $sleep;
+        $self->next_animation;
+    }
+    sleep $sleep;
+}
+
+sub leave_grid_animation {
+    my $self = shift;
+    my $sleep = 0.06;
+    $self->sequence_animation('leave_grid');
+    for my $frame (0..5) {
+        sleep $sleep;
+        $self->next_animation;
+    }
+    sleep $sleep;
 }
 
 sub death_animation {

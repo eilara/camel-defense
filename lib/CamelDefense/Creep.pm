@@ -3,10 +3,12 @@ package CamelDefense::Creep;
 # * is_alive - can be hit
 # * is_shown - needs to be drawn
 #
-# - creep starts out: is_shown=1, is_alive=0
+# - before enter animation, creep is_shown=1, is_alive=0
 # - after enter animation, creep is_shown=1, is_alive=1
 #   now it can be hit
-# - when starting death animation: is_shown=1, is_alive=0
+# - before leave animation, creep is_shown=1, is_alive=0
+# - after leave animation, creep is_shown=0, is_alive=0
+# - before starting death animation: is_shown=1, is_alive=0
 # - after death animation: is_shown=0, is_alive=0
 
 use Moose;
@@ -78,6 +80,7 @@ sub start {
         }
         $wp1 = $wp2;
     }
+    $self->is_alive(0);
     $self->leave_grid_animation;
     $self->is_shown(0);
 }

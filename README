@@ -44,6 +44,10 @@ TODO
     add $ with X on it for cursor shadow when building tower and no money
     get stuff from opengameart.org
     with coro we can make slow objects update less often
+    accuracy- if creep moves more than 1px per position update could be that
+        we passed some tower range so look not for tower in range of position
+        but of all positions passed in last sleep
+    accuracy- many models for laser cool off period        
 
 Game objects, layers, and z-index in layer:
 

@@ -97,28 +97,45 @@ after render => sub {
 
 __END__
 
-
 sub start {
     my $self = shift;
-    my ($fire_period, $cool_off_period, $damage_per_sec, $xy, $range) =
-        map { $self->$_ }
-            qw(fire_period cool_off_period damage_per_sec xy range);
+    my ($fire_start_time, $is_firing) = (time, 0);
+    my $time_diff = sub { time - $fire_start_time };
     while (1) {
-        my $target = $self->aim;
-        my $start_fire_time = time;
-        while (time - $start_fire_time <= $fire_period) {
-            while (
-                $target->is_alive &&
-                $target->is_in_range(@$xy, $range)
-            ) {
+        while (&$time_diff < $fire_period) {
+            if ($self->aim(&$time_diff)) {
+                $fire_start_time = time unless $is_firing;
+                $is_firing = 1;
+                $self->fire(&$time_diff);
             }
-
-target alive
-target in range
-fire period
-        $self->current_target($target);
-
+        }
+        sleep $cool_off_period if $is_firing;
+        $is_firing = 0;
     }
-    
+}
+
+sub fire {
+    my ($self, $timeout) = @_;
+    my $sleep  = 0.1;
+    my $start  = time;
+    my $target = $self->current_target;
+    my $damage = $self->damage_per_sec * $sleep;
+    my @xy     = @{ $self->xy };
+    my $range  = $self->range;
+    while (
+           time - $start < $timeout
+        && $target->is_alive
+        && $target->is_in_range(@xy, $range);
+    ) {
+        $target->hit($damage);
+        sleep $sleep;
+    }
+    $self->current_target(undef);
+}
+
+sub aim {
+    my ($self, $timeout) = @_;
+    $self->curent_target($target);
+    return 1;
 }
 

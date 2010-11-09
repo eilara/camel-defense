@@ -74,6 +74,11 @@ sub start {
                                                  ($wp2->[1]..$wp1->[1]);
         my $axis = 1 - $is_horizontal;
         for my $i (@range) {
+            # TODO: should move not 1 pixel but as many pixels needed
+            #       because last sleep was too long?
+            # TODO: should keep a delta and sleep less if needed?
+            # TODO: why move 1 pixel per 0.01 secs in 100px/sec speed
+            #       if fps=60?
             $xy->[$axis] += $dir;
             $self->_update_sprite_xy;
             sleep $sleep;

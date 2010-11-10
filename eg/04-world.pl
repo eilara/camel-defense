@@ -51,11 +51,11 @@ my $world = World->new(
                 creep_count      => 13,
                 inter_creep_wait => 0.3,
                 creep_args       =>
-                    [v => 100, kind => 'slow', hp => 20],
+                    [v => 50, kind => 'slow', hp => 20],
             },
         ],
     ],
-    tower_manager_args => [tower_args => [fire_period => 1.0]],
+    tower_manager_args => [tower_args => [fire_period => 1.5]],
     waypoints  => [
         [0.50, 0.00],
         [0.50, 0.25],

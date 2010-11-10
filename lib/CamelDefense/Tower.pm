@@ -12,7 +12,7 @@ has wave_manager    => (is => 'ro', required => 1, isa => WaveManager);
 has laser_color     => (is => 'ro', required => 1, isa => Num, default => 0xFF0000FF);
 has cool_off_period => (is => 'ro', required => 1, isa => Num, default => 1.0);
 has fire_period     => (is => 'ro', required => 1, isa => Num, default => 1.0);
-has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 15);
+has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 10);
 
 has current_target  => (is => 'rw');
 has coro            => (is => 'rw');

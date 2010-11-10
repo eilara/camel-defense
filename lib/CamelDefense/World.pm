@@ -108,7 +108,6 @@ sub _build_cursor
 
 sub move {
     my ($self, $dt) = @_;
-    $self->tower_manager->move($dt);
     if ($self->is_level_complete) {
         # TODO: should only be called once not every move
         $self->level_complete_handler->();

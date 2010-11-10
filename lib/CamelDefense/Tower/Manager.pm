@@ -38,11 +38,6 @@ around merge_tower_args => sub {
     );
 };
 
-sub move {
-    my ($self, $dt) = @_;
-    $_->move($dt) for @{ $self->towers };
-}
-
 sub render {
     my ($self, $surface) = @_;
     $_->render($surface) for @{$self->towers};

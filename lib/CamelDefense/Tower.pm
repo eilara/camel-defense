@@ -1,26 +1,101 @@
 package CamelDefense::Tower;
 
 use Moose;
+use Coro;
+use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Num Str);
 use Time::HiRes qw(time);
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 
-has wave_manager =>
-    (is => 'ro', required => 1, isa => WaveManager, handles => [qw(aim)]);
+has wave_manager    => (is => 'ro', required => 1, isa => WaveManager);
 
 has laser_color     => (is => 'ro', required => 1, isa => Num, default => 0xFF0000FF);
-has cool_off_period => (is => 'ro', required => 1, isa => Num, default => 0.5);
+has cool_off_period => (is => 'ro', required => 1, isa => Num, default => 1.0);
 has fire_period     => (is => 'ro', required => 1, isa => Num, default => 1.0);
-has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 10);
+has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 15);
 
-has last_fire_time  => (is => 'rw', isa => Num, default => 0);
-has state           => (is => 'rw', isa => Str, default => 'init');
-
-has [qw(current_target last_damage_update)] => (is => 'rw');
+has current_target  => (is => 'rw');
+has coro            => (is => 'rw');
 
 with 'CamelDefense::Role::TowerView';
 
 sub init_image_def { '../data/tower.png' }
+
+sub BUILD() {
+    my $self = shift;
+    $self->coro(async { $self->start });
+}
+
+sub start {
+    my $self = shift;
+    my $fire_period = $self->fire_period;
+    my ($fire_start_time, $is_firing) = (time, 0);
+    my $time_diff = sub { time - $fire_start_time };
+    while (1) {
+        while (&$time_diff < $fire_period) {
+            if ($self->aim(&$time_diff)) {
+                $fire_start_time = time unless $is_firing;
+                $is_firing = 1;
+                $self->fire(&$time_diff);
+            }
+        }
+        sleep $self->cool_off_period if $is_firing;
+        ($fire_start_time, $is_firing) = (time, 0);
+    }
+}
+
+sub aim {
+    my ($self, $timeout) = @_;
+    my $sleep = 0.1;
+    my $start = time;
+    my @args  = ($self->center_x, $self->center_y, $self->range);
+    while (time - $start < $timeout) {
+        sleep $sleep;
+        if (my $target = $self->wave_manager->aim(@args)) {
+            $self->current_target($target);
+            return $target;
+        }
+    }
+    return undef;
+}
+
+sub fire {
+    my ($self, $timeout) = @_;
+    my $sleep  = 0.1;
+    my $start  = time;
+    my $target = $self->current_target;
+    my $damage = $self->damage_per_sec * $sleep;
+    my @xy     = @{ $self->xy };
+    my $range  = $self->range;
+    while (
+           time - $start < $timeout
+        && $target->is_alive
+        && $target->is_in_range(@xy, $range)
+    ) {
+        $target->hit($damage);
+        sleep $sleep;
+    }
+    $self->current_target(undef);
+}
+
+after render => sub {
+    my ($self, $surface) = @_;
+    # render laser to creep
+    if (my $target = $self->current_target) {
+        if ($target->is_alive) {
+            my $sprite = $self->sprite;
+            $surface->draw_line(
+                [$self->center_x, $self->center_y],
+                $target->xy,
+                $self->laser_color, 1,
+            );
+        }
+    }
+};
+
+1;
+
+__END__
 
 sub move {
     my ($self, $dt)     = @_;
@@ -74,68 +149,3 @@ sub move {
         die "Unknown state: $state";
     }
 }
-
-after render => sub {
-    my ($self, $surface) = @_;
-    # render laser to creep
-    if ($self->state eq 'firing') {
-        my $target = $self->current_target;
-        if ($target && $target->is_alive) {
-            my $sprite = $self->sprite;
-            $surface->draw_line(
-                [$self->center_x, $self->center_y],
-                $target->xy,
-                $self->laser_color, 1,
-            );
-        } else {
-            $self->current_target(undef);
-        }
-    }
-};
-
-1;
-
-__END__
-
-sub start {
-    my $self = shift;
-    my ($fire_start_time, $is_firing) = (time, 0);
-    my $time_diff = sub { time - $fire_start_time };
-    while (1) {
-        while (&$time_diff < $fire_period) {
-            if ($self->aim(&$time_diff)) {
-                $fire_start_time = time unless $is_firing;
-                $is_firing = 1;
-                $self->fire(&$time_diff);
-            }
-        }
-        sleep $cool_off_period if $is_firing;
-        $is_firing = 0;
-    }
-}
-
-sub fire {
-    my ($self, $timeout) = @_;
-    my $sleep  = 0.1;
-    my $start  = time;
-    my $target = $self->current_target;
-    my $damage = $self->damage_per_sec * $sleep;
-    my @xy     = @{ $self->xy };
-    my $range  = $self->range;
-    while (
-           time - $start < $timeout
-        && $target->is_alive
-        && $target->is_in_range(@xy, $range);
-    ) {
-        $target->hit($damage);
-        sleep $sleep;
-    }
-    $self->current_target(undef);
-}
-
-sub aim {
-    my ($self, $timeout) = @_;
-    $self->curent_target($target);
-    return 1;
-}
-

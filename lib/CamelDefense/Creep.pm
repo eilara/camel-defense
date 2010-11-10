@@ -111,6 +111,7 @@ after render => sub {
 sub hit {
     my ($self, $damage) = @_;
     my $hp = $self->hp - $damage;
+    $hp = 0 if $hp < 0;
     $self->hp($hp);
     unless ($hp > 0) {
         $self->is_alive(0);

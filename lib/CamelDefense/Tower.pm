@@ -60,13 +60,15 @@ sub aim {
 }
 
 sub fire {
-    my ($self, $timeout) = @_;
-    my $sleep  = 0.1;
-    my $start  = time;
-    my $target = $self->current_target;
-    my $damage = $self->damage_per_sec * $sleep;
-    my @xy     = @{ $self->xy };
-    my $range  = $self->range;
+    my ($self, $since_fire_start) = @_;
+    my $sleep   = 0.1;
+    my $start   = time;
+    my $target  = $self->current_target;
+    my $damage  = $self->damage_per_sec * $sleep;
+    my @xy      = @{ $self->xy };
+    my $range   = $self->range;
+    my $timeout = $self->fire_period - $since_fire_start;
+    return if $timeout <= 0;
     while (
            time - $start < $timeout
         && $target->is_alive

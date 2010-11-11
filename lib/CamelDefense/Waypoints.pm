@@ -13,6 +13,8 @@ has marks => (
 );
 
 has waypoints => ( # waypoints specified as ratio of surface size
+                   # each point is specified as the top left corner
+                   # x and y coordinates, so 0,0 is top left cell
     is       => 'ro',
     required => 1,
     isa      => ArrayRef[ArrayRef[Num]],

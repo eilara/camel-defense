@@ -103,8 +103,15 @@ sub BUILD {
     $c->add_move_handler(sub { $self->move(@_) });
 }
 
-sub _build_cursor
-    { Cursor->new(shadow_args => [grid => shift->grid]) }
+sub _build_cursor {
+    my $self = shift;
+    my %manager_args = @{$self->tower_manager_args};
+    my $tower_args = $manager_args{tower_args};
+    return Cursor->new(shadow_args => [
+        grid => $self->grid,
+        ($tower_args? @$tower_args: ()),
+    ]);
+}
 
 sub move {
     my ($self, $dt) = @_;

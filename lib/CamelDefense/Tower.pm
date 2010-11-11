@@ -17,7 +17,7 @@ has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 10);
 has current_target  => (is => 'rw');
 has coro            => (is => 'rw');
 
-with 'CamelDefense::Role::TowerView';
+extends 'CamelDefense::Tower::Base';
 
 sub init_image_def { '../data/tower.png' }
 

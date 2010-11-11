@@ -9,7 +9,7 @@ use MooseX::Types::Moose qw(Str);
 
 has state => (is => 'rw', isa => Str, default => 'place_tower');
 
-with 'CamelDefense::Role::TowerView';
+extends 'CamelDefense::Tower::Base';
 with 'CamelDefense::Role::AnimatedSprite';
 
 sub init_image_def {{

@@ -48,3 +48,13 @@ sub render {
 
 1;
 
+__END__
+
+sub start {
+    my $self = shift;
+    my $sleep = $self->inter_creep_wait;
+    for my $creep_idx (1..$self->creep_count) {
+        my $creep = $self->creep(idx => $creep_idx. parent => $self);
+        sleep $sleep;
+    }
+}

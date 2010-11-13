@@ -35,9 +35,9 @@ my $world = World->new(
         ],
     ],
     tower_manager_args => [tower_args => [
-        fire_period => 3,
+        fire_period     => 3,
         cool_off_period => 2,
-        range       => 300,
+        range           => 300,
     ]],
     waypoints  => [
         [0.00, 0.50],

@@ -103,6 +103,7 @@ sub BUILD {
     $c->add_move_handler(sub { $self->move(@_) });
 }
 
+# should move to build instance role
 sub _build_cursor {
     my $self = shift;
     my %manager_args = @{$self->tower_manager_args};

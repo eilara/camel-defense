@@ -67,12 +67,9 @@ sub aim {
     my ($self, $sx, $sy, $range) = @_;
     for my $wave (@{ $self->waves }) {
         for my $creep (@{ $wave->creeps }) {
-            if (
+            return $creep if
                 $creep->is_alive &&
-                $creep->is_in_range($sx, $sy, $range)
-            ) {
-                return $creep;
-            }
+                $creep->is_in_range($sx, $sy, $range);
         }
     }
 }

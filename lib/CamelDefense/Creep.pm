@@ -90,7 +90,7 @@ sub start {
     $self->is_shown(0);
 }
 
-after render => sub {
+before render => sub {
     my ($self, $surface) = @_;
 
 # draws text of creep hp and index    

@@ -119,8 +119,6 @@ sub move {
     if ($self->is_level_complete) {
         # TODO: should only be called once not every move
         $self->level_complete_handler->();
-    } else {
-        $self->wave_manager->move($dt);
     }
 }
 

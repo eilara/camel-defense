@@ -5,9 +5,11 @@ package CamelDefense::Wave::Manager;
 # next wave def out of the definitions and creates a wave out of it
 
 use Moose;
-use MooseX::Types::Moose qw(ArrayRef HashRef);
+use MooseX::Types::Moose qw(Int ArrayRef HashRef);
 use aliased 'CamelDefense::Wave';
 use aliased 'CamelDefense::Grid';
+
+with 'CamelDefense::Living::Parent';
 
 has grid  => (is => 'ro', required => 1, isa => Grid, handles => [qw(
     points_px
@@ -20,13 +22,9 @@ has wave_defs => (
     default  => sub { [] },
 );
 
+has next_wave_idx => (is => 'rw', required => 1, isa => Int , default => 0);
+
 # the wave manager creates and manages waves
-has waves => (
-    is       => 'rw',
-    required => 1,
-    isa      => ArrayRef[Wave],
-    default  => sub { [] },
-);
 with 'MooseX::Role::BuildInstanceOf' => {target => Wave, type => 'factory'};
 around merge_wave_args => sub {
     my ($orig, $self)      = @_;
@@ -36,39 +34,33 @@ around merge_wave_args => sub {
     my %creep_args         = @{ $args{creep_args} ||= [] };
     $creep_args{waypoints} = $self->points_px;
     $args{creep_args}      = [%creep_args, %next_creep_def];
-    return (%args, %wave_def);
+    my $idx                = $self->next_wave_idx;
+    $self->next_wave_idx($idx + 1);
+    return (%args, parent => $self, idx => $idx, %wave_def);
 };
 
 # no more wave defs or waves
 sub is_level_complete {
     my $self = shift;
-    return (@{ $self->waves } + @{ $self->wave_defs })? 0: 1;
+    return (@{ $self->children } + @{ $self->wave_defs })? 0: 1;
 }
 
 sub render {
     my ($self, $surface) = @_;
-    $_->render($surface) for @{$self->waves};
-}
-
-sub move {
-    my ($self, $dt) = @_;
-    my $wc = scalar @{$self->waves};
-    my @waves = map { $_->move($dt) } @{ $self->waves };
-    $self->waves(\@waves);
+    $_->render($surface) for @{$self->children};
 }
 
 sub start_wave {
     my $self = shift;
     return unless @{ $self->wave_defs };
-    push @{ $self->waves }, $self->wave;
+    push @{ $self->children }, $self->wave;
 }
 
 sub aim {
     my ($self, $sx, $sy, $range) = @_;
-    for my $wave (@{ $self->waves }) {
-        for my $creep (@{ $wave->creeps }) {
+    for my $wave (@{ $self->living_children }) {
+        for my $creep (@{ $wave->living_children }) {
             return $creep if
-                $creep->is_alive &&
                 $creep->is_in_range($sx, $sy, $range);
         }
     }

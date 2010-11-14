@@ -17,6 +17,8 @@ use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Bool Num Int Str ArrayRef);
 use CamelDefense::Util qw(analyze_right_angle_line distance);
 
+extends 'CamelDefense::Living::Base';
+
 # kind: normal, fast, slow
 has kind      => (is => 'ro', required => 1, isa => Str, default => 'normal');
 has v         => (is => 'ro', required => 1, isa => Num, default => 10);
@@ -25,8 +27,6 @@ has waypoints => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
 has hp        => (is => 'rw', required => 1, isa => Num, default => 10);
 
 has start_hp  => (is => 'rw', isa => Num);
-has is_alive  => (is => 'rw', required => 1, isa => Bool, default => 0);
-has is_shown  => (is => 'rw', required => 1, isa => Bool, default => 1);
 
 has coro => (is => 'rw');
 
@@ -115,9 +115,9 @@ sub hit {
     $self->hp($hp);
     unless ($hp > 0) {
         $self->is_alive(0);
+        $self->coro->cancel;
         async {
             $self->animate(death => 5, 0.06);
-            $self->coro->cancel;
             $self->is_shown(0);
         };
     }

@@ -13,6 +13,7 @@ package CamelDefense::Creep;
 
 use Moose;
 use Coro;
+use List::Util qw(max);
 use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Bool Num Int Str ArrayRef);
 use CamelDefense::Util qw(analyze_right_angle_line distance);
@@ -55,31 +56,30 @@ sub BUILD() {
 }
 
 # assumes creep only moves in vertical or horizontal direction, no angles
+# TODO: should move not 1 pixel but as many pixels needed
+#       because last sleep was too long? note sometimes uneven
+#       distances between creeps because of this
+#       should keep a delta and sleep less if needed?
 sub start {
     my $self  = shift;
     my @wps   = @{$self->waypoints};
     my $wp1   = shift @wps;
-    my $sleep = 1/$self->v;
+    my $v     = $self->v;
+    my $sleep = max(1/$v, 1/60); # dont move pixel by 1 pixel if you are fast
+    my $step  = $v * $sleep;
     $self->animate(enter_grid => 5, 0.06);
     $self->is_alive(1);
     $self->xy([@$wp1]);
     my $xy = $self->xy;
     sleep $sleep;
     for my $wp2 (@wps) {
-        my ($is_horizontal, $dir, $is_forward) =
-            analyze_right_angle_line(@$wp1, @$wp2);
-        my @range = $is_horizontal? $is_forward? ($wp1->[0]..$wp2->[0]):
-                                                 ($wp2->[0]..$wp1->[0]):
-                                    $is_forward? ($wp1->[1]..$wp2->[1]):
-                                                 ($wp2->[1]..$wp1->[1]);
-        my $axis = 1 - $is_horizontal;
-        for my $i (@range) {
-            # TODO: should move not 1 pixel but as many pixels needed
-            #       because last sleep was too long?
-            # TODO: should keep a delta and sleep less if needed?
-            # TODO: why move 1 pixel per 0.01 secs in 100px/sec speed
-            #       if fps=60?
-            $xy->[$axis] += $dir;
+        my ($is_horizontal, $dir) = analyze_right_angle_line(@$wp1, @$wp2);
+        my $is_vertical = 1 - $is_horizontal; # TODO
+        my $distance    = abs($wp2->[$is_vertical] - $wp1->[$is_vertical]);
+        my $steps       = int($distance / $step);
+        my $actual_step = $distance / $steps;
+        for (1..$steps) {
+            $xy->[$is_vertical] += $dir * $actual_step;
             $self->_update_sprite_xy;
             sleep $sleep;
         }

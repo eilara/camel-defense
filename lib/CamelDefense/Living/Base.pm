@@ -15,7 +15,6 @@ use Moose;
 use MooseX::Types::Moose qw(Bool Int);
 use aliased 'CamelDefense::Living::Parent';
 
-
 has parent => (is => 'ro', required => 1, does => Parent, weak_ref => 1);
 has idx    => (is => 'ro', required => 1, isa  => Int); # index in parent
 
@@ -38,7 +37,6 @@ has is_shown => (
     default      => 1,
     trigger      => sub {
         my $self = shift;
-#        use Data::Dumper;print Dumper $self unless $self->parent;
         $self->parent->handle_child_not_shown($self)
             unless $self->is_shown;
     },

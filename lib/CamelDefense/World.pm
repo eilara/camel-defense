@@ -3,7 +3,7 @@ package CamelDefense::World;
 use Moose;
 use SDL::Mouse;
 use SDL::Events;
-use MooseX::Types::Moose qw(ArrayRef CodeRef);
+use MooseX::Types::Moose qw(ArrayRef);
 use aliased 'SDLx::App';
 use aliased 'SDLx::Surface';
 use aliased 'CamelDefense::Grid';
@@ -20,9 +20,6 @@ has app =>
     (is => 'ro', required => 1, isa => App, handles => [qw(w h)]);
 
 has waypoints => (is => 'ro', required => 1);
-
-has level_complete_handler =>
-    (is => 'ro', required => 1, isa => CodeRef, default => sub { sub {} });
 
 has cursor     => (is => 'ro', lazy_build => 1, isa => Cursor);
 has bg_surface => (is => 'ro', lazy_build => 1, isa => Surface);
@@ -100,7 +97,6 @@ sub BUILD {
     my $c = $self->controller;
     $c->add_event_handler(sub { $self->handle_event(@_) });
     $c->add_show_handler(sub { $self->render(@_) });
-    $c->add_move_handler(sub { $self->move(@_) });
 }
 
 # should move to build instance role
@@ -112,14 +108,6 @@ sub _build_cursor {
         grid => $self->grid,
         ($tower_args? @$tower_args: ()),
     ]);
-}
-
-sub move {
-    my ($self, $dt) = @_;
-    if ($self->is_level_complete) {
-        # TODO: should only be called once not every move
-        $self->level_complete_handler->();
-    }
 }
 
 sub render {

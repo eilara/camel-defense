@@ -28,12 +28,12 @@ my $controller = Controller->new;
 my $world = World->new(
     app                    => $app,
     controller             => $controller,
-    level_complete_handler => sub { $game_over = 1 },
     grid_args              => [
         marks_args         => [bg_color   => 0x210606FF],
         waypoint_list_args => [path_color => 0x202010FF],
     ],
     wave_manager_args => [
+        level_complete_handler => sub { $game_over = 1 },
         wave_defs => [
             {
                 creep_count      => 10,

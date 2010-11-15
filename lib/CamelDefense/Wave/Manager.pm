@@ -5,7 +5,7 @@ package CamelDefense::Wave::Manager;
 # next wave def out of the definitions and creates a wave out of it
 
 use Moose;
-use MooseX::Types::Moose qw(Int ArrayRef HashRef);
+use MooseX::Types::Moose qw(Int ArrayRef HashRef CodeRef);
 use aliased 'CamelDefense::Wave';
 use aliased 'CamelDefense::Grid';
 
@@ -21,6 +21,9 @@ has wave_defs => (
     isa      => ArrayRef[HashRef],
     default  => sub { [] },
 );
+
+has level_complete_handler =>
+    (is => 'ro', required => 1, isa => CodeRef, default => sub { sub {} });
 
 has next_wave_idx => (is => 'rw', required => 1, isa => Int , default => 0);
 
@@ -39,11 +42,12 @@ around merge_wave_args => sub {
     return (%args, parent => $self, idx => $idx, %wave_def);
 };
 
-# no more wave defs or waves
-sub is_level_complete {
+after handle_child_not_shown => sub {
     my $self = shift;
-    return (@{ $self->children } + @{ $self->wave_defs })? 0: 1;
-}
+    # when no more wave defs or waves
+    $self->level_complete_handler->() unless
+        @{ $self->children } + @{ $self->wave_defs };
+};
 
 sub render {
     my ($self, $surface) = @_;

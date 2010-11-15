@@ -15,9 +15,9 @@ use Moose;
 use MooseX::Types::Moose qw(Bool Int);
 use aliased 'CamelDefense::Living::Parent';
 
-has idx => (is => 'ro', required => 1, isa => Int); # index in collection
 
 has parent => (is => 'ro', required => 1, does => Parent, weak_ref => 1);
+has idx    => (is => 'ro', required => 1, isa  => Int); # index in parent
 
 has is_alive => (
     is           => 'rw',

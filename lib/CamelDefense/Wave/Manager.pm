@@ -61,12 +61,10 @@ sub start_wave {
 }
 
 sub aim {
-    my ($self, $sx, $sy, $range) = @_;
+    my ($self, @range) = @_;
     for my $wave (@{ $self->living_children }) {
-        for my $creep (@{ $wave->living_children }) {
-            return $creep if
-                $creep->is_in_range($sx, $sy, $range);
-        }
+        my $creep = $wave->aim(@range);
+        return $creep if $creep;
     }
 }
 

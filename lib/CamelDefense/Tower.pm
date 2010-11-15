@@ -108,9 +108,6 @@ sub move {
     my $diff            = time - $last_fire;
     my $state           = $self->state;
 
-# HACK: this should be in a state machine or something!
-#       this logic is too complex for me to grok easily. help.
-
     if ($state eq 'init') {
         if (my $target = $self->aim($self->center_x, $self->center_y, $self->range)) {
             $self->current_target($target);

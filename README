@@ -22,6 +22,10 @@ Requires:
    Moose
    MooseX::Types
    MooseX::Role::BuildInstanceOf
+   EV
+   Coro
+   SDLx::Controller::Coro
+   SDLx::Coro::REPL
 
 Credit:
 

@@ -6,6 +6,8 @@ use MooseX::Types::Moose qw(Num Str);
 use Time::HiRes qw(time);
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 
+extends 'CamelDefense::Tower::Base';
+
 has wave_manager    => (is => 'ro', required => 1, isa => WaveManager);
 
 has laser_color     => (is => 'ro', required => 1, isa => Num, default => 0xFF0000FF);
@@ -16,8 +18,6 @@ has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 10);
 has current_target  => (is => 'rw');
 
 with 'CamelDefense::Role::Active';
-
-extends 'CamelDefense::Tower::Base';
 
 sub init_image_def { '../data/tower.png' }
 

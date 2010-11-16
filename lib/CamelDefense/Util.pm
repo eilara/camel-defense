@@ -16,7 +16,8 @@ sub analyze_right_angle_line {
     my $dir = $is_horizontal? $x1 <= $x2? 1: -1:
                               $y1 <= $y2? 1: -1;
 
-    return ($is_horizontal, $dir, $dir == 1? 1: 0);
+    # ($is_horizontal, $dir, $is_forward)
+    return (1 - $is_horizontal, $dir, $dir == 1? 1: 0);
 }
 
 sub distance {

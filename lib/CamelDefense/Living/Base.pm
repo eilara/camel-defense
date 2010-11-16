@@ -1,15 +1,16 @@
 package CamelDefense::Living::Base;
 
 # base class for things that live and die
+# they may still be shown if not alive (body, exit animation, frozen, etc.)
 #
 # * is_alive - can be hit
-# * is_shown - needs to be drawn (enter animation,
-#              leave animation, frozen, etc.)
+# * is_shown - needs to be drawn
+#
 # we start at is_alive=0, is_shown=1
 # subclass set is_alive, is_shown as needed
 #
 # parent methods handle_child_not_shown, handle_child_not_alive,
-# and handle_child_is_alive are called when the flags set to false
+# and handle_child_is_alive are called when the flags set
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int);

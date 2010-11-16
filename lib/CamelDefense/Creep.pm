@@ -33,7 +33,7 @@ with qw(
     CamelDefense::Role::Active
     CamelDefense::Role::CenteredSprite
 );
-with 'CamelDefense::Role::AnimatedSprite';
+with 'CamelDefense::Role::AnimatedSprite'; # needs sprite() from CenteredSprite
 
 sub init_image_def {
     my $self = shift;
@@ -56,7 +56,7 @@ sub BUILD() {
 }
 
 # assumes creep only moves in vertical or horizontal direction, no angles
-# TODO: should move not 1 pixel but as many pixels needed
+# TODO: should move as many pixels needed
 #       because last sleep was too long? note sometimes uneven
 #       distances between creeps because of this
 #       should keep a delta and sleep less if needed?
@@ -73,8 +73,7 @@ sub start {
     my $xy = $self->xy;
     sleep $sleep;
     for my $wp2 (@wps) {
-        my ($is_horizontal, $dir) = analyze_right_angle_line(@$wp1, @$wp2);
-        my $is_vertical = 1 - $is_horizontal; # TODO
+        my ($is_vertical, $dir) = analyze_right_angle_line(@$wp1, @$wp2);
         my $distance    = abs($wp2->[$is_vertical] - $wp1->[$is_vertical]);
         my $steps       = int($distance / $step);
         my $actual_step = $distance / $steps;
@@ -115,7 +114,7 @@ sub hit {
     $self->hp($hp);
     unless ($hp > 0) {
         $self->is_alive(0);
-        $self->cancel_coro;
+        $self->cancel_coro; # stop moving
         async {
             $self->animate(death => 5, 0.06);
             $self->is_shown(0);

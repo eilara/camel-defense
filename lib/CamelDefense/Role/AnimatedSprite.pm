@@ -4,7 +4,6 @@ package CamelDefense::Role::AnimatedSprite;
 # and the animate method
 
 use Moose::Role;
-use Coro;
 use Coro::Timer qw(sleep);
 use aliased 'SDLx::Sprite::Animated';
 

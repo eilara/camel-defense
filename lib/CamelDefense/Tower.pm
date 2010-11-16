@@ -1,7 +1,6 @@
 package CamelDefense::Tower;
 
 use Moose;
-use Coro;
 use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Num Str);
 use Time::HiRes qw(time);
@@ -15,16 +14,12 @@ has fire_period     => (is => 'ro', required => 1, isa => Num, default => 1.0);
 has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 10);
 
 has current_target  => (is => 'rw');
-has coro            => (is => 'rw');
+
+with 'CamelDefense::Role::Active';
 
 extends 'CamelDefense::Tower::Base';
 
 sub init_image_def { '../data/tower.png' }
-
-sub BUILD() {
-    my $self = shift;
-    $self->coro(async { $self->start });
-}
 
 sub start {
     my $self = shift;

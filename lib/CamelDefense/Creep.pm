@@ -29,9 +29,10 @@ has hp        => (is => 'rw', required => 1, isa => Num, default => 10);
 
 has start_hp  => (is => 'rw', isa => Num);
 
-has coro => (is => 'rw');
-
-with 'CamelDefense::Role::CenteredSprite';
+with qw(
+    CamelDefense::Role::Active
+    CamelDefense::Role::CenteredSprite
+);
 with 'CamelDefense::Role::AnimatedSprite';
 
 sub init_image_def {
@@ -52,7 +53,6 @@ sub BUILD() {
     my $self = shift;
     $self->xy($self->waypoints->[0]);
     $self->start_hp($self->hp);
-    $self->coro(async { $self->start });
 }
 
 # assumes creep only moves in vertical or horizontal direction, no angles
@@ -115,7 +115,7 @@ sub hit {
     $self->hp($hp);
     unless ($hp > 0) {
         $self->is_alive(0);
-        $self->coro->cancel;
+        $self->cancel_coro;
         async {
             $self->animate(death => 5, 0.06);
             $self->is_shown(0);

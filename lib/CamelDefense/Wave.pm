@@ -3,13 +3,11 @@ package CamelDefense::Wave;
 # the wave creates creep_count creeps every inter creep wait seconds
 
 use Moose;
-use Coro;
 use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Bool Num Int ArrayRef);
 use aliased 'CamelDefense::Creep';
 
 extends 'CamelDefense::Living::Base';
-with 'CamelDefense::Living::Parent';
 
 has creep_count      => (is => 'ro', required => 1, isa => Int , default => 6);
 has inter_creep_wait => (is => 'ro', required => 1, isa => Num , default => 1);
@@ -25,12 +23,10 @@ around merge_creep_args => sub {
     return (idx => $creep_idx, parent => $self, $self->$orig);
 };
 
-has coro => (is => 'rw');
-
-sub BUILD() {
-    my $self = shift;
-    $self->coro(async { $self->start });
-}
+with qw(
+    CamelDefense::Role::Active
+    CamelDefense::Living::Parent
+);
 
 after handle_child_not_shown => sub {
     my $self = shift;

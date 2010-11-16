@@ -4,8 +4,8 @@ package CamelDefense::Grid;
 #    * shows gridlines
 #    * shows waypoints
 #    * keeps the grid cells and answers the question "can I build on a cell?"
-#    * updates grid cells with items that are placed in them, waypoint,
-#      and path cells
+#    * updates grid cells with items that are placed in them: waypoints,
+#      path cells
 
 use Moose;
 use MooseX::Types::Moose qw(Num Int ArrayRef);
@@ -36,6 +36,17 @@ around merge_waypoint_list_args => sub {
     my ($orig, $self) = @_;
     return (marks => $self->marks, $self->$orig);
 };
+
+# TODO: above should be written so:
+# compose_from
+#     target  => Waypoints,
+#     prefix  => 'waypoint_list',
+#     handles => [qw(points_px)],
+#     merge   => sub {
+#         my ($orig, $self) = @_;
+#         return (marks => $self->marks, $self->$orig);
+#     };
+    
 
 sub _build_cells {
     my $self = shift;

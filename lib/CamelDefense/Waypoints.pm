@@ -94,8 +94,11 @@ sub _build_cached_path_rects {
 sub render {
     my ($self, $surface) = @_;
     # cant just do draw_rect(@$_) because draw_rect fucks up the rect ($_->[0])
-    $surface->draw_rect([@{$_->[0]}], $_->[1]) for @{ $self->cached_waypoint_rects };
-    $surface->draw_rect([@{$_->[0]}], $_->[1]) for @{ $self->cached_path_rects };
+    # argument
+    $surface->draw_rect([@{$_->[0]}], $_->[1])
+        for @{ $self->cached_waypoint_rects };
+    $surface->draw_rect([@{$_->[0]}], $_->[1])
+        for @{ $self->cached_path_rects };
 }
 
 1;

@@ -36,6 +36,9 @@ has points_px => ( # center of waypoints in px
     isa        => ArrayRef[ArrayRef[Num]],
 );
 
+has [qw(cached_waypoint_rects cached_path_rects)] =>
+    (is => 'ro', required => 1, lazy_build => 1, isa => ArrayRef);
+
 sub _build_points_px {
     my $self = shift;
     return [map
@@ -44,27 +47,29 @@ sub _build_points_px {
     ];
 }
 
-sub render {
-    my ($self, $surface) = @_;
+sub _build_cached_waypoint_rects {
+    my $self = shift;
+    my $c    = $self->waypoint_color;
+    my $s    = $self->spacing;
+    return [map {
+        my ($cx, $cy) = @$_;
+        my ($x, $y) = ($cx - $s/2, $cy - $s/2);
+        [ [$x+1, $y+1, $s-1, $s-1], $c ];
+    } @{ $self->points_px }];
+}
+
+sub _build_cached_path_rects {
+    my $self    = shift;
     my @centers = @{ $self->points_px };
-    my $c = $self->waypoint_color;
-    my $path_c = $self->path_color;
-    my $s = $self->spacing;
-    my ($i, @last_waypoint_xy);
+    my $c       = $self->path_color;
+    my $s       = $self->spacing;
+    my @last_waypoint_xy;
+    my @out;
 
     for my $center (@centers) {
         my ($cx, $cy) = @$center;
         my ($x, $y) = ($cx - $s/2, $cy - $s/2);
 
-        # draw waypoint
-        $surface->draw_rect([$x+1, $y+1, $s-1, $s-1], $c);
-        # draw waypoint index number
-        $surface->draw_gfx_text([$x+3, $y+3], 0x000000FF, ++$i);
-        # draw tiny square in the center of the waypoint
-        $surface->draw_rect([$cx-1, $cy-1, 3, 3], 0x000000FF);
-
-        # draw rectangle on path to previous waypoint
-        # TODO: cache path rects
         if (@last_waypoint_xy) {
             my ($lx, $ly) = (@last_waypoint_xy);
             my ($v, $dir) = analyze_right_angle_line($lx, $ly, $x, $y);
@@ -78,12 +83,27 @@ sub render {
                       : $dir == 1? ($lx+1  , $ly+$si, $s-1   , $dy-$si)
                                  : ($lx+1  , $y+$si , $s-1   , $dy-$si)
                 );
-                $surface->draw_rect(\@rect, $path_c);
+                push @out, [\@rect, $c];
             };
         }
         @last_waypoint_xy = ($x, $y);
     }
+    return \@out;
+}
+
+sub render {
+    my ($self, $surface) = @_;
+    # cant just do draw_rect(@$_) because draw_rect fucks up the rect ($_->[0])
+    $surface->draw_rect([@{$_->[0]}], $_->[1]) for @{ $self->cached_waypoint_rects };
+    $surface->draw_rect([@{$_->[0]}], $_->[1]) for @{ $self->cached_path_rects };
 }
 
 1;
 
+__END__
+
+
+        # draw waypoint index number
+        $surface->draw_gfx_text([$x+3, $y+3], 0x000000FF, ++$i);
+        # draw tiny square in the center of the waypoint
+        $surface->draw_rect([$cx-1, $cy-1, 3, 3], 0x000000FF);

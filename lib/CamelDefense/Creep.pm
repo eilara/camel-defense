@@ -114,7 +114,7 @@ sub hit {
     $self->hp($hp);
     unless ($hp > 0) {
         $self->is_alive(0);
-        $self->cancel_coro; # stop moving
+        $self->deactivate; # stop moving
         async {
             $self->animate(death => 5, 0.06);
             $self->is_shown(0);

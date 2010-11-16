@@ -14,7 +14,7 @@ has coro => (
     required => 1,
     default  => sub { my $self = shift; return async { $self->start } },
     handles  => {
-        cancel_coro => 'cancel',
+        deactivate => 'cancel',
     },
 );
 

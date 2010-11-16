@@ -64,9 +64,11 @@ sub render {
         $surface->draw_rect([$cx-1, $cy-1, 3, 3], 0x000000FF);
 
         # draw rectangle on path to previous waypoint
+        # TODO: cache path rects
         if (@last_waypoint_xy) {
             my ($lx, $ly) = (@last_waypoint_xy);
-            my ($h, $dir) = analyze_right_angle_line($lx, $ly, $x, $y);
+            my ($v, $dir) = analyze_right_angle_line($lx, $ly, $x, $y);
+            my $h = 1 - $v;
             my ($si, $dx, $dy) = ($s + 1, abs($x - $lx), abs($y - $ly));
 
             if ($dx > $s or $dy > $s) { # not adjacent in the grid

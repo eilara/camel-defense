@@ -25,8 +25,8 @@ sub init_image_def {{
     size      => [32, 32],
     sequences => [
         normal           => [[0, 0]],
-        cant_place_tower => [[1, 0]],
-        place_tower      => [[2, 0]],
+        place_tower      => [[1, 0]],
+        cant_place_tower => [[2, 0]],
     ],
 }}
 

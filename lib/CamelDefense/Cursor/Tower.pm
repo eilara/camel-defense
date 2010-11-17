@@ -32,7 +32,17 @@ sub change_to {
 before render => sub {
     my ($self, $surface) = @_;
     return unless $self->state eq 'place_tower';
-    $self->render_range($surface, 0x027202FF, 0x02720250);
+    $surface->draw_circle_filled(
+        [$self->center_x, $self->center_y],
+        $self->range,
+        0x02720250,
+    );
+    $surface->draw_circle(
+        [$self->center_x, $self->center_y],
+        $self->range,
+        0x027202FF,
+        1,
+    );
 };
 
 1;

@@ -77,69 +77,28 @@ sub fire {
 
 after render => sub {
     my ($self, $surface) = @_;
-    # render laser to creep
-    if (my $target = $self->current_target) {
-        if ($target->is_alive) {
-            my $sprite = $self->sprite;
-            $surface->draw_line(
-                [$self->center_x, $self->center_y],
-                $target->xy,
-                $self->laser_color, 1,
-            );
-        }
+    my $target = $self->current_target;
+    if ($target && $target->is_alive) {
+        # render laser to creep
+        my $sprite = $self->sprite;
+        $surface->draw_line(
+            [$self->center_x, $self->center_y],
+            $target->xy,
+            $self->laser_color, 1,
+        );
     }
 };
 
+# should be called before render, on background layer
+sub render_range {
+    my ($self, $surface, $color) = @_;
+    $surface->draw_circle(
+        [$self->center_x, $self->center_y],
+        $self->range,
+        $color,
+        1,
+    );
+}
+
 1;
 
-__END__
-
-sub move {
-    my ($self, $dt)     = @_;
-
-    my $last_fire       = $self->last_fire_time;
-    my $cool_off_period = $self->cool_off_period;
-    my $fire_period     = $self->fire_period;
-    my $diff            = time - $last_fire;
-    my $state           = $self->state;
-
-    if ($state eq 'init') {
-        if (my $target = $self->aim($self->center_x, $self->center_y, $self->range)) {
-            $self->current_target($target);
-            $self->last_damage_update(time);
-            $self->last_fire_time(time);
-            $self->state('firing');
-        }
-    } elsif ($state eq 'firing') {
-        my $target = $self->current_target;
-        if (
-            $target &&
-            $target->is_alive &&
-            $target->is_in_range
-                ($self->center_x, $self->center_y, $self->range)
-        ) {
-            my $damage_period = time - $self->last_damage_update;
-            my $damage = $self->damage_per_sec * $damage_period;
-            $self->last_damage_update(time);
-            $target->hit($damage);
-            $self->current_target(undef) unless $target->is_alive;
-        } else {
-            if (my $target = $self->aim($self->center_x, $self->center_y, $self->range)) {
-                $self->current_target($target);
-                $self->last_damage_update(time);
-            } else {
-                $self->current_target(undef);
-            }
-        }
-        if ($diff >= $fire_period) {
-            $self->current_target(undef);
-            $self->state('cooling');
-        }
-    } elsif ($state eq 'cooling') {
-        if ($diff >= $cool_off_period + $fire_period) {
-            $self->state('init');
-        }
-    } else {
-        die "Unknown state: $state";
-    }
-}

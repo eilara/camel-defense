@@ -4,12 +4,13 @@ use Moose;
 use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Num Str);
 use Time::HiRes qw(time);
+use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 
-extends 'CamelDefense::Tower::Base';
-
 has wave_manager    => (is => 'ro', required => 1, isa => WaveManager);
+has grid            => (is => 'ro', required => 1, isa => Grid);
 
+has range           => (is => 'ro', required => 1, isa => Num, default => 100); # in pixels
 has laser_color     => (is => 'ro', required => 1, isa => Num, default => 0xFF0000FF);
 has cool_off_period => (is => 'ro', required => 1, isa => Num, default => 1.0);
 has fire_period     => (is => 'ro', required => 1, isa => Num, default => 1.0);
@@ -18,8 +19,11 @@ has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 10);
 has current_target  => (is => 'rw');
 
 with 'CamelDefense::Role::Active';
+with 'CamelDefense::Role::GridAlignedSprite';
 
 sub init_image_def { '../data/tower.png' }
+
+sub compute_cell_center { shift->grid->compute_cell_center(@_) }
 
 sub start {
     my $self = shift;

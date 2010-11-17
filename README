@@ -18,6 +18,7 @@ Next tasks:
 Requires:
 
    aliased
+   Data::Average
    SDL
    Moose
    MooseX::Types

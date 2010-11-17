@@ -3,7 +3,6 @@ package CamelDefense::World;
 use Moose;
 use SDL::Mouse;
 use SDL::Events;
-use MooseX::Types::Moose qw(ArrayRef);
 use aliased 'SDLx::App';
 use aliased 'SDLx::Surface';
 use aliased 'CamelDefense::Grid';
@@ -13,6 +12,8 @@ use aliased 'CamelDefense::World::EventHandler';
 use aliased 'CamelDefense::Tower::Manager' => 'TowerManager';
 use aliased 'CamelDefense::Wave::Manager'  => 'WaveManager';
 use aliased 'SDLx::Controller::Coro'       => 'Controller';
+
+with 'CamelDefense::Role::PerformanceMeter';
 
 has controller => (is => 'ro', required => 1, isa => Controller);
 
@@ -94,9 +95,10 @@ around merge_event_handler_args => sub {
 sub BUILD {
     my $self = shift;
     SDL::Mouse::show_cursor(SDL_DISABLE);
+    my $app = $self->app;
     my $c = $self->controller;
     $c->add_event_handler(sub { $self->handle_event(@_) });
-    $c->add_show_handler(sub { $self->render(@_) });
+    $c->add_show_handler(sub { $self->render($app, @_) });
 }
 
 # should move to build instance role
@@ -111,8 +113,7 @@ sub _build_cursor {
 }
 
 sub render {
-    my $self = shift;
-    my $surface = $self->app;
+    my ($self, $surface) = @_;
     $self->refresh_bg($surface);
 # TODO: would be better to redraw bg layer only when towers change but
 #       it looks choppy, needs to test FPS then check why the slowness

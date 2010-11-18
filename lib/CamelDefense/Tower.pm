@@ -8,7 +8,7 @@ use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 
 has wave_manager    => (is => 'ro', required => 1, isa => WaveManager);
-has grid            => (is => 'ro', required => 1, isa => Grid);
+has grid            => (is => 'ro', required => 1, isa => Grid, handles => [qw(compute_cell_center)]);
 
 has range           => (is => 'ro', required => 1, isa => Num, default => 100); # in pixels
 has laser_color     => (is => 'ro', required => 1, isa => Num, default => 0xFF0000FF);
@@ -22,8 +22,6 @@ with 'CamelDefense::Role::Active';
 with 'CamelDefense::Role::GridAlignedSprite';
 
 sub init_image_def { '../data/tower.png' }
-
-sub compute_cell_center { shift->grid->compute_cell_center(@_) }
 
 sub start {
     my $self = shift;

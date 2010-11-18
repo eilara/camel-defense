@@ -92,15 +92,6 @@ around merge_event_handler_args => sub {
     return (cursor => $self->cursor, state => $self->state, $self->$orig);
 };
 
-sub BUILD {
-    my $self = shift;
-    SDL::Mouse::show_cursor(SDL_DISABLE);
-    my $app = $self->app;
-    my $c = $self->controller;
-    $c->add_event_handler(sub { $self->handle_event(@_) });
-    $c->add_show_handler(sub { $self->render($app, @_) });
-}
-
 # should move to build instance role
 sub _build_cursor {
     my $self = shift;
@@ -110,6 +101,15 @@ sub _build_cursor {
         grid => $self->grid,
         ($tower_args? @$tower_args: ()),
     ]);
+}
+
+sub BUILD {
+    my $self = shift;
+    SDL::Mouse::show_cursor(SDL_DISABLE);
+    my $app = $self->app;
+    my $c = $self->controller;
+    $c->add_event_handler(sub { $self->handle_event(@_) });
+    $c->add_show_handler(sub { $self->render($app, @_) });
 }
 
 sub render {

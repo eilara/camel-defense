@@ -81,7 +81,7 @@ sub event_handler {
     }
     $world->start_wave if
         $e->type == SDL_KEYUP &&
-        $e->key_sym == SDLK_1;
+        $e->key_sym == SDLK_SPACE;
 }
 
 sub show_handler {
@@ -92,9 +92,9 @@ sub show_handler {
         $app->draw_gfx_text([$app_w/2 - 40, $app_h/2 - 4], 0xFFFF00FF, $msg);
     }
 
-    my $msg1 = "Hit space to create a tower, then place it with your mouse and click";
-    my $msg2 = "Hit space again before placing the tower to cancel the build";
-    my $msg3 = "Hit the 1 key to start a wave";
+    my $msg1 = "Hit 1 to build laser tower, then place with mouse and click";
+    my $msg2 = "Hit 1 or Esc before placing tower to cancel build";
+    my $msg3 = "Hit the space bar to start a wave";
     $app->draw_gfx_text([10, 10], 0xFFFF00FF, $msg1);
     $app->draw_gfx_text([10, 23], 0xFFFF00FF, $msg2);
     $app->draw_gfx_text([10, 36], 0xFFFF00FF, $msg3);

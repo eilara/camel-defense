@@ -51,6 +51,9 @@ sub _build_state {
                     init_or_cancel_build_tower => {
                         next_state => 'init',
                     },
+                    cancel_build_tower => {
+                        next_state => 'init',
+                    },
                     mouse_motion => {
                         next_state => $can_build,
                     },
@@ -67,6 +70,9 @@ sub _build_state {
                         next_state => $can_build,
                     },
                     init_or_cancel_build_tower => {
+                        next_state => 'init',
+                    },
+                    cancel_build_tower => {
                         next_state => 'init',
                     },
                 },

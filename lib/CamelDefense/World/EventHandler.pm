@@ -17,8 +17,12 @@ sub handle_event {
     my ($self, $e) = @_;
     my $state = $self->state;
 
-    if ($e->type == SDL_KEYUP && $e->key_sym == SDLK_1) {
-        $state->handle_event('init_or_cancel_build_tower');
+    if ($e->type == SDL_KEYUP) {
+        if ($e->key_sym == SDLK_1) {
+            $state->handle_event('init_or_cancel_build_tower');
+        } elsif ($e->key_sym == SDLK_ESCAPE) {
+            $state->handle_event('cancel_build_tower');
+        }
 
     } elsif ($e->type == SDL_MOUSEMOTION) {
         my ($x, $y) = ($e->motion_x, $e->motion_y);

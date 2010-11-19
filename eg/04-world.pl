@@ -55,7 +55,6 @@ my $world = World->new(
             },
         ],
     ],
-    tower_manager_args => [tower_args => [fire_period => 1.5]],
     tower_manager_args => [
         tower_defs => [
             {

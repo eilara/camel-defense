@@ -38,8 +38,10 @@ sub _build_state {
 
     my $init_build = sub {
         my $tower_def_idx = shift;
+        return 'init' unless
+            $self->tower_manager->is_tower_available($tower_def_idx);
         $self->tower_manager->configure_next_tower($tower_def_idx);
-        $can_build->();
+        return $can_build->();
     };
 
     return StateMachine->new(

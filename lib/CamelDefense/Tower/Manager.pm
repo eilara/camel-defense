@@ -53,6 +53,11 @@ around merge_tower_args => sub {
     );
 };
 
+sub is_tower_available {
+    my ($self, $tower_def_idx) = @_;
+    return $self->tower_defs->[ $tower_def_idx ]? 1: 0;
+}
+
 sub configure_next_tower {
     my ($self, $tower_def_idx) = @_;
     $self->tower_def_idx($tower_def_idx);

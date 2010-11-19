@@ -38,7 +38,7 @@ sub _build_state {
 
     my $init_build = sub {
         my $tower_def_idx = shift;
-        return 'init' unless
+        return undef unless # if no such tower then do nothing
             $self->tower_manager->is_tower_available($tower_def_idx);
         $self->tower_manager->configure_next_tower($tower_def_idx);
         return $can_build->();
@@ -58,6 +58,9 @@ sub _build_state {
             place_tower => {
                 cursor => 'place_tower',
                 events => {
+                    init_build => {
+                        next_state => $init_build,
+                    },
                     cancel_action => {
                         next_state => 'init',
                     },
@@ -73,6 +76,9 @@ sub _build_state {
             cant_place_tower => {
                 cursor => 'cant_place_tower',
                 events => {
+                    init_build => {
+                        next_state => $init_build,
+                    },
                     mouse_motion => {
                         next_state => $can_build,
                     },

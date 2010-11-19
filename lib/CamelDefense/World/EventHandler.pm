@@ -22,6 +22,7 @@ sub handle_event {
         if ($k == SDLK_ESCAPE) {
             $state->handle_event('cancel_action');
         } elsif ($k >= SDLK_1 && $k <= SDLK_9) {
+            # init_build events get the index of the tower type def to be built
             $state->handle_event(init_build => $k - SDLK_1);
         } 
 

@@ -1,14 +1,16 @@
 package CamelDefense::Tower::Manager;
 
+# create the tower manager with a list of tower definitions
 # call configure_next_tower with an index in tower_defs
 # then call build_tower to build a tower at the cursor
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Int ArrayRef HashRef);
 use aliased 'CamelDefense::Cursor';
-use aliased 'CamelDefense::Tower';
 use aliased 'CamelDefense::Grid';
+use aliased 'CamelDefense::Tower::Base'   => 'BaseTower';
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
+use CamelDefense::Tower::Laser;
 
 has wave_manager => (is => 'ro', required => 1, isa => WaveManager);
 
@@ -35,23 +37,9 @@ has tower_defs => (
 has towers => (
     is       => 'ro',
     required => 1,
-    isa      => ArrayRef[Tower],
+    isa      => ArrayRef[BaseTower],
     default  => sub { [] },
 );
-with 'MooseX::Role::BuildInstanceOf' => {target => Tower, type => 'factory'};
-around merge_tower_args => sub {
-    my ($orig, $self) = @_;
-    my ($x, $y) = @{$self->cursor->xy};
-    $self->add_tower($x, $y); # fills the tower cell in the grid
-    $self->is_dirty(1);       # mark the bg layer as needing redraw
-    return (
-        grid          => $self->grid,
-        wave_manager  => $self->wave_manager,
-        xy            => [$x, $y],
-        %{ $self->tower_defs->[ $self->tower_def_idx ] },
-        $self->$orig,
-    );
-};
 
 sub is_tower_available {
     my ($self, $tower_def_idx) = @_;
@@ -61,12 +49,32 @@ sub is_tower_available {
 sub configure_next_tower {
     my ($self, $tower_def_idx) = @_;
     $self->tower_def_idx($tower_def_idx);
-    $self->cursor->tower_def($self->tower_defs->[ $tower_def_idx ]);
+    $self->cursor->tower_def($self->current_tower_def);
+}
+
+sub current_tower_def {
+    my $self = shift;
+    return $self->tower_defs->[ $self->tower_def_idx ];
 }
 
 sub build_tower {
-    my $self = shift;
-    push @{ $self->towers }, $self->tower;
+    my $self    = shift;
+    my ($x, $y) = @{$self->cursor->xy};
+    my $def     = $self->current_tower_def;
+    my $type    = delete($def->{type}) || 'Laser';
+    $type       = "CamelDefense::Tower::$type";
+
+    $self->add_tower($x, $y); # fills the tower cell in the grid
+    $self->is_dirty(1);       # mark the bg layer as needing redraw
+
+    my $tower = $type->new(
+        grid         => $self->grid,
+        wave_manager => $self->wave_manager,
+        xy           => [$x, $y],
+        %$def,
+    );
+    push @{ $self->towers }, $tower;
+    return $tower;
 }
 
 sub render {

@@ -26,12 +26,20 @@ sub _build_state {
     my $self        = shift;
     my $cursor      = $self->cursor;
     my $grid        = $self->grid;
+
     my $build_tower = sub { $self->tower_manager->build_tower };
-    my $can_build   = sub {
+
+    my $can_build = sub {
         my $self = shift;
         return $grid->can_build(@{$cursor->xy})?
             'place_tower':
             'cant_place_tower';
+    };
+
+    my $init_build = sub {
+        my $tower_def_idx = shift;
+        $self->tower_manager->configure_next_tower($tower_def_idx);
+        $can_build->();
     };
 
     return StateMachine->new(
@@ -40,24 +48,21 @@ sub _build_state {
             init => {
                 cursor => 'normal',
                 events => {
-                    init_or_cancel_build_tower => {
-                        next_state => $can_build,
+                    init_build => {
+                        next_state => $init_build,
                     },
                 },
             },
             place_tower => {
                 cursor => 'place_tower',
                 events => {
-                    init_or_cancel_build_tower => {
-                        next_state => 'init',
-                    },
-                    cancel_build_tower => {
+                    cancel_action => {
                         next_state => 'init',
                     },
                     mouse_motion => {
                         next_state => $can_build,
                     },
-                    build_tower => {
+                    mouse_up => {
                         next_state => 'cant_place_tower',
                         code       => $build_tower,
                     },
@@ -69,10 +74,7 @@ sub _build_state {
                     mouse_motion => {
                         next_state => $can_build,
                     },
-                    init_or_cancel_build_tower => {
-                        next_state => 'init',
-                    },
-                    cancel_build_tower => {
+                    cancel_action => {
                         next_state => 'init',
                     },
                 },

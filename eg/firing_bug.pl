@@ -35,11 +35,16 @@ my $world = World->new(
             },
         ],
     ],
-    tower_manager_args => [tower_args => [
-        fire_period     => 3,
-        cool_off_period => 2,
-        range           => 300,
-    ]],
+    tower_manager_args => [
+        tower_defs => [
+            {
+                type            => 'Laser',
+                fire_period     => 3,
+                cool_off_period => 2,
+                range           => 300,
+            },
+        ],
+    ],
     waypoints  => [
         [0.00, 0.50],
         [0.95, 0.50],
@@ -66,7 +71,7 @@ sub show_handler {
     my $dt = shift;
 
     my $msg1 = "Hit 1 to build laser tower, then place with mouse and click";
-    my $msg2 = "Hit 1 or Esc before placing tower to cancel build";
+    my $msg2 = "Hit Esc before placing tower to cancel build";
     my $msg3 = "Hit the space bar to start a wave";
     $app->draw_gfx_text([10, 10], 0xFFFF00FF, $msg1);
     $app->draw_gfx_text([10, 23], 0xFFFF00FF, $msg2);

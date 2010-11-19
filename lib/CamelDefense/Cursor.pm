@@ -11,7 +11,7 @@ has is_visible => (is => 'rw', required => 1, isa => Bool , default  => 0);
 # the shadow shows the tower about to be built in the cursor grid cell
 # it is attached to the cursor
 with 'MooseX::Role::BuildInstanceOf' => {target => Tower, prefix => 'shadow'};
-has '+shadow' => (handles => [qw(points_px)]);
+has '+shadow' => (handles => [qw(points_px tower_def)]);
 around merge_shadow_args => sub {
     my ($orig, $self) = @_;
     return (xy => $self->xy, $self->$orig);

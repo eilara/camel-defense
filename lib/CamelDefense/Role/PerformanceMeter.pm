@@ -28,7 +28,7 @@ after render => sub {
     my $average = sprintf("%.0f", $self->avg);
     $self->last_point(time);
 
-    $surface->draw_gfx_text([590, 10], 0xFFFF00FF, "FPS=$average");
+    $surface->draw_gfx_text([585, 10], 0xFFFF00FF, "FPS=$average");
 };
 
 1;

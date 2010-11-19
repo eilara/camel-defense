@@ -18,11 +18,12 @@ sub handle_event {
     my $state = $self->state;
 
     if ($e->type == SDL_KEYUP) {
-        if ($e->key_sym == SDLK_1) {
-            $state->handle_event('init_or_cancel_build_tower');
-        } elsif ($e->key_sym == SDLK_ESCAPE) {
-            $state->handle_event('cancel_build_tower');
-        }
+        my $k = $e->key_sym;
+        if ($k == SDLK_ESCAPE) {
+            $state->handle_event('cancel_action');
+        } elsif ($k >= SDLK_1 && $k <= SDLK_9) {
+            $state->handle_event(init_build => $k - SDLK_1);
+        } 
 
     } elsif ($e->type == SDL_MOUSEMOTION) {
         my ($x, $y) = ($e->motion_x, $e->motion_y);
@@ -30,7 +31,7 @@ sub handle_event {
         $state->handle_event('mouse_motion');
 
     } elsif ($e->type == SDL_MOUSEBUTTONUP) {
-        $state->handle_event('build_tower');
+        $state->handle_event('mouse_up');
 
     } elsif ($e->type == SDL_APPMOUSEFOCUS) {
         $self->cursor->is_visible($e->active_gain);

@@ -29,8 +29,8 @@ my $world = World->new(
     app                    => $app,
     controller             => $controller,
     grid_args              => [
-        marks_args         => [bg_color   => 0x210606FF],
-        waypoint_list_args => [path_color => 0x202010FF],
+        marks_args         => [bg_color   => 0x303030FF],
+        waypoint_list_args => [path_color => 0x404040FF],
     ],
     wave_manager_args => [
         level_complete_handler => sub { $game_over = 1 },
@@ -58,7 +58,7 @@ my $world = World->new(
     tower_manager_args => [
         tower_defs => [
             {
-                type        => 'Laser',
+                type        => 'CamelDefense::Tower::Laser',
                 fire_period => 1.5,
             },
         ],

@@ -37,9 +37,16 @@ has sprite => (
 );
 
 has image_def => (
-    is       => 'ro',
+    is       => 'rw',
     required => 1,
     default  => sub { shift->init_image_def },
+    trigger  => sub {
+        my $self = shift;
+        my $image_def = $self->image_def;
+        $self->load( $image_def->{image} );
+        $self->sprite->set_sequences( @{ $image_def->{sequences} } );
+        $self->sequence_animation($self->state);
+    },
 );
 
 has is_animated => (is => 'ro', lazy_build => 1, isa => Bool);

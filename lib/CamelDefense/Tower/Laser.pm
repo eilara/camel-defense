@@ -7,12 +7,22 @@ use Time::HiRes qw(time);
 
 extends 'CamelDefense::Tower::Base';
 
-has laser_color    => (is => 'ro', required => 1, isa => Num, default => 0xFF0000FF);
-has fire_period    => (is => 'ro', required => 1, isa => Num, default => 1.0);
+has cool_off_period => (is => 'ro', required => 1, isa => Num, default => 1.0);
+has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 10);
+has laser_color     => (is => 'ro', required => 1, isa => Num, default => 0xFF0000FF);
+has fire_period     => (is => 'ro', required => 1, isa => Num, default => 1.0);
 
 has current_target => (is => 'rw');
 
-sub init_image_def { '../data/tower.png' }
+sub init_image_def {{
+    image     => '../data/tower_laser.png',
+    size      => [15, 15],
+    sequences => [
+        default          => [[0, 0]],
+        place_tower      => [[1, 0]],
+        cant_place_tower => [[2, 0]],
+    ],
+}}
 
 sub start {
     my $self = shift;
@@ -75,7 +85,7 @@ after render => sub {
         # render laser to creep
         my $sprite = $self->sprite;
         $surface->draw_line(
-            [$self->center_x, $self->center_y],
+            [$self->center_x, $self->center_y - 4], # laser starts from antena
             $target->xy,
             $self->laser_color, 1,
         );

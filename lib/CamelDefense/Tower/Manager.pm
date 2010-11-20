@@ -46,6 +46,7 @@ sub is_tower_available {
     return $self->tower_defs->[ $tower_def_idx ]? 1: 0;
 }
 
+# configure next tower to be built
 sub configure_next_tower {
     my ($self, $tower_def_idx) = @_;
     $self->tower_def_idx($tower_def_idx);
@@ -61,8 +62,7 @@ sub build_tower {
     my $self    = shift;
     my ($x, $y) = @{$self->cursor->xy};
     my $def     = $self->current_tower_def;
-    my $type    = delete($def->{type}) || 'Laser';
-    $type       = "CamelDefense::Tower::$type";
+    my $type    = delete($def->{type}) || 'CamelDefense::Tower::Laser';
 
     $self->add_tower($x, $y); # fills the tower cell in the grid
     $self->is_dirty(1);       # mark the bg layer as needing redraw

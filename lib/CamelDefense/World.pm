@@ -96,10 +96,10 @@ around merge_event_handler_args => sub {
 sub _build_cursor {
     my $self = shift;
     my %manager_args = @{$self->tower_manager_args};
-    my $tower_args = $manager_args{tower_args};
+    my $tower_defs = $manager_args{tower_defs} || die "No towers defined";
     return Cursor->new(shadow_args => [
-        grid => $self->grid,
-        ($tower_args? @$tower_args: ()),
+        grid      => $self->grid,
+        tower_def => $tower_defs->[0],
     ]);
 }
 

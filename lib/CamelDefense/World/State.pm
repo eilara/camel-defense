@@ -48,7 +48,7 @@ sub _build_state {
         cursor => $cursor,
         states => {
             init => {
-                cursor => 'normal',
+                cursor => 'default',
                 events => {
                     init_build => {
                         next_state => $init_build,

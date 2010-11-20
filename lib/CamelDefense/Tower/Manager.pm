@@ -11,6 +11,7 @@ use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::Tower::Base'   => 'BaseTower';
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 use CamelDefense::Tower::Laser;
+use CamelDefense::Tower::Splash;
 
 has wave_manager => (is => 'ro', required => 1, isa => WaveManager);
 
@@ -61,8 +62,8 @@ sub current_tower_def {
 sub build_tower {
     my $self    = shift;
     my ($x, $y) = @{$self->cursor->xy};
-    my $def     = $self->current_tower_def;
-    my $type    = delete($def->{type}) || 'CamelDefense::Tower::Laser';
+    my %def     = %{ $self->current_tower_def };
+    my $type    = delete($def{type}) || 'CamelDefense::Tower::Laser';
 
     $self->add_tower($x, $y); # fills the tower cell in the grid
     $self->is_dirty(1);       # mark the bg layer as needing redraw
@@ -71,7 +72,7 @@ sub build_tower {
         grid         => $self->grid,
         wave_manager => $self->wave_manager,
         xy           => [$x, $y],
-        %$def,
+        %def,
     );
     push @{ $self->towers }, $tower;
     return $tower;

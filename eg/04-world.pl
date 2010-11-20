@@ -61,6 +61,9 @@ my $world = World->new(
                 type        => 'CamelDefense::Tower::Laser',
                 fire_period => 1.5,
             },
+            {
+                type => 'CamelDefense::Tower::Splash',
+            },
         ],
     ],
     waypoints  => [
@@ -100,11 +103,13 @@ sub show_handler {
     }
 
     my $msg1 = "Hit 1 to build laser tower, then place with mouse and click";
-    my $msg2 = "Hit Esc before placing tower to cancel build";
-    my $msg3 = "Hit the space bar to start a wave";
+    my $msg2 = "Hit 2 for splash tower";
+    my $msg3 = "Hit Esc before placing tower to cancel build";
+    my $msg4 = "Hit the space bar to start a wave";
     $app->draw_gfx_text([10, 10], 0xFFFF00FF, $msg1);
     $app->draw_gfx_text([10, 23], 0xFFFF00FF, $msg2);
     $app->draw_gfx_text([10, 36], 0xFFFF00FF, $msg3);
+    $app->draw_gfx_text([10, 49], 0xFFFF00FF, $msg4);
 
     $world->render_cursor($app);
     $app->update;

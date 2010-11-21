@@ -69,19 +69,28 @@ sub start {
     my $step  = $v * $sleep;
     $self->animate(enter_grid => 5, 0.06);
     $self->is_alive(1);
+
     $self->xy([@$wp1]);
     my $xy = $self->xy;
     sleep $sleep;
+
     for my $wp2 (@wps) {
         my ($is_vertical, $dir) = analyze_right_angle_line(@$wp1, @$wp2);
         my $distance    = abs($wp2->[$is_vertical] - $wp1->[$is_vertical]);
         my $steps       = int($distance / $step);
-        my $actual_step = $distance / $steps;
         for (1..$steps) {
-            $xy->[$is_vertical] += $dir * $actual_step;
+            $xy->[$is_vertical] += $dir * $step;
             $self->_update_sprite_xy;
             sleep $sleep;
         }
+
+        my $remainder = $distance - $steps * $step;
+        if ($remainder >= 1) {
+            $xy->[$is_vertical] += $dir * $remainder;
+            $self->_update_sprite_xy;
+            sleep $sleep * ($remainder / $step);
+        }
+
         $wp1 = $wp2;
     }
     $self->is_alive(0);

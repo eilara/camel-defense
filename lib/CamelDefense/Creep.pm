@@ -67,6 +67,7 @@ sub start {
     my $v     = $self->v;
     my $sleep = max(1/$v, 1/60); # dont move pixel by 1 pixel if you are fast
     my $step  = $v * $sleep;
+
     $self->animate(enter_grid => 5, 0.06);
     $self->is_alive(1);
 
@@ -86,7 +87,8 @@ sub start {
 
         my $remainder = $distance - $steps * $step;
         if ($remainder >= 1) {
-            $xy->[$is_vertical] += $dir * $remainder;
+            $self->xy([@$wp2]);
+            $xy = $self->xy;
             $self->_update_sprite_xy;
             sleep $sleep * ($remainder / $step);
         }

@@ -78,11 +78,11 @@ sub fire {
     $self->current_target(undef);
 }
 
+# render laser to creep
 after render => sub {
     my ($self, $surface) = @_;
     my $target = $self->current_target;
     if ($target && $target->is_alive) {
-        # render laser to creep
         my $sprite = $self->sprite;
         $surface->draw_line(
             [$self->center_x, $self->center_y - 4], # laser starts from antena

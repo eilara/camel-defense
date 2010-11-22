@@ -62,7 +62,7 @@ sub fire {
 }
 
 # render laser to creep
-after render => sub {
+sub render_attacks {
     my ($self, $surface) = @_;
     my $target = $self->current_target;
     if ($target && $target->is_alive) {
@@ -73,7 +73,7 @@ after render => sub {
             $self->laser_color, 1,
         );
     }
-};
+}
 
 1;
 

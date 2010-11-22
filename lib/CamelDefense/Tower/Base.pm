@@ -47,6 +47,8 @@ sub aim {
     return undef;
 }
 
+sub render_attacks { die "Abstract" }
+
 # should be called before render, on background layer
 sub render_range {
     my ($self, $surface, $color) = @_;

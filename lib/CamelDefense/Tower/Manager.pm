@@ -84,6 +84,11 @@ sub render {
     $self->is_dirty(0); # no need to render until towers change
 }
 
+sub render_attacks {
+    my ($self, $surface) = @_;
+    $_->render_attacks($surface) for @{$self->towers};
+}
+
 sub render_bg {
     my ($self, $surface) = @_;
     my $grid_color = $self->grid_color;

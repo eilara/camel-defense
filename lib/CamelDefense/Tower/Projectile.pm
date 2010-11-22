@@ -80,10 +80,10 @@ sub start {
     $self->is_shown(0);
 }
 
-# render laser to creep
+# only render if we are alive
 around render => sub {
     my ($orig, $self, $surface) = @_;
-    return $orig->($self, $surface) if $self->is_alive;
+    $orig->($self, $surface) if $self->is_alive;
     my $radius = $self->explosion_radius;
     $surface->draw_circle_filled(
         [$self->center_x, $self->center_y],
@@ -97,5 +97,6 @@ around render => sub {
         1,
     );
 };
+
 1;
 

@@ -57,7 +57,7 @@ sub start {
 };
 
 # render projectiles
-after render => sub {
+sub render_attacks {
     my ($self, $surface) = @_;
     $_->render($surface) for @{ $self->children };
 };

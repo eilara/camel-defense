@@ -39,6 +39,7 @@ TODO
     bug- projectiles and layers appear below towers
     range circles make rendering slow
     bug- splash tower not accurate at all, they look like they are firing at nothing sometimes
+    bug- explosions z order
     check why bg layer refresh trick dont work
     add FPS indicator
     make sure all cycles are weak ref

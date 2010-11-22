@@ -8,7 +8,7 @@ use aliased 'CamelDefense::Tower::Projectile';
 
 extends 'CamelDefense::Tower::Base';
 
-has cool_off_period => (is => 'ro', required => 1, isa => Num, default => 1.0);
+has cool_off_period => (is => 'ro', required => 1, isa => Num, default => 1);
 
 has next_projectile_idx => (is => 'rw', required => 1, isa => Int , default => 0);
 
@@ -19,10 +19,17 @@ with 'MooseX::Role::BuildInstanceOf' =>
     {target => Projectile, type => 'factory', prefix => 'projectile'};
 around merge_projectile_args => sub {
     my ($orig, $self) = @_;
-    my %args          = $self->$orig;
     my $idx           = $self->next_projectile_idx;
+    my $target        = $self->current_target;
     $self->next_projectile_idx($idx + 1);
-    return (%args, parent => $self, idx => $idx);
+    return (
+        wave_manager => $self->wave_manager,
+        begin_xy     => [$self->center_x, $self->center_y - 6],
+        end_xy       => [$target->center_x, $target->center_y],
+        parent       => $self,
+        idx          => $idx,
+        $self->$orig,
+    );
 };
 
 sub init_image_def {{
@@ -38,7 +45,13 @@ sub init_image_def {{
 sub start {
     my $self = shift;
     while (1) {
-        sleep 1;
+        my $did_fire;
+        if ($self->aim(1)) {
+            $did_fire = 1;
+            push @{$self->children}, $self->projectile;
+        }
+        sleep $self->cool_off_period if $did_fire;
+        $did_fire = 0;
     }
 };
 

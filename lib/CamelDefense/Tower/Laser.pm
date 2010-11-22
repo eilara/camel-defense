@@ -12,8 +12,6 @@ has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 10);
 has laser_color     => (is => 'ro', required => 1, isa => Num, default => 0xFF0000FF);
 has fire_period     => (is => 'ro', required => 1, isa => Num, default => 1.0);
 
-has current_target => (is => 'rw');
-
 sub init_image_def {{
     image     => '../data/tower_laser.png',
     size      => [15, 15],
@@ -40,21 +38,6 @@ sub start {
         sleep $self->cool_off_period if $is_firing;
         ($fire_start_time, $is_firing) = (time, 0);
     }
-}
-
-sub aim {
-    my ($self, $timeout) = @_;
-    my $sleep = 0.1;
-    my $start = time;
-    my @args  = ($self->center_x, $self->center_y, $self->range);
-    while (time - $start < $timeout) {
-        sleep $sleep;
-        if (my $target = $self->wave_manager->aim(@args)) {
-            $self->current_target($target);
-            return $target;
-        }
-    }
-    return undef;
 }
 
 sub fire {

@@ -63,9 +63,15 @@ sub start_wave {
 sub aim {
     my ($self, @range) = @_;
     for my $wave (@{ $self->living_children }) {
-        my $creep = $wave->aim(@range);
+        my $creep = $wave->aim_one(@range);
         return $creep if $creep;
     }
+}
+
+sub find_creeps_in_range {
+    my ($self, @range) = @_;
+    return map { $_->aim_all(@range) }
+              @{ $self->living_children };
 }
 
 1;

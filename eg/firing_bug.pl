@@ -31,7 +31,7 @@ my $world = World->new(
             {
                 inter_creep_wait => 0.2,
                 creep_count      => 1000,
-                creep_args       => [v => 64, hp => 10],
+                creep_args       => [v => 64, hp => 30],
             },
         ],
     ],
@@ -41,6 +41,10 @@ my $world = World->new(
                 type            => 'CamelDefense::Tower::Laser',
                 fire_period     => 3,
                 cool_off_period => 2,
+                range           => 300,
+            },
+            {
+                type            => 'CamelDefense::Tower::Splash',
                 range           => 300,
             },
         ],

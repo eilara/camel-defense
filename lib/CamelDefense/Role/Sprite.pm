@@ -52,6 +52,17 @@ has image_def => (
 has is_animated => (is => 'ro', lazy_build => 1, isa => Bool);
 has [qw(w h)]   => (is => 'ro', lazy_build => 1, isa => Int);
 
+# maybe memoize these two?
+sub center_x {
+    my $self = shift;
+    return $self->sprite_x + $self->w/2;
+}
+
+sub center_y {
+    my $self = shift;
+    return $self->sprite_y + $self->h/2;
+}
+
 sub _build_sprite {
     my $self = shift;
     my $image_def = $self->image_def;

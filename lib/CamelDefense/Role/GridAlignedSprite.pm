@@ -8,19 +8,7 @@ use MooseX::Types::Moose qw(Num);
 
 requires 'compute_cell_center';
 
-has [qw(center_x center_y)] => (is => 'rw', lazy_build => 1, isa => Num);
-
 with 'CamelDefense::Role::Sprite' => { -excludes => ['compute_sprite_xy'] };
-
-sub _build_center_x {
-    my $self = shift;
-    return $self->sprite_x + $self->w/2;
-}
-
-sub _build_center_y {
-    my $self = shift;
-    return $self->sprite_y + $self->h/2;
-}
 
 sub compute_sprite_xy {
     my $self = shift;

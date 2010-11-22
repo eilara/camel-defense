@@ -62,12 +62,18 @@ sub render {
     $_->render($surface) for @{ $self->children };
 }
 
-sub aim {
+sub aim_one {
     my ($self, $x, $y, $range) = @_;
     for my $creep (@{ $self->living_children }) {
         return $creep if
             $creep->is_in_range($x, $y, $range);
     }
+}
+
+sub aim_all {
+    my ($self, $x, $y, $range) = @_;
+    return grep { $_->is_in_range($x, $y, $range) }
+               @{ $self->living_children };
 }
 
 1;

@@ -85,14 +85,10 @@ sub start {
             sleep $sleep;
         }
 
+        $self->xy([@$wp2]);
+        $xy = $self->xy;
         my $remainder = $distance - $steps * $step;
-        if ($remainder >= 1) {
-            $self->xy([@$wp2]);
-            $xy = $self->xy;
-            $self->_update_sprite_xy;
-            sleep $sleep * ($remainder / $step);
-        }
-
+        sleep($sleep * ($remainder / $step)) if $remainder >= 1;
         $wp1 = $wp2;
     }
     $self->is_alive(0);

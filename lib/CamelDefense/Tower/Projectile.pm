@@ -7,17 +7,20 @@ use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Bool Num Int Str ArrayRef);
 use CamelDefense::Util qw(distance);
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
+use aliased 'CamelDefense::Creep';
 
 extends 'CamelDefense::Living::Base';
 
 has wave_manager => (is => 'ro', required => 1, isa => WaveManager, handles => [qw(find_creeps_in_range)]);
 has begin_xy     => (is => 'ro', required => 1, isa => ArrayRef);
 has end_xy       => (is => 'ro', required => 1, isa => ArrayRef);
-has v            => (is => 'ro', required => 1, isa => Num, default => 300);
+has v            => (is => 'ro', required => 1, isa => Num, default => 320);
 has damage       => (is => 'ro', required => 1, isa => Num, default => 3);
 has range        => (is => 'ro', required => 1, isa => Num, default => 30);
 
 has explosion_radius => (is => 'rw', isa => Num, default => 0);
+
+has target => (is => 'ro', required => 1, isa => Creep, weak_ref => 1);
 
 with qw(
     CamelDefense::Role::Active
@@ -58,7 +61,7 @@ sub start {
 
     $self->is_alive(0);
 
-    my $explosion_steps = $self->range / 4;
+    my $explosion_steps = 5;
     my $explosion_sleep = 1/40;
     my $explosion_step  = ($self->range - 1) / $explosion_steps;
     my $radius          = 1;
@@ -67,7 +70,6 @@ sub start {
         $radius += $explosion_step;
         sleep $explosion_sleep;
     }
-
 
     $self->is_shown(0);
 }

@@ -39,6 +39,16 @@ sub start {
     my $self      = shift;
     my $v         = $self->v;
     my $sleep     = max(1/$v, 1/60); # dont move pixel by 1 pixel if you are fast
+
+=head
+
+    my $step = $v * $sleep;
+    while (distance(@{$self->xy}, @{$target->xy}) > 1) {
+        sleep $sleep;
+    }
+
+=cut    
+
     my $d         = distance(@{$self->begin_xy}, @{$self->end_xy});
     my $time2live = $d / $v;
     my $steps     = int($time2live / $sleep);

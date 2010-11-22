@@ -1,6 +1,7 @@
 package CamelDefense::Tower::Projectile;
 
 use Moose;
+use Scalar::Util qw(weaken);
 use List::Util qw(max);
 use Coro;
 use Coro::Timer qw(sleep);
@@ -14,7 +15,7 @@ extends 'CamelDefense::Living::Base';
 has wave_manager => (is => 'ro', required => 1, isa => WaveManager, handles => [qw(find_creeps_in_range)]);
 has begin_xy     => (is => 'ro', required => 1, isa => ArrayRef);
 has end_xy       => (is => 'ro', required => 1, isa => ArrayRef);
-has v            => (is => 'ro', required => 1, isa => Num, default => 320);
+has v            => (is => 'ro', required => 1, isa => Num, default => 250);
 has damage       => (is => 'ro', required => 1, isa => Num, default => 3);
 has range        => (is => 'ro', required => 1, isa => Num, default => 30);
 
@@ -36,46 +37,36 @@ sub BUILD() {
 }
 
 sub start {
-    my $self      = shift;
-    my $v         = $self->v;
-    my $sleep     = max(1/$v, 1/60); # dont move pixel by 1 pixel if you are fast
-
-=head
-
-    my $step = $v * $sleep;
-    my ($x, $y) = @{ $self->begin_xy };
-    my ($tx, $ty) = @{$target->xy};
-    while (distance($x, $y, $tx, $ty) > 1) {
-        my $ratio = $ty - y / $tx - x;
-        $self->xy([$x, $y]);
-        sleep $sleep;
-        ($tx, $ty) = @{ $target->xy } if $target->is_alive;
-    }
-
-=cut    
-
-    my $d         = distance(@{$self->begin_xy}, @{$self->end_xy});
-    my $time2live = $d / $v;
-    my $steps     = int($time2live / $sleep);
-    my ($bx, $by) = @{ $self->begin_xy };
-    my ($ex, $ey) = @{ $self->end_xy };
-    my $step_x    = ($ex - $bx) / $steps;
-    my $step_y    = ($ey - $by) / $steps;
-    my ($x, $y)   = ($bx, $by);
-    
+    my $self = shift;
     $self->is_alive(1);
-    for (1.. $steps) {
-        $x += $step_x;
-        $y += $step_y;
+    my $target = $self->target;
+    weaken $target;
+
+    my $v            = $self->v;
+    my $sleep        = max(1/$v, 1/60); # dont move pixel by 1 pixel if you are fast
+    my $step         = $v * $sleep;
+    my ($x, $y)      = @{ $self->begin_xy };
+    my ($tx, $ty)    = @{$target->xy};
+    my ($d, $last_d) = (0, 1_000_000); # never shall there be such a distance
+
+    while (
+        ($d = distance($x, $y, $tx, $ty)) > 1
+     && $last_d >= $d
+    ) {
+        my $steps = $d / $step;
+        last if $steps < 1;
+        $x += ($tx - $x) / $steps;
+        $y += ($ty - $y) / $steps;
         $self->xy([$x, $y]);
         sleep $sleep;
+        ($tx, $ty) = @{ $target->xy } if $target && $target->is_alive;
+        $last_d = $d;
     }
 
     $_->hit($self->damage) for $self->find_creeps_in_range
         ($self->center_x, $self->center_y, $self->range);
 
     $self->is_alive(0);
-
     my $explosion_steps = 5;
     my $explosion_sleep = 1/40;
     my $explosion_step  = ($self->range - 1) / $explosion_steps;
@@ -92,8 +83,8 @@ sub start {
 # render laser to creep
 around render => sub {
     my ($orig, $self, $surface) = @_;
+    return $orig->($self, $surface) if $self->is_alive;
     my $radius = $self->explosion_radius;
-    return $orig->($self, $surface) unless $radius;
     $surface->draw_circle_filled(
         [$self->center_x, $self->center_y],
         $radius,

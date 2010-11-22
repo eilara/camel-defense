@@ -30,8 +30,8 @@ my $world = World->new(
         wave_defs => [
             {
                 inter_creep_wait => 0.2,
-                creep_count      => 1000,
-                creep_args       => [v => 64, hp => 30],
+                creep_count      => 1,
+                creep_args       => [v => 128, hp => 3000],
             },
         ],
     ],

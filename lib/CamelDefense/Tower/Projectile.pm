@@ -15,8 +15,8 @@ extends 'CamelDefense::Living::Base';
 has wave_manager => (is => 'ro', required => 1, isa => WaveManager, handles => [qw(find_creeps_in_range)]);
 has begin_xy     => (is => 'ro', required => 1, isa => ArrayRef);
 has end_xy       => (is => 'ro', required => 1, isa => ArrayRef);
-has v            => (is => 'ro', required => 1, isa => Num, default => 250);
-has damage       => (is => 'ro', required => 1, isa => Num, default => 3);
+has v            => (is => 'ro', required => 1, isa => Num, default => 300);
+has damage       => (is => 'ro', required => 1, isa => Num, default => 0.1);
 has range        => (is => 'ro', required => 1, isa => Num, default => 30);
 
 has explosion_radius => (is => 'rw', isa => Num, default => 0);
@@ -67,7 +67,7 @@ sub start {
         ($self->center_x, $self->center_y, $self->range);
 
     $self->is_alive(0);
-    my $explosion_steps = 5;
+    my $explosion_steps = 6;
     my $explosion_sleep = 1/40;
     my $explosion_step  = ($self->range - 1) / $explosion_steps;
     my $radius          = 1;

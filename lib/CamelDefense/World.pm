@@ -117,7 +117,7 @@ sub render {
     $self->refresh_bg($surface);
 # TODO: would be better to redraw bg layer only when towers change but
 #       it looks choppy, needs to test FPS then check why the slowness
-    $_->render($surface) for $self->tower_manager, $self->wave_manager;
+    $_->render($surface) for $self->wave_manager, $self->tower_manager;
 }
 
 sub refresh_bg {

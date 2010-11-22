@@ -43,8 +43,13 @@ sub start {
 =head
 
     my $step = $v * $sleep;
-    while (distance(@{$self->xy}, @{$target->xy}) > 1) {
+    my ($x, $y) = @{ $self->begin_xy };
+    my ($tx, $ty) = @{$target->xy};
+    while (distance($x, $y, $tx, $ty) > 1) {
+        my $ratio = $ty - y / $tx - x;
+        $self->xy([$x, $y]);
         sleep $sleep;
+        ($tx, $ty) = @{ $target->xy } if $target->is_alive;
     }
 
 =cut    

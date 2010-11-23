@@ -64,6 +64,10 @@ my $world = World->new(
             {
                 type => 'CamelDefense::Tower::Splash',
             },
+            {
+                type  => 'CamelDefense::Tower::Slow',
+                range => 60,
+            },
         ],
     ],
     waypoints  => [

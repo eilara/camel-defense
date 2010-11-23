@@ -12,6 +12,7 @@ use aliased 'CamelDefense::Tower::Base'   => 'BaseTower';
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 use CamelDefense::Tower::Laser;
 use CamelDefense::Tower::Splash;
+use CamelDefense::Tower::Slow;
 
 has wave_manager => (is => 'ro', required => 1, isa => WaveManager);
 

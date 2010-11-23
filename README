@@ -3,7 +3,7 @@ A very simple Perl SDL tower defense game.
 To run:
 
 > cd camel-defense/eg
-> perl 05-world.pl
+> perl 04-world.pl
 
 What works:
 

@@ -43,7 +43,7 @@ sub start {
             }
             $self->explosion_radius($self->range);
             for my $color (
-                0x00008F25, 0x00008F20, 0x00008F15, 0x00008F10, 0x00008F05, 0x00008F00,
+                0x00008F25, 0x00008F20, 0x00008F15, 0x00008F10, 0x00008F05,
             ) {
                 $self->explosion_color($color);
                 sleep 1/20;

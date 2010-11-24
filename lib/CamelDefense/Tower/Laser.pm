@@ -9,7 +9,7 @@ extends 'CamelDefense::Tower::Base';
 
 has cool_off_period => (is => 'ro', required => 1, isa => Num, default => 1.0);
 has damage_per_sec  => (is => 'ro', required => 1, isa => Num, default => 10);
-has laser_color     => (is => 'ro', required => 1, isa => Num, default => 0x009F00FF);
+has laser_color     => (is => 'ro', required => 1, isa => Num, default => 0x9F0000FF);
 has fire_period     => (is => 'ro', required => 1, isa => Num, default => 1.0);
 
 sub init_image_def {{

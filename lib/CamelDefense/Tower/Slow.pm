@@ -8,7 +8,7 @@ use aliased 'CamelDefense::Tower::Projectile';
 
 extends 'CamelDefense::Tower::Base';
 
-has cool_off_period   => (is => 'ro', required => 1, isa => Num, default => 2);
+has cool_off_period   => (is => 'ro', required => 1, isa => Num, default => 1);
 has slow_percent      => (is => 'ro', required => 1, isa => Num, default => 10);
 has slow_time         => (is => 'ro', required => 1, isa => Num, default => 3);
 

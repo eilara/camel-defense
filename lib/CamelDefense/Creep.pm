@@ -110,8 +110,8 @@ before render => sub {
     my ($x, $y) = ($self->sprite_x, $self->sprite_y - 7);
     my $w = $self->w;
     $surface->draw_rect([$x  , $y  , $w  , 4], 0x0);
-    $surface->draw_rect([$x+1, $y+1, $w-1, 2], 0xFF0000FF);
-    $surface->draw_rect([$x+1, $y+1, $hp_ratio*($w-1), 2], 0x00FF00FF);
+    $surface->draw_rect([$x+1, $y+1, $w-1, 2], 0x9F0000FF);
+    $surface->draw_rect([$x+1, $y+1, $hp_ratio*($w-1), 2], 0x009F00FF);
 };
 
 sub hit {

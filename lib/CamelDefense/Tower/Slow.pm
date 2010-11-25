@@ -4,6 +4,7 @@ use Moose;
 use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Int Num);
 use Time::HiRes qw(time);
+use CamelDefense::Util qw(animate);
 use aliased 'CamelDefense::Tower::Projectile';
 
 extends 'CamelDefense::Tower::Base';
@@ -32,15 +33,11 @@ sub start {
         if ($self->aim(1)) {
             $did_fire = 1;
 
-            my $explosion_steps = 6;
-            my $explosion_sleep = 1/50;
-            my $explosion_step  = ($self->range - 1) / $explosion_steps;
-            my $radius          = 1;
-            for (1..$explosion_steps) {
-                $self->explosion_radius($radius);
-                $radius += $explosion_step;
-                sleep $explosion_sleep;
-            }
+            animate
+                type  => [linear => 1, $self->range - 1, 6],
+                on    => [explosion_radius => $self],
+                sleep => 1/50;
+
             $self->explosion_radius($self->range);
             for my $color (
                 0x00008F25, 0x00008F20, 0x00008F15, 0x00008F10, 0x00008F05,

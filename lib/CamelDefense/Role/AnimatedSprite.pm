@@ -1,7 +1,7 @@
 package CamelDefense::Role::AnimatedSprite;
 
 # add to a sprite to get delegation on sprite animation methods
-# and the animate method
+# and the animate_sprite method
 
 use Moose::Role;
 use Coro::Timer qw(sleep);
@@ -21,7 +21,7 @@ has sprite_as_animated => (
 
 sub _build_sprite_as_animated { shift->sprite }
 
-sub animate {
+sub animate_sprite {
     my ($self, $sequence, $frame_count, $sleep) = @_;
     $self->sequence_animation($sequence);
     for my $frame (0..$frame_count) {

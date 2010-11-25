@@ -2,9 +2,25 @@ package CamelDefense::Util;
 
 use strict;
 use warnings;
+use Coro::Timer qw(sleep);
 use base 'Exporter';
 
-our @EXPORT_OK = qw(analyze_right_angle_line distance);
+our @EXPORT_OK = qw(analyze_right_angle_line distance animate);
+
+sub animate(%) {
+    my (%args) = @_;
+    my $sleep = $args{sleep};
+    my ($method, $obj) = @{$args{on}};
+    my ($type, $begin, $end, $steps) = @{$args{type}}; 
+
+    my $step = ($end - $begin) / $steps;
+    my $value = $begin;
+    for (1..$steps) {
+        $obj->$method($value);
+        $value += $step;
+        sleep $sleep;
+    }
+}
 
 sub analyze_right_angle_line {
     my ($x1, $y1, $x2, $y2) = @_;

@@ -6,7 +6,7 @@ use List::Util qw(max);
 use Coro;
 use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Bool Num Int Str ArrayRef);
-use CamelDefense::Util qw(distance);
+use CamelDefense::Util qw(distance animate);
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 use aliased 'CamelDefense::Creep';
 
@@ -67,15 +67,11 @@ sub start {
         ($self->center_x, $self->center_y, $self->range);
 
     $self->is_alive(0);
-    my $explosion_steps = 6;
-    my $explosion_sleep = 1/40;
-    my $explosion_step  = ($self->range - 1) / $explosion_steps;
-    my $radius          = 1;
-    for (1..$explosion_steps) {
-        $self->explosion_radius($radius);
-        $radius += $explosion_step;
-        sleep $explosion_sleep;
-    }
+
+    animate
+        type  => [linear => 1, $self->range - 1, 6],
+        on    => [explosion_radius => $self],
+        sleep => 1/40;
 
     $self->is_shown(0);
 }

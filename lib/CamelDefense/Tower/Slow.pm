@@ -39,12 +39,12 @@ sub start {
                 sleep => 1/50;
 
             $self->explosion_radius($self->range);
-            for my $color (
-                0x00008F25, 0x00008F20, 0x00008F15, 0x00008F10, 0x00008F05,
-            ) {
-                $self->explosion_color($color);
-                sleep 1/20;
-            }
+
+            animate
+                type  => [linear => 0x00008F25, 0x00008F05, 5],
+                on    => [explosion_color => $self],
+                sleep => 1/15;
+
             $self->explosion_radius(0);
             $self->explosion_color(0x00008F25);
                
@@ -62,7 +62,7 @@ sub render_attacks {
     $surface->draw_circle_filled(
         [$self->center_x, $self->center_y],
         $radius,
-        $self->explosion_color,
+        int($self->explosion_color),
     );
 };
 

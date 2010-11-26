@@ -5,7 +5,18 @@ use warnings;
 use Coro::Timer qw(sleep);
 use base 'Exporter';
 
-our @EXPORT_OK = qw(analyze_right_angle_line distance animate);
+our @EXPORT_OK = qw(analyze_right_angle_line distance animate interval);
+
+sub interval(%) {
+    my (%args) = @_;
+    my $sleep = $args{sleep};
+    my $times = $args{times};
+    my $code  = $args{code};
+    for my $i (1..$times) {
+        $code->($i);
+        sleep $sleep;
+    }
+}
 
 sub animate(%) {
     my (%args) = @_;
@@ -20,6 +31,7 @@ sub animate(%) {
         $value += $step;
         sleep $sleep;
     }
+    $obj->$method($end);
 }
 
 sub analyze_right_angle_line {

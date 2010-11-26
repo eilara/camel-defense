@@ -3,9 +3,9 @@ package CamelDefense::Wave;
 # the wave creates creep_count creeps every inter creep wait seconds
 
 use Moose;
-use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Bool Num Int ArrayRef);
 use aliased 'CamelDefense::Creep';
+use CamelDefense::Util qw(interval);
 
 extends 'CamelDefense::Living::Base';
 
@@ -49,11 +49,10 @@ after handle_child_is_alive => sub {
 
 sub start {
     my $self = shift;
-    my $sleep = $self->inter_creep_wait;
-    for (1..$self->creep_count) {
-        push @{$self->children}, $self->creep;
-        sleep $sleep;
-    }
+    interval
+        times => $self->creep_count,
+        sleep => $self->inter_creep_wait,
+        code  => sub { push @{$self->children}, $self->creep };
     $self->is_done_creating(1);
 }
 
@@ -81,16 +80,3 @@ sub aim_all {
 __END__
 
 
-# returns empty list if wave has no more living creeps or creeps to be born
-# or self if it has such waves
-sub move {
-    my ($self, $dt) = @_;
-    # TODO: should listen to channel of creep death broadcast on channel wave death
-    my @creeps       = grep { $_->is_shown } @{ $self->creeps };
-    my $should_build = time - $self->last_creep_birth > $self->inter_creep_wait;
-    my $still_left   = $self->creep_count - $self->next_creep_idx + 1;
-    my $not_enough   = $still_left > 0;
-    push(@creeps, $self->creep) if $should_build && $not_enough;
-    $self->creeps(\@creeps);
-    return (($still_left + scalar @creeps)? $self: ());
-}

@@ -4,6 +4,7 @@ use Moose;
 use MooseX::Types::Moose qw(Num);
 use Coro::Timer qw(sleep);
 use Time::HiRes qw(time);
+use CamelDefense::Util qw(poll);
 use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 
@@ -34,17 +35,16 @@ sub merge_range {
 
 sub aim {
     my ($self, $timeout) = @_;
-    my $sleep = 0.1; # aim 10 times a sec
-    my $start = time;
-    my @args  = ($self->center_x, $self->center_y, $self->range);
-    while (time - $start < $timeout) {
-        sleep $sleep;
-        if (my $target = $self->wave_manager->aim(@args)) {
-            $self->current_target($target);
-            return $target;
-        }
-    }
-    return undef;
+    my @args = ($self->center_x, $self->center_y, $self->range);
+    my $waves = $self->wave_manager;
+
+    my $target = poll
+        timeout   => $timeout,
+        sleep     => 0.1,
+        predicate => sub { $waves->aim(@args) };
+
+    $self->current_target($target) if $target;
+    return $target;
 }
 
 sub render_attacks { die "Abstract" }

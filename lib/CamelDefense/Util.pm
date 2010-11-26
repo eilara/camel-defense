@@ -2,10 +2,27 @@ package CamelDefense::Util;
 
 use strict;
 use warnings;
+use Coro;
 use Coro::Timer qw(sleep);
 use base 'Exporter';
 
-our @EXPORT_OK = qw(analyze_right_angle_line distance animate interval);
+our @EXPORT_OK =
+    qw(analyze_right_angle_line distance animate interval poll);
+
+sub poll(%) {
+    my (%args)    = @_;
+    my $sleep     = $args{sleep};
+    my $timeout   = $args{timeout};
+    my $predicate = $args{predicate};
+    my $start     = time;
+    while (time - $start < $timeout) {
+        sleep $sleep;
+        if (my $result = $predicate->()) {
+            return $result;
+        }
+    }
+    return undef;
+}
 
 sub interval(%) {
     my (%args) = @_;

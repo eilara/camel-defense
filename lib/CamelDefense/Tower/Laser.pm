@@ -2,7 +2,7 @@ package CamelDefense::Tower::Laser;
 
 use Moose;
 use MooseX::Types::Moose qw(Num);
-use CamelDefense::Util qw(work_while);
+use CamelDefense::Time qw(work_while);
 
 extends 'CamelDefense::Tower::Base';
 

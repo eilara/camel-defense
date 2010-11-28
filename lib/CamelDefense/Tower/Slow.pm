@@ -2,7 +2,7 @@ package CamelDefense::Tower::Slow;
 
 use Moose;
 use MooseX::Types::Moose qw(Int Num);
-use CamelDefense::Util qw(animate repeat_work);
+use CamelDefense::Time qw(animate repeat_work);
 use aliased 'CamelDefense::Tower::Projectile';
 
 my $ATTACK_COLOR = 0x00008F25;

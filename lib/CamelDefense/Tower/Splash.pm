@@ -2,7 +2,7 @@ package CamelDefense::Tower::Splash;
 
 use Moose;
 use MooseX::Types::Moose qw(Int Num);
-use CamelDefense::Util qw(animate repeat_work);
+use CamelDefense::Time qw(animate repeat_work);
 use aliased 'CamelDefense::Tower::Projectile';
 
 extends 'CamelDefense::Tower::Base';

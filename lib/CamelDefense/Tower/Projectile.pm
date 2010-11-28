@@ -6,7 +6,8 @@ use List::Util qw(max);
 use Coro;
 use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Bool Num Int Str ArrayRef);
-use CamelDefense::Util qw(distance animate);
+use CamelDefense::Util qw(distance);
+use CamelDefense::Time qw(animate);
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 use aliased 'CamelDefense::Creep';
 

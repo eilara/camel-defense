@@ -2,7 +2,7 @@ package CamelDefense::Tower::Base;
 
 use Moose;
 use MooseX::Types::Moose qw(Num);
-use CamelDefense::Util qw(poll);
+use CamelDefense::Time qw(poll);
 use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 

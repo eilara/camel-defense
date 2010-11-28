@@ -5,7 +5,7 @@ package CamelDefense::Wave;
 use Moose;
 use MooseX::Types::Moose qw(Bool Num Int ArrayRef);
 use aliased 'CamelDefense::Creep';
-use CamelDefense::Util qw(interval);
+use CamelDefense::Time qw(interval);
 
 extends 'CamelDefense::Living::Base';
 

@@ -1,9 +1,8 @@
 package CamelDefense::Tower::Slow;
 
 use Moose;
-use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Int Num);
-use CamelDefense::Util qw(animate);
+use CamelDefense::Util qw(animate repeat_work);
 use aliased 'CamelDefense::Tower::Projectile';
 
 my $ATTACK_COLOR = 0x00008F25;
@@ -29,12 +28,10 @@ sub init_image_def {{
 
 sub start {
     my $self = shift;
-    while (1) {
-        if ($self->aim(1)) {
-            $self->attack;
-            sleep $self->cool_off_period;
-        }
-    }
+    repeat_work
+        predicate => sub { $self->aim(1) },
+        work      => sub { $self->attack },
+        sleep     => $self->cool_off_period;
 }
 
 sub attack {

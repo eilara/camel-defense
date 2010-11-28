@@ -4,10 +4,39 @@ use strict;
 use warnings;
 use Coro;
 use Coro::Timer qw(sleep);
+use Time::HiRes qw(time);
 use base 'Exporter';
 
 our @EXPORT_OK =
-    qw(analyze_right_angle_line distance animate interval poll);
+    qw(analyze_right_angle_line distance
+       animate interval poll repeat_work work_while);
+
+sub work_while {
+    my (%args)    = @_;
+    my $sleep     = $args{sleep};
+    my $predicate = $args{predicate} || 1;
+    my $work      = $args{work};
+    my $timeout   = $args{timeout};
+    my $start     = time;
+    my $time_pred = $timeout? sub { time - $start < $timeout }: sub { 1 };
+    while ($time_pred->() && $predicate->()) {
+        $work->();
+        sleep $sleep;
+    }
+}
+
+sub repeat_work(%) {
+    my (%args)    = @_;
+    my $sleep     = $args{sleep};
+    my $predicate = $args{predicate};
+    my $work      = $args{work};
+    while (1) {
+        if ($predicate->()) {
+            $work->();
+            sleep $sleep;
+        }
+    }
+}
 
 sub poll(%) {
     my (%args)    = @_;

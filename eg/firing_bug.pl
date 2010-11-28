@@ -38,14 +38,13 @@ my $world = World->new(
     tower_manager_args => [
         tower_defs => [
             {
-                type            => 'CamelDefense::Tower::Laser',
-                fire_period     => 3,
-                cool_off_period => 2,
-                range           => 300,
+                type        => 'CamelDefense::Tower::Laser',
+                fire_period => 3,
+                range       => 300,
             },
             {
-                type            => 'CamelDefense::Tower::Splash',
-                range           => 300,
+                type        => 'CamelDefense::Tower::Splash',
+                range       => 300,
             },
         ],
     ],

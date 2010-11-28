@@ -1,9 +1,8 @@
 package CamelDefense::Tower::Splash;
 
 use Moose;
-use Coro::Timer qw(sleep);
 use MooseX::Types::Moose qw(Int Num);
-use Time::HiRes qw(time);
+use CamelDefense::Util qw(animate repeat_work);
 use aliased 'CamelDefense::Tower::Projectile';
 
 extends 'CamelDefense::Tower::Base';
@@ -45,15 +44,10 @@ sub init_image_def {{
 
 sub start {
     my $self = shift;
-    while (1) {
-        my $did_fire;
-        if ($self->aim(1)) {
-            $did_fire = 1;
-            push @{$self->children}, $self->projectile;
-        }
-        sleep $self->cool_off_period if $did_fire;
-        $did_fire = 0;
-    }
+    repeat_work
+        predicate => sub { $self->aim(1) },
+        work      => sub { push @{$self->children}, $self->projectile },
+        sleep     => $self->cool_off_period;
 };
 
 # render projectiles

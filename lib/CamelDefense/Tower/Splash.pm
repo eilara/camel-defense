@@ -1,15 +1,13 @@
 package CamelDefense::Tower::Splash;
 
 use Moose;
-use MooseX::Types::Moose qw(Int Num);
-use CamelDefense::Time qw(animate repeat_work);
+use MooseX::Types::Moose qw(Num);
+use CamelDefense::Time qw(repeat_work);
 use aliased 'CamelDefense::Tower::Projectile';
 
 extends 'CamelDefense::Tower::Base';
 
 has cool_off_period => (is => 'ro', required => 1, isa => Num, default => 1);
-
-has next_projectile_idx => (is => 'rw', required => 1, isa => Int , default => 0);
 
 with 'CamelDefense::Living::Parent';
 
@@ -18,15 +16,12 @@ with 'MooseX::Role::BuildInstanceOf' =>
     {target => Projectile, type => 'factory', prefix => 'projectile'};
 around merge_projectile_args => sub {
     my ($orig, $self) = @_;
-    my $idx           = $self->next_projectile_idx;
-    my $target        = $self->current_target;
-    $self->next_projectile_idx($idx + 1);
     return (
         wave_manager => $self->wave_manager,
         target       => $self->current_target,
         begin_xy     => [$self->center_x, $self->center_y - 6],
         parent       => $self,
-        idx          => $idx,
+        idx          => $self->update_next_child_idx,
         $self->$orig,
     );
 };

@@ -12,15 +12,15 @@ extends 'CamelDefense::Living::Base';
 has creep_count      => (is => 'ro', required => 1, isa => Int , default => 6);
 has inter_creep_wait => (is => 'ro', required => 1, isa => Num , default => 1);
 
-has next_creep_idx   => (is => 'rw', required => 1, isa => Int , default => 0);
 has is_done_creating => (is => 'rw', required => 1, isa => Bool, default => 0);
 
 with 'MooseX::Role::BuildInstanceOf' => {target => Creep, type => 'factory'};
 around merge_creep_args => sub {
     my ($orig, $self) = @_;
-    my $creep_idx = $self->next_creep_idx;
-    $self->next_creep_idx($creep_idx + 1);
-    return (idx => $creep_idx, parent => $self, $self->$orig);
+    return (
+        idx    => $self->update_next_child_idx,
+        parent => $self, $self->$orig,
+    );
 };
 
 with qw(

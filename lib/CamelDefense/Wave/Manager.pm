@@ -25,8 +25,6 @@ has wave_defs => (
 has level_complete_handler =>
     (is => 'ro', required => 1, isa => CodeRef, default => sub { sub {} });
 
-has next_wave_idx => (is => 'rw', required => 1, isa => Int , default => 0);
-
 # the wave manager creates and manages waves
 with 'MooseX::Role::BuildInstanceOf' => {target => Wave, type => 'factory'};
 around merge_wave_args => sub {
@@ -37,9 +35,12 @@ around merge_wave_args => sub {
     my %creep_args         = @{ $args{creep_args} ||= [] };
     $creep_args{waypoints} = $self->points_px;
     $args{creep_args}      = [%creep_args, %next_creep_def];
-    my $idx                = $self->next_wave_idx;
-    $self->next_wave_idx($idx + 1);
-    return (%args, parent => $self, idx => $idx, %wave_def);
+    return (
+        %args,
+        parent => $self,
+        idx    => $self->update_next_child_idx,
+        %wave_def,
+    );
 };
 
 after handle_child_not_shown => sub {

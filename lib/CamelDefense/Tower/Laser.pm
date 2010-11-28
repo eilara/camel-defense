@@ -21,10 +21,7 @@ sub init_image_def {{
 
 sub start {
     my $self = shift;
-    while (1) {
-        $self->attack if $self->aim(1);
-    }
-
+    while (1) { $self->attack if $self->aim(1) }
 }
 
 sub attack {

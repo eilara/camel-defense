@@ -62,7 +62,8 @@ my $world = World->new(
                 fire_period => 1.5,
             },
             {
-                type => 'CamelDefense::Tower::Splash',
+                type            => 'CamelDefense::Tower::Splash',
+                cool_off_period => 1.0,
             },
             {
                 type  => 'CamelDefense::Tower::Slow',

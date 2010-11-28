@@ -15,7 +15,6 @@ extends 'CamelDefense::Living::Base';
 
 has wave_manager => (is => 'ro', required => 1, isa => WaveManager, handles => [qw(find_creeps_in_range)]);
 has begin_xy     => (is => 'ro', required => 1, isa => ArrayRef);
-has end_xy       => (is => 'ro', required => 1, isa => ArrayRef);
 has v            => (is => 'ro', required => 1, isa => Num, default => 300);
 has damage       => (is => 'ro', required => 1, isa => Num, default => 1);
 has range        => (is => 'ro', required => 1, isa => Num, default => 30);

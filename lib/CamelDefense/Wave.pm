@@ -19,7 +19,8 @@ around merge_creep_args => sub {
     my ($orig, $self) = @_;
     return (
         idx    => $self->update_next_child_idx,
-        parent => $self, $self->$orig,
+        parent => $self,
+        $self->$orig,
     );
 };
 

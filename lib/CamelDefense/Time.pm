@@ -42,7 +42,8 @@ sub poll(%) {
     my $timeout   = $args{timeout};
     my $predicate = $args{predicate};
     my $start     = time;
-    while (time - $start < $timeout) {
+    my $time_pred = $timeout? sub { time - $start < $timeout }: sub { 1 };
+    while ($time_pred->()) {
         sleep $sleep;
         if (my $result = $predicate->()) {
             return $result;

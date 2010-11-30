@@ -60,16 +60,13 @@ sub interval(%) {
     my (%args)   = @_;
     my $sleep    = $args{sleep};
     my $times    = $args{times};
-    my $code     = $args{code};
+    my $step     = $args{step};
     my $start    = $args{start};
-    my $is_first = 1;
+	
+	my $block = $start? sub { $start->(@_); $block = $step }:$step;
+	
     for my $i (1..$times) {
-        if ($start && $is_first) {
-            $start->($i);
-            $is_first = 0;
-        } else {
-            $code->($i);
-        }
+        $block->($i);
         sleep $sleep;
     }
 }

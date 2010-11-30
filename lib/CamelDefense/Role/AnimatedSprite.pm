@@ -26,7 +26,7 @@ sub animate_sprite {
     interval
         times => $frame_count,
         sleep => $sleep,
-        code  => sub { $self->next_animation },
+        step  => sub { $self->next_animation },
         start => sub { $self->sequence_animation($sequence) };
 }
 

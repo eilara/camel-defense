@@ -53,7 +53,7 @@ sub start {
     interval
         times => $self->creep_count,
         sleep => $self->inter_creep_wait,
-        code  => sub { push @{$self->children}, $self->creep };
+        step  => sub { push @{$self->children}, $self->creep };
     $self->is_done_creating(1);
 }
 

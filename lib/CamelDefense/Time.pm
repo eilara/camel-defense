@@ -57,13 +57,13 @@ sub poll(%) {
 }
 
 sub interval(%) {
-    my (%args)   = @_;
-    my $sleep    = $args{sleep};
-    my $times    = $args{times};
-    my $step     = $args{step};
-    my $start    = $args{start};
-	
-	my $block = $start? sub { $start->(@_); $block = $step }:$step;
+    my $block;
+    my (%args) = @_;
+    my $sleep  = $args{sleep};
+    my $times  = $args{times};
+    my $step   = $args{step};
+    my $start  = $args{start};
+	$block     = $start? sub { $start->(@_); $block = $step }: $step;
 	
     for my $i (1..$times) {
         $block->($i);

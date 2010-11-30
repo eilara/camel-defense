@@ -2,7 +2,7 @@ A very simple Perl SDL tower defense game.
 
 To run:
 
-> cd camel-defense/eg # or image will not be found
+> cd camel-defense/eg # or images will not be found
 > perl 04-world.pl
 
 What works:

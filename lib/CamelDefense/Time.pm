@@ -5,9 +5,13 @@ use warnings;
 use Coro;
 use Coro::Timer qw(sleep);
 use Time::HiRes qw(time);
+use List::Util qw(max);
+use CamelDefense::Util qw(distance);
 use base 'Exporter';
 
-our @EXPORT_OK = qw(animate interval poll repeat_work work_while);
+our @EXPORT_OK = qw(
+    animate interval poll repeat_work work_while move
+);
 
 sub work_while {
     my (%args)    = @_;
@@ -53,12 +57,19 @@ sub poll(%) {
 }
 
 sub interval(%) {
-    my (%args) = @_;
-    my $sleep = $args{sleep};
-    my $times = $args{times};
-    my $code  = $args{code};
+    my (%args)   = @_;
+    my $sleep    = $args{sleep};
+    my $times    = $args{times};
+    my $code     = $args{code};
+    my $start    = $args{start};
+    my $is_first = 1;
     for my $i (1..$times) {
-        $code->($i);
+        if ($start && $is_first) {
+            $start->($i);
+            $is_first = 0;
+        } else {
+            $code->($i);
+        }
         sleep $sleep;
     }
 }
@@ -77,6 +88,39 @@ sub animate(%) {
         sleep $sleep;
     }
     $obj->$method($end);
+}
+
+sub move(%) {
+    my (%args)    = @_;
+    my $xy        = $args{xy};
+    my $to        = $args{to};
+    my $v         = $args{v};
+    my $sleep     = max(1/$v, 1/60); # dont move pixel by 1 pixel if you are fast
+    my $step      = $v * $sleep;
+    my ($x1, $y1) = @{ $xy->() };
+    my ($x2, $y2) = @{ $to->() };
+    $to->(undef); # if $to is a queue of move commands
+    my ($d, $last_d);
+
+    while (
+        ($d = distance($x1, $y1, $x2, $y2)) > 1
+     && (!$last_d || $last_d >= $d)
+    ) {
+        my $steps = $d / $step;
+        last if $steps < 1;
+        $x1 += ($x2 - $x1) / $steps;
+        $y1 += ($y2 - $y1) / $steps;
+        $xy->([$x1, $y1]);
+        sleep $sleep;
+        if (my $to_xy = $to->()) {
+            ($x2, $y2) = @$to_xy;
+            $last_d = undef; # if queue of commands
+        } else {
+            $last_d = $d;
+        }
+    }
+
+    $xy->([$x2, $y2]);
 }
 
 1;

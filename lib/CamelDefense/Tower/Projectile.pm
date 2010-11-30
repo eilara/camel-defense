@@ -27,7 +27,6 @@ with qw(
     CamelDefense::Role::Active
     CamelDefense::Role::CenteredSprite
 );
-with 'CamelDefense::Role::AnimatedSprite'; # needs sprite() from CenteredSprite
 
 sub init_image_def { '../data/tower_splash_projectile.png' }
 

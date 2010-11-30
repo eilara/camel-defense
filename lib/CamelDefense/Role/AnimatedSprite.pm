@@ -4,7 +4,7 @@ package CamelDefense::Role::AnimatedSprite;
 # and the animate_sprite method
 
 use Moose::Role;
-use Coro::Timer qw(sleep);
+use CamelDefense::Time qw(interval);
 use aliased 'SDLx::Sprite::Animated';
 
 requires 'sprite';
@@ -23,13 +23,11 @@ sub _build_sprite_as_animated { shift->sprite }
 
 sub animate_sprite {
     my ($self, $sequence, $frame_count, $sleep) = @_;
-    $self->sequence_animation($sequence);
-    for my $frame (0..$frame_count) {
-        sleep $sleep;
-        $self->next_animation;
-    }
-    sleep $sleep;
+    interval
+        times => $frame_count,
+        sleep => $sleep,
+        code  => sub { $self->next_animation },
+        start => sub { $self->sequence_animation($sequence) };
 }
 
 1;
-

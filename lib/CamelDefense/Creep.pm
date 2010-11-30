@@ -68,7 +68,7 @@ sub start {
     my $sleep = max(1/$v, 1/60); # dont move pixel by 1 pixel if you are fast
     my $step  = $v * $sleep;
 
-    $self->animate_sprite(enter_grid => 5, 0.06);
+    $self->animate_sprite(enter_grid => 7, 0.06);
     $self->is_alive(1);
 
     $self->xy([@$wp1]);
@@ -92,7 +92,7 @@ sub start {
         $wp1 = $wp2;
     }
     $self->is_alive(0);
-    $self->animate_sprite(leave_grid => 5, 0.06);
+    $self->animate_sprite(leave_grid => 7, 0.06);
     $self->is_shown(0);
 }
 
@@ -123,7 +123,7 @@ sub hit {
         $self->is_alive(0);
         $self->deactivate; # stop moving
         async {
-            $self->animate_sprite(death => 5, 0.06);
+            $self->animate_sprite(death => 7, 0.06);
             $self->is_shown(0);
         };
     }

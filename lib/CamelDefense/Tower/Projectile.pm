@@ -5,9 +5,9 @@ use Scalar::Util qw(weaken);
 use List::Util qw(max);
 use Coro;
 use Coro::Timer qw(sleep);
-use MooseX::Types::Moose qw(Bool Num Int Str ArrayRef);
+use MooseX::Types::Moose qw(Num ArrayRef);
 use CamelDefense::Util qw(distance);
-use CamelDefense::Time qw(animate);
+use CamelDefense::Time qw(animate move);
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 use aliased 'CamelDefense::Creep';
 
@@ -39,28 +39,12 @@ sub start {
     my $self = shift;
     $self->is_alive(1);
     my $target = $self->target;
-    weaken $target;
+    weaken $target; # it could die while we move, don't want ref to it
 
-    my $v            = $self->v;
-    my $sleep        = max(1/$v, 1/60); # dont move pixel by 1 pixel if you are fast
-    my $step         = $v * $sleep;
-    my ($x, $y)      = @{ $self->begin_xy };
-    my ($tx, $ty)    = @{$target->xy};
-    my ($d, $last_d) = (0, 1_000_000); # never shall there be such a distance
-
-    while (
-        ($d = distance($x, $y, $tx, $ty)) > 1
-     && $last_d >= $d
-    ) {
-        my $steps = $d / $step;
-        last if $steps < 1;
-        $x += ($tx - $x) / $steps;
-        $y += ($ty - $y) / $steps;
-        $self->xy([$x, $y]);
-        sleep $sleep;
-        ($tx, $ty) = @{ $target->xy } if $target && $target->is_alive;
-        $last_d = $d;
-    }
+    move
+        xy => sub { $self->xy(@_) },
+        to => sub { $target && $target->is_alive? $target->xy: undef },
+        v  => $self->v;
 
     $_->hit($self->damage) for $self->find_creeps_in_range
         ($self->center_x, $self->center_y, $self->range);
@@ -80,6 +64,8 @@ around render => sub {
     my ($orig, $self, $surface) = @_;
     $orig->($self, $surface) if $self->is_alive;
     my $radius = $self->explosion_radius;
+    return unless $radius;
+
     $surface->draw_circle_filled(
         [$self->center_x, $self->center_y],
         $radius,

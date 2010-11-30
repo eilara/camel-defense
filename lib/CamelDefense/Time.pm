@@ -87,17 +87,46 @@ sub animate(%) {
     $obj->$method($end);
 }
 
+# set wild to true when target moves around wildly
+# it will then be reset to undef 1st time we read it
+# and 'can we reach the target' is computed a little differently
+#
+# TODO: should move as many pixels needed
+#       because last sleep was too long? note sometimes uneven
+#       distances between creeps because of this
+#       should keep a delta and sleep less if needed?
+
 sub move(%) {
     my (%args)    = @_;
     my $xy        = $args{xy};
     my $to        = $args{to};
     my $v         = $args{v};
+    my $wild      = $args{wild};
     my $sleep     = max(1/$v, 1/60); # dont move pixel by 1 pixel if you are fast
     my $step      = $v * $sleep;
+    my $init_to   = $to->();
+    return unless $init_to; # target died
+
     my ($x1, $y1) = @{ $xy->() };
-    my ($x2, $y2) = @{ $to->() };
-    $to->(undef); # if $to is a queue of move commands
+    my ($x2, $y2) = @$init_to;
+    $to->(undef) if $wild;
     my ($d, $last_d);
+
+    my $compute_next_xy = $wild
+        ? sub { # for wild targets we can't make sure that
+                # distance is decreasing when it moves
+            if (my $to_xy = $to->()) {
+                ($x2, $y2) = @$to_xy;
+                $last_d = undef;
+            } else {
+                $last_d = $d;
+            }
+        }: sub {
+            if (my $to_xy = $to->()) {
+                ($x2, $y2) = @$to_xy;
+            }
+            $last_d = $d;
+        };
 
     while (
         ($d = distance($x1, $y1, $x2, $y2)) > 1
@@ -109,12 +138,7 @@ sub move(%) {
         $y1 += ($y2 - $y1) / $steps;
         $xy->([$x1, $y1]);
         sleep $sleep;
-        if (my $to_xy = $to->()) {
-            ($x2, $y2) = @$to_xy;
-            $last_d = undef; # if queue of commands
-        } else {
-            $last_d = $d;
-        }
+        $compute_next_xy->();
     }
 
     $xy->([$x2, $y2]);

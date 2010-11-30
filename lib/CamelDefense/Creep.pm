@@ -13,10 +13,9 @@ package CamelDefense::Creep;
 
 use Moose;
 use Coro;
-use List::Util qw(max);
-use Coro::Timer qw(sleep);
-use MooseX::Types::Moose qw(Bool Num Int Str ArrayRef);
-use CamelDefense::Util qw(analyze_right_angle_line distance);
+use MooseX::Types::Moose qw(Num Int Str ArrayRef);
+use CamelDefense::Util qw(distance);
+use CamelDefense::Time qw(move);
 
 extends 'CamelDefense::Living::Base';
 
@@ -55,42 +54,22 @@ sub BUILD() {
     $self->start_hp($self->hp);
 }
 
-# assumes creep only moves in vertical or horizontal direction, no angles
-# TODO: should move as many pixels needed
-#       because last sleep was too long? note sometimes uneven
-#       distances between creeps because of this
-#       should keep a delta and sleep less if needed?
 sub start {
-    my $self  = shift;
-    my @wps   = @{$self->waypoints};
-    my $wp1   = shift @wps;
-    my $v     = $self->v;
-    my $sleep = max(1/$v, 1/60); # dont move pixel by 1 pixel if you are fast
-    my $step  = $v * $sleep;
+    my $self = shift;
+    my @wps  = @{$self->waypoints};
+    my $v    = $self->v;
+    shift @wps;
 
     $self->animate_sprite(enter_grid => 7, 0.06);
     $self->is_alive(1);
 
-    $self->xy([@$wp1]);
-    my $xy = $self->xy;
-    sleep $sleep;
-
-    for my $wp2 (@wps) {
-        my ($is_vertical, $dir) = analyze_right_angle_line(@$wp1, @$wp2);
-        my $distance    = abs($wp2->[$is_vertical] - $wp1->[$is_vertical]);
-        my $steps       = int($distance / $step);
-        for (1..$steps) {
-            $xy->[$is_vertical] += $dir * $step;
-            $self->_update_sprite_xy;
-            sleep $sleep;
-        }
-
-        $self->xy([@$wp2]);
-        $xy = $self->xy;
-        my $remainder = $distance - $steps * $step;
-        sleep($sleep * ($remainder / $step)) if $remainder >= 1;
-        $wp1 = $wp2;
+    for my $wp (@wps) {
+        move
+            xy => sub { $self->xy(@_) },
+            to => sub { $wp },
+            v  => $v;
     }
+
     $self->is_alive(0);
     $self->animate_sprite(leave_grid => 7, 0.06);
     $self->is_shown(0);

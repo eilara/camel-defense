@@ -9,7 +9,7 @@ has next_xy => (is => 'rw');
 
 with qw(
     CamelDefense::Role::Active
-    CamelDefense::Role::Sprite
+    CamelDefense::Role::CenteredSprite
 );
 with 'CamelDefense::Role::AnimatedSprite';
 
@@ -31,9 +31,10 @@ sub start {
     while (1) {
         poll sleep => 0.1, predicate => sub { $self->next_xy };
         move
-            xy => sub { $self->xy(@_) },
-            to => sub { $self->next_xy(@_) },
-            v  => 100;
+            xy   => sub { $self->xy(@_) },
+            to   => sub { $self->next_xy(@_) },
+            v    => 100,
+            wild => 1;
         $self->animate_sprite(death => 7, 0.1);
         $self->animate_sprite(birth => 7, 0.1);
     }

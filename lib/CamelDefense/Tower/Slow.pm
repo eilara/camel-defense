@@ -5,7 +5,7 @@ use MooseX::Types::Moose qw(Int Num);
 use CamelDefense::Time qw(animate repeat_work);
 use aliased 'CamelDefense::Tower::Projectile';
 
-my $ATTACK_COLOR = 0x00008F25;
+my $ATTACK_COLOR = 0x39257235;
 
 extends 'CamelDefense::Tower::Base';
 
@@ -41,7 +41,7 @@ sub attack {
         on    => [explosion_radius => $self],
         sleep => 1/50;
     animate
-        type  => [linear => $ATTACK_COLOR, 0x00008F05, 5],
+        type  => [linear => $ATTACK_COLOR, 0x39257205, 5],
         on    => [explosion_color => $self],
         sleep => 1/15;
 

@@ -24,11 +24,11 @@ has waypoint_color => (
     is       => 'ro',
     required => 1,
     isa      => Int,
-    default  => 0x5F5F5FFF,
+    default  => 0x9F9F9FFF,
 );
 
 has path_color =>
-    (is => 'ro', required => 1, isa => Int, default => 0x3F3F3FFF);
+    (is => 'ro', required => 1, isa => Int, default => 0x7F7F7FFF);
 
 has points_px => ( # center of waypoints in px
     is         => 'ro',

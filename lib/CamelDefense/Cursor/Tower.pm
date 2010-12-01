@@ -55,12 +55,12 @@ before render => sub {
     $surface->draw_circle_filled(
         [$self->center_x, $self->center_y],
         $range,
-        0x02720220,
+        0x02720230,
     );
     $surface->draw_circle(
         [$self->center_x, $self->center_y],
         $range,
-        0x027202FF,
+        0x024202FF,
         1,
     );
 };

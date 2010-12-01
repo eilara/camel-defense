@@ -26,12 +26,8 @@ my $app = App->new(
 my $controller = Controller->new;
 
 my $world = World->new(
-    app                    => $app,
-    controller             => $controller,
-    grid_args              => [
-        marks_args         => [bg_color   => 0x303030FF],
-        waypoint_list_args => [path_color => 0x404040FF],
-    ],
+    app               => $app,
+    controller        => $controller,
     wave_manager_args => [
         level_complete_handler => sub { $game_over = 1 },
         wave_defs => [

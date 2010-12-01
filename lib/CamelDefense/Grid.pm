@@ -86,18 +86,16 @@ sub can_build {
     return !$cell->has_contents;
 }
 
-# 1     - can build here
-# 0     - can't because of path, waypoint, etc.
-# undef - can't because of tower here or some other obstacle
-#         that should show no cursor shadow
-#sub can_build {
-#    my ($self, $x, $y) = @_;
-#    my ($col, $row) = @{ $self->find_cell($x, $y) };
-#    my $cell = $self->cells->[$col]->[$row];
-#    return $cell->has_contents
-#        ? $cell->contents eq 'tower'? undef: 0
-#        : 1;
-#}
+# is this a type of cell that cursor shadow would look nice on
+sub should_show_shadow {
+    my ($self, $x, $y) = @_;
+    my ($col, $row) = @{ $self->find_cell($x, $y) };
+    my $cell = $self->cells->[$col]->[$row];
+    return
+        $cell->has_contents
+            ? $cell->contents eq 'tower'? 0: 1
+            : 1;
+}
 
 sub render_markers {
     my ($self, $surface) = @_;

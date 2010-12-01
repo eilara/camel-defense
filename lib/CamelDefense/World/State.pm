@@ -27,7 +27,9 @@ sub _build_state {
     my $cursor      = $self->cursor;
     my $grid        = $self->grid;
 
-    my $build_tower = sub { $self->tower_manager->build_tower };
+    my $build_tower = sub {
+        $self->tower_manager->build_tower;
+    };
 
     my $can_build = sub {
         my $self = shift;

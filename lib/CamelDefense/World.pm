@@ -97,10 +97,10 @@ sub _build_cursor {
     my $self = shift;
     my %manager_args = @{$self->tower_manager_args};
     my $tower_defs = $manager_args{tower_defs} || die "No towers defined";
-    return Cursor->new(shadow_args => [
-        grid      => $self->grid,
-        tower_def => $tower_defs->[0],
-    ]);
+    return Cursor->new(
+        grid        => $self->grid,
+        shadow_args => [tower_def => $tower_defs->[0]],
+    );
 }
 
 sub BUILD {

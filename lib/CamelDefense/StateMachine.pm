@@ -23,10 +23,18 @@ sub handle_event {
 
     my $next_state_name = $event->{next_state};
     $next_state_name = $next_state_name->(@args) if ref $next_state_name eq 'CODE';
-    if ($next_state_name) {
-        my $next_state = $self->states->{ $next_state_name };
-        $self->current_state($next_state);
+    my $states = $self->states;
 
+    if ($next_state_name) {
+        my $next_state = $states->{ $next_state_name };
+        $self->current_state($next_state);
+    }
+    
+    my $code = $event->{code};
+    $code->(@args) if $code;
+
+    if ($next_state_name) {
+        my $next_state = $states->{ $next_state_name };
         my $cursor = $next_state->{cursor};
         if ($cursor) {
             $cursor = $cursor->(@args) if ref $cursor eq 'CODE';
@@ -34,8 +42,6 @@ sub handle_event {
         }
     }
     
-    my $code = $event->{code};
-    $code->(@args) if $code;
 }
 
 1;

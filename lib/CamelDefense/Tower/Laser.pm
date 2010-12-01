@@ -7,7 +7,7 @@ use CamelDefense::Time qw(work_while);
 extends 'CamelDefense::Tower::Base';
 
 has damage_per_sec => (is => 'ro', required => 1, isa => Num, default => 3);
-has laser_color    => (is => 'ro', required => 1, isa => Num, default => 0x602075FF);
+has laser_color    => (is => 'ro', required => 1, isa => Num, default => 0x501265FF);
 
 sub init_image_def {{
     image     => '../data/tower_laser.png',

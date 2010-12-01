@@ -33,6 +33,8 @@ sub handle_event {
     my $code = $event->{code};
     $code->(@args) if $code;
 
+    # update cursor AFTER running code, because running
+    # code could have changed its state
     if ($next_state_name) {
         my $next_state = $states->{ $next_state_name };
         my $cursor = $next_state->{cursor};

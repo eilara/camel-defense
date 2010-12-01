@@ -21,7 +21,7 @@ extends 'CamelDefense::Living::Base';
 
 # kind: normal, fast, slow
 has kind      => (is => 'ro', required => 1, isa => Str, default => 'normal');
-has v         => (is => 'ro', required => 1, isa => Num, default => 10);
+has v         => (is => 'rw', required => 1, isa => Num, default => 10);
 has idx       => (is => 'ro', required => 1, isa => Int); # index in wave
 has waypoints => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
 has hp        => (is => 'rw', required => 1, isa => Num, default => 10);
@@ -67,7 +67,7 @@ sub start {
         move
             xy => sub { $self->xy(@_) },
             to => sub { $wp },
-            v  => $v;
+            v  => sub { $self->v };
     }
 
     $self->is_alive(0);
@@ -106,6 +106,12 @@ sub hit {
             $self->is_shown(0);
         };
     }
+}
+
+sub slow {
+    my ($self, $percent) = @_;
+    my $v = $self->v;
+    $self->v($v - $v * ($percent/100));
 }
 
 sub is_in_range {

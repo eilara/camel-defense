@@ -6,7 +6,7 @@ use CamelDefense::Time qw(poll);
 use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 
-has wave_manager => (is => 'ro', required => 1, isa => WaveManager);
+has wave_manager => (is => 'ro', required => 1, isa => WaveManager, handles => [qw(find_creeps_in_range)]);
 has grid         => (is => 'ro', required => 1, isa => Grid, handles => [qw(compute_cell_center)]);
 has range        => (is => 'ro', required => 1, isa => Num, default => 100); # in pixels
 

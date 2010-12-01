@@ -1,9 +1,10 @@
 package CamelDefense::Tower::Slow;
 
 use Moose;
-use MooseX::Types::Moose qw(Int Num);
+use MooseX::Types::Moose qw(Int Num ArrayRef);
 use CamelDefense::Time qw(animate repeat_work);
 use aliased 'CamelDefense::Tower::Projectile';
+use aliased 'CamelDefense::Creep';
 
 my $ATTACK_COLOR = 0x39257235;
 
@@ -15,6 +16,9 @@ has slow_time         => (is => 'ro', required => 1, isa => Num, default => 3);
 
 has explosion_radius  => (is => 'rw', isa => Num, default => 0);
 has explosion_color   => (is => 'rw', isa => Num, default => $ATTACK_COLOR);
+
+has current_targets   => (is => 'ro', required => 1, isa => ArrayRef[Creep], default => sub { [] });
+
 
 sub init_image_def {{
     image     => '../data/tower_slow.png',
@@ -36,10 +40,15 @@ sub start {
 
 sub attack {
     my $self = shift;    
+
     animate
         type  => [linear => 1, $self->range, 6],
         on    => [explosion_radius => $self],
         sleep => 1/50;
+
+    $self->attack_target($_) for $self->find_creeps_in_range
+        ($self->center_x, $self->center_y, $self->range);
+
     animate
         type  => [linear => $ATTACK_COLOR, 0x39257205, 5],
         on    => [explosion_color => $self],
@@ -47,7 +56,12 @@ sub attack {
 
     $self->explosion_radius(0);
     $self->explosion_color($ATTACK_COLOR);
-}               
+}
+
+sub attack_target {
+    my ($self, $target) = @_;
+    $target->slow($self->slow_percent);
+}
 
 # render projectiles
 sub render_attacks {

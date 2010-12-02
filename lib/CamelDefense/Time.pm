@@ -45,7 +45,7 @@ sub repeat_work(%) {
 
 sub poll(%) {
     my (%args)    = @_;
-    my $sleep     = $args{sleep};
+    my $sleep     = $args{sleep} || 0.1;
     my $timeout   = $args{timeout};
     my $predicate = $args{predicate};
     my $start     = time;

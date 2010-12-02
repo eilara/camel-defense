@@ -53,21 +53,24 @@ sub start {
         sleep     => $self->cool_off_period;
 }
 
-# thread that cleans creeps leaving range
 # TODO: Active role should handle sub threads
+# TODO: creeps should keep track of their spells, and there should be a 
+#       spell thing which does all this stuff. creeps need to show spells
+# TODO: polling is bad, should be able to just write the expression for
+#       currently in range creeps and get events when they change
+
+# thread that cleans creeps leaving range
 sub start_cleanup_thread {
     my $self = shift;
     my $x = async {
         my @range = ();
         while (1) {
             my @out_of_range_targets = @{
-                poll
-                    sleep     => 0.1,
-                    predicate => sub {
-                        my @ts = grep { !can_tower_hit_creep($self, $_) }
-                                      $self->targets;
-                        @ts? \@ts: undef;
-                    }
+                poll predicate => sub {
+                    my @ts = grep { !can_tower_hit_creep($self, $_) }
+                                  $self->targets;
+                    @ts? \@ts: undef;
+                }
             };
             $self->remove_targets(@out_of_range_targets);
             my $vs = $self->velocities_removed;

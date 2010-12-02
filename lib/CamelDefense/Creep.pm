@@ -108,10 +108,19 @@ sub hit {
     }
 }
 
+# returns: how much did I slow?
 sub slow {
     my ($self, $percent) = @_;
     my $v = $self->v;
-    $self->v($v - $v * ($percent/100));
+    my $delta_v = $v * ($percent/100);
+    $self->v($v - $delta_v);
+    return $delta_v;
+}
+
+sub haste {
+    my ($self, $delta_v) = @_;
+    my $v = $self->v;
+    $self->v($v + $delta_v);
 }
 
 sub is_in_range {

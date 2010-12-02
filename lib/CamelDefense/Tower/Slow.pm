@@ -1,8 +1,12 @@
 package CamelDefense::Tower::Slow;
 
 use Moose;
+use Coro;
+use Scalar::Util qw(weaken);
+use Set::Object::Weak qw(set);
 use MooseX::Types::Moose qw(Int Num ArrayRef);
-use CamelDefense::Time qw(animate repeat_work);
+use CamelDefense::Time qw(animate poll repeat_work);
+use CamelDefense::Util qw(can_tower_hit_creep);
 use aliased 'CamelDefense::Tower::Projectile';
 use aliased 'CamelDefense::Creep';
 
@@ -11,13 +15,24 @@ my $ATTACK_COLOR = 0x39257235;
 extends 'CamelDefense::Tower::Base';
 
 has cool_off_period   => (is => 'ro', required => 1, isa => Num, default => 1);
-has slow_percent      => (is => 'ro', required => 1, isa => Num, default => 10);
-has slow_time         => (is => 'ro', required => 1, isa => Num, default => 3);
+has slow_percent      => (is => 'ro', required => 1, isa => Num, default => 13);
 
 has explosion_radius  => (is => 'rw', isa => Num, default => 0);
 has explosion_color   => (is => 'rw', isa => Num, default => $ATTACK_COLOR);
 
-has current_targets   => (is => 'ro', required => 1, isa => ArrayRef[Creep], default => sub { [] });
+has current_targets => (
+    is       => 'ro',
+    required => 1,
+    isa      => 'Set::Object::Weak',
+    default  => sub { Set::Object::Weak->new },
+    handles  => {
+        add_targets    => 'insert',
+        remove_targets => 'remove',
+        targets        => 'elements',
+    },
+);
+
+has velocities_removed => (is => 'ro', required => 1, default => sub { {} });
 
 sub init_image_def {{
     image     => '../data/tower_slow.png',
@@ -31,24 +46,46 @@ sub init_image_def {{
 
 sub start {
     my $self = shift;
+    $self->start_cleanup_thread;
     repeat_work
         predicate => sub { $self->aim(1) },
         work      => sub { $self->attack },
         sleep     => $self->cool_off_period;
 }
 
+# thread that cleans creeps leaving range
+# TODO: Active role should handle sub threads
+sub start_cleanup_thread {
+    my $self = shift;
+    my $x = async {
+        my @range = ();
+        while (1) {
+            my @out_of_range_targets = @{
+                poll
+                    sleep     => 0.1,
+                    predicate => sub {
+                        my @ts = grep { !can_tower_hit_creep($self, $_) }
+                                      $self->targets;
+                        @ts? \@ts: undef;
+                    }
+            };
+            $self->remove_targets(@out_of_range_targets);
+            my $vs = $self->velocities_removed;
+            for my $target (@out_of_range_targets)
+                { $target->haste(delete $vs->{$target}) if $target }
+        }
+    };
+}
+
 sub attack {
     my $self = shift;    
+    $self->find_and_slow_creeps;
 
-    my @args = ($self->center_x, $self->center_y, $self->range);
-    if (my $targets = $self->find_creeps_in_range(@args))
-        { $_->slow($self->slow_percent) for @$targets }
-
+    # explode then fade away
     animate
         type  => [linear => 1, $self->range, 6],
         on    => [explosion_radius => $self],
         sleep => 1/50;
-
     animate
         type  => [linear => $ATTACK_COLOR, 0x39257205, 5],
         on    => [explosion_color => $self],
@@ -56,6 +93,19 @@ sub attack {
 
     $self->explosion_radius(0);
     $self->explosion_color($ATTACK_COLOR);
+}
+
+sub find_and_slow_creeps {
+    my $self = shift;    
+    my @args = ($self->center_x, $self->center_y, $self->range);
+    my $targets = $self->find_creeps_in_range(@args);
+    if ($targets) {
+        my $slow = $self->slow_percent;
+        my $vs = $self->velocities_removed;
+        for my $target (@$targets)
+            { $vs->{$target} += $target->slow($slow) }
+        $self->add_targets(@$targets);
+    }
 }
 
 # render projectiles

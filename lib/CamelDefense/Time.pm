@@ -13,6 +13,9 @@ our @EXPORT_OK = qw(
     animate interval poll repeat_work work_while move
 );
 
+# TODO these are horrible names
+#      surely someone somewhere has named these things before
+
 sub work_while {
     my (%args)    = @_;
     my $sleep     = $args{sleep};

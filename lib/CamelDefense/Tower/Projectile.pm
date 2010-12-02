@@ -46,8 +46,9 @@ sub start {
         to => sub { $target && $target->is_alive? $target->xy: undef },
         v  => $self->v;
 
-    $_->hit($self->damage) for $self->find_creeps_in_range
-        ($self->center_x, $self->center_y, $self->range);
+    my @args = ($self->center_x, $self->center_y, $self->range);
+    if (my $targets = $self->find_creeps_in_range(@args))
+        { $_->hit($self->damage) for @$targets }
 
     $self->is_alive(0);
 

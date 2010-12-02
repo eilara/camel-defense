@@ -24,7 +24,7 @@ sub merge_image_def {
     return $def->{image_def} || $class->init_image_def;
 }
 
-# given this tower class defaults and a hash, what is the merge range?
+# given this tower class defaults and a hash, what is the merged range?
 sub merge_range {
     my ($class, $def) = @_;
     return $def->{range} ||

@@ -71,8 +71,9 @@ sub aim {
 
 sub find_creeps_in_range {
     my ($self, @range) = @_;
-    return map { $_->aim_all(@range) }
-              @{ $self->living_children };
+    my @creeps = map { $_->aim_all(@range) }
+                    @{ $self->living_children };
+    return @creeps? \@creeps: undef;                    
 }
 
 1;

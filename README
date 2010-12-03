@@ -7,13 +7,21 @@ To run:
 
 What works:
 
-   Can place towers and start waves. Towers fire lasers at creeps within range.
-   Creeps die, and while living display their health.
-
+    1- grid with waypoints and path painted (only straight lines and 90 degree
+       angles allowed)
+    2- creeps which follow the waypoints with enter/leave grid animations, 
+       and explosions on death
+    3- 3 types of fully operational towers that can be placed using the cursor
+    4- a world object that lets you configure all of the above in its
+       constructor
 
 Next tasks:
 
-   Towers cost money. Level object.
+   UI
+   Towers cost money
+   Tower selection and upgrade
+   Level object
+   Levels
 
 Requires:
 
@@ -36,19 +44,13 @@ Credit:
 -------------------------------------notes--------------------------------------
 
 TODO
-    bug- projectiles and layers appear below towers
     range circles make rendering slow
-    bug- splash tower not accurate at all, they look like they are firing at nothing sometimes
-    bug- explosions z order
     check why bg layer refresh trick dont work
-    add FPS indicator
-    make sure all cycles are weak ref
     checks for creeps in range using better ds than list
     when FPS is very low, compute damage on creep if it passed through range during
         fire time during the last dt, because it could have jumped
     add intelligence getter on wave manager which answers how many waves left,
         what creeps, etc.
-
     rename Grid to Map?    
     composite waves for different creeps in a single wave
     add $ with X on it for cursor shadow when building tower and no money
@@ -57,7 +59,6 @@ TODO
     accuracy- if creep moves more than 1px per position update could be that
         we passed some tower range so look not for tower in range of position
         but of all positions passed in last sleep
-    accuracy- many models for laser cool off period        
 
 Game objects, layers, and z-index in layer:
 

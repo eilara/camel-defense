@@ -35,6 +35,7 @@ Requires:
    Coro
    SDLx::Controller::Coro
    SDLx::Coro::REPL
+   Set::Object
 
 Credit:
 

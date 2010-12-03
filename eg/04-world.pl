@@ -23,6 +23,8 @@ my $app = App->new(
     height => $app_h,
 );
 
+# $app->fullscreen;
+
 my $controller = Controller->new;
 
 my $world = World->new(
@@ -86,7 +88,12 @@ $controller->run;
 
 sub event_handler {
     my $e = shift;
-    if ($e->type == SDL_QUIT) {
+    if (
+        $e->type == SDL_QUIT || (
+            $e->type    == SDL_KEYUP
+         && $e->key_sym == SDLK_q
+        )
+    ) {
         $app->stop;
         exit;
     }
@@ -107,10 +114,12 @@ sub show_handler {
     my $msg2 = "Hit 2 for splash tower, 3 for slow tower";
     my $msg3 = "Hit Esc before placing tower to cancel build";
     my $msg4 = "Hit the space bar to start a wave";
+    my $msg5 = "Hit q to quit the game";
     $app->draw_gfx_text([10, 10], 0xFFFF00FF, $msg1);
     $app->draw_gfx_text([10, 23], 0xFFFF00FF, $msg2);
     $app->draw_gfx_text([10, 36], 0xFFFF00FF, $msg3);
     $app->draw_gfx_text([10, 49], 0xFFFF00FF, $msg4);
+    $app->draw_gfx_text([10, 62], 0xFFFF00FF, $msg5);
 
     $world->render_cursor($app);
     $app->update;

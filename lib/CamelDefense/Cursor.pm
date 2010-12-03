@@ -40,7 +40,7 @@ sub change_to {
     $self->state($new_state);
     $self->sequence_animation($new_state);
     # some cells (e.g. tower) dont look nice with a shadow rendered on them
-    if ($self->should_show_shadow(@{$self->xy})) {
+    if ($new_state ne 'default' && $self->should_show_shadow(@{$self->xy})) {
         $self->render_shadow(1);
         $self->shadow->change_to($new_state);
     } else {

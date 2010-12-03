@@ -90,10 +90,13 @@ sub can_build {
 sub should_show_shadow {
     my ($self, $x, $y) = @_;
     my ($col, $row) = @{ $self->find_cell($x, $y) };
-    my $cell = $self->cells->[$col]->[$row];
+    my $cells = $self->cells->[$col];
+    return 0 unless $col; # out of screen shows no shadow
+    my $cell = $cells->[$row];
+    return 0 unless $row; # out of screen shows no shadow
     return
         $cell->has_contents
-            ? $cell->contents eq 'tower'? 0: 1
+            ? $cell->is_tower? 0: 1
             : 1;
 }
 
@@ -114,6 +117,10 @@ use MooseX::Types::Moose qw(Num Int ArrayRef);
 
 has contents => (is => 'rw', predicate => 'has_contents');
 
+sub is_tower {
+    my $self = shift;
+    return $self->contents eq 'tower';
+}
 
 1;
 

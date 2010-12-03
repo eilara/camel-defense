@@ -1,6 +1,7 @@
 package CamelDefense::World;
 
 use Moose;
+use Scalar::Util qw(weaken);
 use SDL::Mouse;
 use SDL::Events;
 use aliased 'SDLx::App';
@@ -54,7 +55,15 @@ with 'MooseX::Role::BuildInstanceOf' =>
 has '+wave_manager' => (handles => [qw(start_wave aim is_level_complete)]);
 around merge_wave_manager_args => sub {
     my ($orig, $self) = @_;
-    return (grid => $self->grid, $self->$orig);
+    my %args = $self->$orig;
+    my $level_complete_handler = $args{level_complete_handler} || sub {};
+    weaken $self; # so that callback will not keep a strong ref to self
+    $args{level_complete_handler} = sub {
+        # brutaly escape whatever the user is doing
+        $self->state->handle_event('cancel_action');
+        $level_complete_handler->();
+    };
+    return (grid => $self->grid, %args);
 };
 
 # the world has a tower manager

@@ -16,7 +16,7 @@ has spacing => (
     is       => 'ro',
     required => 1,
     isa      => Int,
-    default  => 32,
+    default  => 24,
 );
 
 has grid_color => (

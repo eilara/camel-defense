@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use lib '../lib';
 use SDL::Events;
+use CamelDefense::Time qw(pause_resume);
 use aliased 'SDLx::App';
 use aliased 'CamelDefense::World';
 
@@ -96,6 +97,8 @@ sub event_handler {
     ) {
         $app->stop;
         exit;
+    } elsif ($e->type == SDL_KEYUP && $e->key_sym == SDLK_p) {
+        pause_resume;
     }
     $world->start_wave if
         $e->type == SDL_KEYUP &&

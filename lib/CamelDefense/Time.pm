@@ -5,13 +5,38 @@ use warnings;
 use Coro;
 use Coro::Timer qw(sleep);
 use Time::HiRes qw(time);
+use Set::Object::Weak qw(set);
 use List::Util qw(max);
 use CamelDefense::Util qw(distance);
 use base 'Exporter';
 
 our @EXPORT_OK = qw(
-    animate interval poll repeat_work work_while move
+    animate interval poll repeat_work work_while move pause_resume
 );
+
+my $Sleeping_Coros = set;
+my $Is_Paused      = 0;
+
+
+sub rest($) {
+    my $t = shift;
+#    $Sleeping_Coros->insert($Coro::current);
+    sleep $t;
+#    $Sleeping_Coros->remove($Coro::current);
+}
+
+sub pause_resume() {
+#    if ($Is_Paused) {
+#        for my $coro ($Sleeping_Coros->elements) {
+#            $coro->resume;
+#            $coro->ready;
+#        }
+#        $Is_Paused = 0;
+#    } else {
+#        $_->suspend for $Sleeping_Coros->elements;
+#        $Is_Paused = 1;
+#    }
+}
 
 # TODO these are horrible names
 #      surely someone somewhere has named these things before
@@ -26,7 +51,7 @@ sub work_while {
     my $time_pred = $timeout? sub { time - $start < $timeout }: sub { 1 };
     while ($time_pred->() && $predicate->()) {
         $work->();
-        sleep $sleep;
+        rest $sleep;
     }
 }
 
@@ -38,7 +63,7 @@ sub repeat_work(%) {
     while (1) {
         if ($predicate->()) {
             $work->();
-            sleep $sleep;
+            rest $sleep;
         }
     }
 }
@@ -51,7 +76,7 @@ sub poll(%) {
     my $start     = time;
     my $time_pred = $timeout? sub { time - $start < $timeout }: sub { 1 };
     while ($time_pred->()) {
-        sleep $sleep;
+        rest $sleep;
         if (my $result = $predicate->()) {
             return $result;
         }
@@ -70,7 +95,7 @@ sub interval(%) {
 	
     for my $i (1..$times) {
         $block->($i);
-        sleep $sleep;
+        rest $sleep;
     }
 }
 
@@ -85,7 +110,7 @@ sub animate(%) {
     for (1..$steps) {
         $obj->$method($value);
         $value += $step;
-        sleep $sleep;
+        rest $sleep;
     }
     $obj->$method($end);
 }
@@ -142,7 +167,7 @@ sub move(%) {
         $x1 += ($x2 - $x1) / $steps;
         $y1 += ($y2 - $y1) / $steps;
         $xy->([$x1, $y1]);
-        sleep $sleep;
+        rest $sleep;
         $compute_next_xy->();
     }
 

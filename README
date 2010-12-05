@@ -149,6 +149,15 @@ how to connect renderer to visual objects:
    renderer keeps a heap of objects per layer sorted by z index
 
    
-    
+next wave
+pause
+
+
+seconds, and then every $repeat seconds. The timer does his best not
+        to drift, but it will not invoke the timer more often then once per
+        event loop iteration, and might drift in other cases. If that isn't
+        acceptable, look at EV::periodic, which can provide long-term stable
+        timers.
+
 
 

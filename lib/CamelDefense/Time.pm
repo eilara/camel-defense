@@ -2,7 +2,11 @@ package CamelDefense::Time;
 
 use strict;
 use warnings;
+use Sub::Call::Recur;
+use Set::Object qw(set);
 use Coro;
+use Coro::EV;
+use EV;
 use Coro::Timer qw(sleep);
 use Time::HiRes qw(time);
 use Set::Object::Weak qw(set);
@@ -11,31 +15,50 @@ use CamelDefense::Util qw(distance);
 use base 'Exporter';
 
 our @EXPORT_OK = qw(
-    animate interval poll repeat_work work_while move pause_resume
+    animate interval poll repeat_work work_while move
+    pause_resume cleanup_thread is_paused
 );
 
-my $Sleeping_Coros = set;
+my $Timers         = {};  # cleaned by cleanup_thread
+my $Resume_Signals = set; # cleaned by resume
 my $Is_Paused      = 0;
 
-
 sub rest($) {
-    my $t = shift;
-#    $Sleeping_Coros->insert($Coro::current);
-    sleep $t;
-#    $Sleeping_Coros->remove($Coro::current);
+    my $sleep = shift;
+    return unless $sleep;
+    my $sleep_start = time;
+    my $timer = EV::timer $sleep, 0, Coro::rouse_cb;
+    $Timers->{$Coro::current} = $timer;
+    Coro::rouse_wait;
+    delete $Timers->{$Coro::current};
+
+    if ($Is_Paused) {
+        $Resume_Signals->insert(my $resume_signal = AnyEvent->condvar);
+        my $sleep_left = $sleep - (time - $sleep_start);
+        $resume_signal->recv;
+        recur($sleep_left) if $sleep_left > 0.01;
+    }
 }
 
-sub pause_resume() {
-#    if ($Is_Paused) {
-#        for my $coro ($Sleeping_Coros->elements) {
-#            $coro->resume;
-#            $coro->ready;
-#        }
-#        $Is_Paused = 0;
-#    } else {
-#        $_->suspend for $Sleeping_Coros->elements;
-#        $Is_Paused = 1;
-#    }
+sub cleanup_thread($) {
+    my $coro = shift;
+    delete $Timers->{$Coro::current};
+}
+
+sub pause_resume() { if ($Is_Paused) { resume() } else { pause() } }
+
+sub is_paused() { $Is_Paused }
+
+sub pause() {
+    $Is_Paused = 1;
+    $_->invoke for values %$Timers;
+    $Timers = {};
+}
+
+sub resume() {
+    $Is_Paused = 0;
+    $_->send for $Resume_Signals->elements;
+    $Resume_Signals->clear;
 }
 
 # TODO these are horrible names
@@ -140,8 +163,8 @@ sub move(%) {
     my ($d, $last_d);
 
     my $compute_next_xy = $wild
-        ? sub { # for wild targets we can't make sure that
-                # distance is decreasing when it moves
+        ? sub { # for wild targets we can't make sure that distance
+                # is decreasing when it moves so we undef last_d
             if (my $to_xy = $to->()) {
                 ($x2, $y2) = @$to_xy;
                 $last_d = undef;
@@ -167,6 +190,7 @@ sub move(%) {
         $x1 += ($x2 - $x1) / $steps;
         $y1 += ($y2 - $y1) / $steps;
         $xy->([$x1, $y1]);
+
         rest $sleep;
         $compute_next_xy->();
     }

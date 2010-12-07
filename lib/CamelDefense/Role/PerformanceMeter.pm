@@ -4,6 +4,7 @@ use Moose::Role;
 use MooseX::Types::Moose qw(Int Num);
 use Time::HiRes qw(time);
 use Data::Average::Expires;
+use CamelDefense::Time qw(is_paused);
 
 requires 'render';
 
@@ -29,6 +30,8 @@ after render => sub {
     $self->last_point(time);
 
     $surface->draw_gfx_text([585, 10], 0xFFFF00FF, "FPS=$average");
+    $surface->draw_gfx_text([585, 23], 0xFFFF00FF, "PAUSED")
+        if is_paused;
 };
 
 1;

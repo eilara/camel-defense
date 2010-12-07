@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use lib '../lib';
 use SDL::Events;
+use CamelDefense::Time qw(pause_resume);
 use aliased 'SDLx::App';
 use aliased 'CamelDefense::World';
 
@@ -66,9 +67,16 @@ $controller->run;
 
 sub event_handler {
     my $e = shift;
-    if ($e->type == SDL_QUIT) {
+    if (
+        $e->type == SDL_QUIT || (
+            $e->type    == SDL_KEYUP
+         && $e->key_sym == SDLK_q
+        )
+    ) {
         $app->stop;
         exit;
+    } elsif ($e->type == SDL_KEYUP && $e->key_sym == SDLK_p) {
+        pause_resume;
     }
     $world->start_wave if
         $e->type == SDL_KEYUP &&
@@ -77,14 +85,6 @@ sub event_handler {
 
 sub show_handler {
     my $dt = shift;
-
-    my $msg1 = "Hit 1 to build laser tower, then place with mouse and click";
-    my $msg2 = "Hit Esc before placing tower to cancel build";
-    my $msg3 = "Hit the space bar to start a wave";
-    $app->draw_gfx_text([10, 10], 0xFFFF00FF, $msg1);
-    $app->draw_gfx_text([10, 23], 0xFFFF00FF, $msg2);
-    $app->draw_gfx_text([10, 36], 0xFFFF00FF, $msg3);
-
     $world->render_cursor($app);
     $app->update;
 }

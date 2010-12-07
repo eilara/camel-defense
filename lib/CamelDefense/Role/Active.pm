@@ -5,6 +5,7 @@ package CamelDefense::Role::Active;
 
 use Moose::Role;
 use Coro;
+use CamelDefense::Time qw(cleanup_thread);
 
 requires 'start';
 
@@ -13,10 +14,14 @@ has coro => (
     isa      => 'Coro',
     required => 1,
     default  => sub { my $self = shift; return async { $self->start } },
-    handles  => {
-        deactivate => 'cancel',
-    },
 );
+
+sub deactivate {
+    my $self = shift;
+    my $coro = $self->coro;
+    $coro->cancel;
+    cleanup_thread($coro);
+}
 
 1;
 

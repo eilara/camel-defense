@@ -89,8 +89,8 @@ before render => sub {
     my ($x, $y) = ($self->sprite_x, $self->sprite_y - 7);
     my $w = $self->w;
     $surface->draw_rect([$x  , $y  , $w  , 4], 0x0);
-    $surface->draw_rect([$x+1, $y+1, $w-1, 2], 0x9F0000FF);
-    $surface->draw_rect([$x+1, $y+1, $hp_ratio*($w-1), 2], 0x009F00FF);
+    $surface->draw_rect([$x+1, $y+1, $w-2, 2], 0x9F0000FF);
+    $surface->draw_rect([$x+1, $y+1, $hp_ratio*($w-2), 2], 0x009F00FF);
 };
 
 sub hit {
@@ -101,6 +101,7 @@ sub hit {
     unless ($hp > 0) {
         $self->is_alive(0);
         $self->deactivate; # stop moving
+        
         async {
             $self->animate_sprite(death => 7, 0.06);
             $self->is_shown(0);

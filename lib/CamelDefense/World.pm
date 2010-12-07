@@ -61,7 +61,6 @@ around merge_wave_manager_args => sub {
     $args{level_complete_handler} = sub {
         # brutaly escape whatever the user is doing
         $self->state->handle_event('cancel_action');
-        print "FGAASD\n";
         $level_complete_handler->();
     };
     return (grid => $self->grid, %args);

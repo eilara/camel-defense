@@ -14,11 +14,18 @@ has current_target => (is => 'rw');
 
 has is_selected => (is => 'rw', required => 1, isa => 'Bool', default => 0);
 
-with 'CamelDefense::Role::Active';
-with 'CamelDefense::Role::GridAlignedSprite';
+with qw(
+    CamelDefense::Role::Active
+    CamelDefense::Role::GridAlignedSprite
+);
+with 'CamelDefense::Role::AnimatedSprite'; # needs sprite() from CenteredSprite
 
 sub init_image_def { die "Abstract" }
 sub start          { die "Abstract" }
+
+# the following two merges are used by the shadow cursor to show
+# the shadow of the correct tower class, while honoring any overrides
+# in some tower definition hash
 
 # given this tower class defaults and a hash, what is the merged image def?
 sub merge_image_def {
@@ -36,11 +43,13 @@ sub merge_range {
 sub set_selected {
     my $self = shift;
     $self->is_selected(1);
+    $self->sequence_animation('selected');
 }
 
 sub set_unselected {
     my $self = shift;
     $self->is_selected(0);
+    $self->sequence_animation('default');
 }
 
 sub aim {
@@ -58,12 +67,6 @@ sub aim {
 }
 
 sub render_attacks { die "Abstract" }
-
-after render => sub {
-    my ($self, $surface) = @_;
-    $surface->draw_rect([$self->sprite_x, $self->sprite_y - 8, $self->w, 4], 0x0)
-        if $self->is_selected;
-};
 
 # should be called before render, on background layer
 sub render_range {

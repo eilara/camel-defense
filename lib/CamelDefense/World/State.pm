@@ -57,7 +57,6 @@ sub _build_state {
             $grid->unselect_tower($selected_tower);
             $selected_tower = undef;
         }
-        return 'init';
     };
 
     my $init_select_or_deselect = sub {
@@ -97,7 +96,12 @@ sub _build_state {
                         next_state => $init_select_or_deselect,
                     },
                     cancel_action => {
-                        next_state => $init_deselect,
+                        next_state => 'init',
+                        code       => $init_deselect,
+                    },
+                    init_build => {
+                        next_state => $init_build,
+                        code       => $init_deselect,
                     },
                 },
             },

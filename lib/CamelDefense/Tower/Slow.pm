@@ -41,6 +41,7 @@ sub init_image_def {{
         default          => [[0, 0]],
         place_tower      => [[1, 0]],
         cant_place_tower => [[2, 0]],
+        selected         => [[3, 0]],
     ],
 }}
 

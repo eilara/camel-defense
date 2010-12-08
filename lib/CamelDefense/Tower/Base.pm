@@ -61,7 +61,7 @@ sub render_attacks { die "Abstract" }
 
 after render => sub {
     my ($self, $surface) = @_;
-    $surface->draw_rect([$self->sprite_x, $self->sprite_y - 7, $self->w, 4], 0x0)
+    $surface->draw_rect([$self->sprite_x, $self->sprite_y - 8, $self->w, 4], 0x0)
         if $self->is_selected;
 };
 

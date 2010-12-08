@@ -27,6 +27,8 @@ sub _build_state {
     my $cursor      = $self->cursor;
     my $grid        = $self->grid;
 
+    my $selected_tower;
+
     my $build_tower = sub { $self->tower_manager->build_tower };
 
     my $can_build = sub {
@@ -44,6 +46,29 @@ sub _build_state {
         return $can_build->();
     };
 
+    my $init_select = sub {
+        my $tower = $grid->select_tower(@{$cursor->xy});
+        $selected_tower = $tower if $tower;
+        return $tower? 'tower_selected': 'init';
+    };
+
+    my $init_select_or_deselect = sub {
+        my ($x, $y) = @{$cursor->xy};
+        my $tower = $grid->select_tower($x, $y);
+        unless ($tower) {
+            if ($selected_tower) {
+                $grid->unselect_tower($selected_tower);
+                $selected_tower = undef;
+            }
+            return 'init';
+        }
+        return 'init' if $tower eq $selected_tower;
+        # switch selected
+        $grid->unselect_tower($selected_tower);
+        $selected_tower = $tower;
+        return 'tower_selected';
+    };
+
     return StateMachine->new(
         cursor => $cursor,
         states => {
@@ -52,6 +77,20 @@ sub _build_state {
                 events => {
                     init_build => {
                         next_state => $init_build,
+                    },
+                    mouse_up => {
+                        next_state => $init_select,
+                    },
+                },
+            },
+            tower_selected => {
+                cursor   => 'default',
+                events   => {
+                    mouse_up => {
+                        next_state => $init_select_or_deselect,
+                    },
+                    cancel_action => {
+                        next_state => 'init',
                     },
                 },
             },

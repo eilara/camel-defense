@@ -2,7 +2,7 @@ package CamelDefense::Time;
 
 use strict;
 use warnings;
-use Sub::Call::Recur;
+#use Sub::Call::Recur; # dont compile on windows
 use Set::Object qw(set);
 use Coro;
 use Coro::EV;
@@ -23,7 +23,7 @@ my $Timers         = {};  # cleaned by cleanup_thread
 my $Resume_Signals = set; # cleaned by resume
 my $Is_Paused      = 0;
 
-sub rest($) {
+sub rest {
     my $sleep = shift;
     return unless $sleep;
     my $sleep_start = time;
@@ -36,7 +36,10 @@ sub rest($) {
         $Resume_Signals->insert(my $resume_signal = AnyEvent->condvar);
         my $sleep_left = $sleep - (time - $sleep_start);
         $resume_signal->recv;
-        recur($sleep_left) if $sleep_left > 0.01;
+#        recur($sleep_left) if $sleep_left > 0.01; # dont compile on windows
+        @_ = ($sleep_left);
+        goto &rest;
+
     }
 }
 

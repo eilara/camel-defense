@@ -100,11 +100,8 @@ sub select_tower {
 sub unselect_tower {
     my ($self, $tower) = @_;
     my $cell = $self->get_cell(@{$tower->xy});
-    print "1 $cell\n";
     return unless $cell;
-    print "2 $cell\n";
     return unless $cell->is_tower;
-    print "3 $cell\n";
     $tower->set_unselected;
     return $tower;
 }

@@ -52,17 +52,24 @@ sub _build_state {
         return $tower? 'tower_selected': 'init';
     };
 
+    my $init_deselect = sub {
+        if ($selected_tower) {
+            $grid->unselect_tower($selected_tower);
+            $selected_tower = undef;
+        }
+        return 'init';
+    };
+
     my $init_select_or_deselect = sub {
         my ($x, $y) = @{$cursor->xy};
         my $tower = $grid->select_tower($x, $y);
-        unless ($tower) {
+        if (!$tower || ($selected_tower && ($tower eq $selected_tower))) {
             if ($selected_tower) {
                 $grid->unselect_tower($selected_tower);
                 $selected_tower = undef;
             }
             return 'init';
         }
-        return 'init' if $tower eq $selected_tower;
         # switch selected
         $grid->unselect_tower($selected_tower);
         $selected_tower = $tower;
@@ -90,7 +97,7 @@ sub _build_state {
                         next_state => $init_select_or_deselect,
                     },
                     cancel_action => {
-                        next_state => 'init',
+                        next_state => $init_deselect,
                     },
                 },
             },

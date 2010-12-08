@@ -116,6 +116,7 @@ sub show_handler {
     my @messages = (
         "Hit 1 to build laser tower, then place with mouse and click",
         "Hit 2 for splash tower, 3 for slow tower",
+        "Click mouse on tower to select",
         "Hit Esc before placing tower to cancel build",
         "Hit the space bar to start a wave",
         "Hit p to pause/resume",

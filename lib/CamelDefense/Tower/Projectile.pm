@@ -70,7 +70,7 @@ around render => sub {
     $surface->draw_circle_filled(
         [$self->center_x, $self->center_y],
         $radius,
-        0x9F000050,
+        0x9F000039,
     );
     $surface->draw_circle(
         [$self->center_x, $self->center_y],

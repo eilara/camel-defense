@@ -27,7 +27,7 @@ with 'CamelDefense::Role::AnimatedSprite';
 
 sub init_image_def {{
     image     => '../data/cursor.png',
-    size      => [32, 32],
+    size      => [22, 26],
     sequences => [
         default          => [[0, 0]],
         place_tower      => [[1, 0]],

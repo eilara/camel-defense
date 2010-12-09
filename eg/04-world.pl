@@ -48,7 +48,7 @@ my $world = World->new(
             },
             {
                 creep_count      => 13,
-                inter_creep_wait => 0.3,
+                inter_creep_wait => 1,
                 creep_args       =>
                     [v => 20, kind => 'slow', hp => 20],
             },

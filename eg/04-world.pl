@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use lib '../lib';
+use SDL::Mouse;
 use SDL::Events;
 use CamelDefense::Time qw(pause_resume);
 use aliased 'SDLx::App';
@@ -25,6 +26,8 @@ my $app = App->new(
 );
 
 # $app->fullscreen;
+
+SDL::Mouse::show_cursor(SDL_DISABLE);
 
 my $controller = Controller->new;
 

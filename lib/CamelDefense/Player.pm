@@ -4,13 +4,15 @@ use Moose;
 use MooseX::Types::Moose qw(Bool Num);
 
 has gold     => (is => 'rw', required => 1, isa => Num , default => 40);
-has start_hp => (is => 'ro', required => 1, isa => Num , default => 100);
+has hp       => (is => 'rw', required => 1, isa => Num , default => 100);
 has is_alive => (is => 'rw', required => 1, isa => Bool, default => 1);
 
-has hp => (
-    is => 'rw', required => 1, isa => Num, lazy => 1,
-    default => sub { shift->start_hp },
-);
+has start_hp => (is => 'rw', isa => Num);
+
+sub BUILD {
+    my $self = shift;
+    $self->start_hp($self->hp);
+}
 
 sub hit {
     my ($self, $damage) = @_;

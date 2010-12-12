@@ -2,8 +2,6 @@ package CamelDefense::World;
 
 use Moose;
 use Scalar::Util qw(weaken);
-use SDL::Mouse;
-use SDL::Events;
 use aliased 'SDLx::App';
 use aliased 'SDLx::Surface';
 use aliased 'CamelDefense::Grid';
@@ -17,11 +15,11 @@ use aliased 'SDLx::Controller::Coro'       => 'Controller';
 with 'CamelDefense::Role::PerformanceMeter';
 
 has controller => (is => 'ro', required => 1, isa => Controller);
+has app        => (is => 'ro', required => 1, isa => App);
+has waypoints  => (is => 'ro', required => 1);
 
-has app =>
-    (is => 'ro', required => 1, isa => App, handles => [qw(w h)]);
-
-has waypoints => (is => 'ro', required => 1);
+has w          => (is => 'ro', required => 1, lazy => 1, default => sub { shift->app->w });
+has h          => (is => 'ro', required => 1, lazy => 1, default => sub { shift->app->h });
 
 has cursor     => (is => 'ro', lazy_build => 1, isa => Cursor);
 has bg_surface => (is => 'ro', lazy_build => 1, isa => Surface);
@@ -114,7 +112,6 @@ sub _build_cursor {
 
 sub BUILD {
     my $self = shift;
-    SDL::Mouse::show_cursor(SDL_DISABLE);
     my $app = $self->app;
     my $c = $self->controller;
     $c->add_event_handler(sub { $self->handle_event(@_) });

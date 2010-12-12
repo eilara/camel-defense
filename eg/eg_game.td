@@ -1,9 +1,9 @@
 {
-    app => {
+    app_args => [
         w     => 640,
         h     => 480,
         title => 'Example Game',
-    },
+    ],
 
     worlds => [
         {

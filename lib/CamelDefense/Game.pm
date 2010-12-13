@@ -9,6 +9,7 @@ use aliased 'SDLx::Controller::Coro' => 'Controller';
 use CamelDefense::Time qw(pause_resume);
 use aliased 'CamelDefense::World';
 use aliased 'CamelDefense::Player';
+use aliased 'CamelDefense::Game::UI';
 
 sub run {
     my ($class, $config) = @_;
@@ -25,6 +26,16 @@ sub _run { shift->controller->run }
 # the game has an sdlx app
 with 'MooseX::Role::BuildInstanceOf' => {target => App};
 has '+app' => (handles => [qw(w h)]);
+around merge_app_args => sub {
+    my ($orig, $self) = @_;
+    my %args = $self->$orig;
+    $args{h} += 48; # UI height
+    return (%args);
+};
+
+# the game has a UI
+with 'MooseX::Role::BuildInstanceOf' =>
+    {target => UI, prefix => 'game_ui'};
 
 has worlds => (is => 'ro', required => 1, isa => ArrayRef[HashRef]);
 
@@ -40,8 +51,13 @@ sub _build_current_world { shift->build_world(0) }
 sub build_world {
     my ($self, $idx) = @_;
     my $def = $self->worlds->[$idx || 0];
-    return World->new
-        (controller => $self->controller, app => $self->app, %$def);
+    return World->new(
+        controller => $self->controller,
+        app        => $self->app,
+        w          => $self->w,
+        h          => $self->h - 48, # UI height
+        %$def,
+    );
 }
 
 has controller => (
@@ -58,6 +74,8 @@ sub BUILD {
     $self->add_app_handlers;
     SDL::Mouse::show_cursor(SDL_DISABLE); # for some reason must be
                                           # done AFTER handlers are added
+    $self->game_ui->xy([0, $self->h - 48]); # ui height
+#    use Data::Dumper;print Dumper $self->game_ui;exit;
 }
 
 sub add_app_handlers {
@@ -73,25 +91,26 @@ sub clean_app_handlers {
 
 sub handle_event {
     my ($self, $e) = @_;
+
     if (
-        $e->type == SDL_QUIT || (
-            $e->type    == SDL_KEYUP
-         && $e->key_sym == SDLK_q
-        )
+        $e->type == SDL_QUIT ||
+            ($e->type == SDL_KEYUP && $e->key_sym == SDLK_q)
     ) {
         $self->app->stop;
         exit;
+
     } elsif ($e->type == SDL_KEYUP && $e->key_sym == SDLK_p) {
         pause_resume;
+
+    } elsif($e->type == SDL_KEYUP && $e->key_sym == SDLK_SPACE) { 
+        $self->current_world->start_wave;
     }
-    $self->current_world->start_wave if
-        $e->type == SDL_KEYUP &&
-        $e->key_sym == SDLK_SPACE;
 }
 
 sub render {
     my $self = shift;
     my $app = $self->app;
+    $self->game_ui->render($app);
     $self->render_cursor($app);
     $app->update;
 }

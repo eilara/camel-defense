@@ -57,7 +57,7 @@
                 tower_defs => [
                     {
                         type           => 'CamelDefense::Tower::Laser',
-                        range          => 150,
+                        range          => 110,
                         damage_per_sec => 3,
                         laser_color    => 0x501265FF,
                     },
@@ -74,7 +74,7 @@
                     },
                     {
                         type            => 'CamelDefense::Tower::Slow',
-                        range           => 100,
+                        range           => 50,
                         cool_off_period => 1.0,
                         slow_percent    => 13,
                     },

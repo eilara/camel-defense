@@ -2,6 +2,7 @@ package CamelDefense::Cursor;
 
 use Moose;
 use MooseX::Types::Moose qw(Bool Str);
+use SDL::Events;
 use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::Cursor::Tower';
 
@@ -34,6 +35,15 @@ sub init_image_def {{
         cant_place_tower => [[2, 0]],
     ],
 }}
+
+sub handle_event {
+    my ($self, $e) = @_;
+    if ($e->type == SDL_APPMOUSEFOCUS) {
+        $self->is_visible($e->active_gain);
+    } elsif ($e->type == SDL_MOUSEMOTION) {
+        $self->xy([$e->motion_x, $e->motion_y]);
+    }
+}
 
 sub change_to {
     my ($self, $new_state) = @_;

@@ -96,7 +96,13 @@ with 'MooseX::Role::BuildInstanceOf' =>
 has '+event_handler' => (handles => [qw(handle_event)]);
 around merge_event_handler_args => sub {
     my ($orig, $self) = @_;
-    return (cursor => $self->cursor, state => $self->state, $self->$orig);
+    return (
+        cursor => $self->cursor,
+        state  => $self->state,
+        w      => $self->w,
+        h      => $self->h,
+        $self->$orig,
+    );
 };
 
 # should move to build instance role
@@ -114,6 +120,9 @@ sub BUILD {
     my $self = shift;
     my $app = $self->app;
     my $c = $self->controller;
+    my $cursor = $self->cursor;
+    # for xy to updated, cursor handles events before world state machine
+    $c->add_event_handler(sub { $cursor->handle_event(@_) });
     $c->add_event_handler(sub { $self->handle_event(@_) });
     $c->add_show_handler(sub { $self->render($app, @_) });
 }

@@ -90,8 +90,7 @@ sub can_build {
 sub select_tower {
     my ($self, $x, $y) = @_;
     my $cell = $self->get_cell($x, $y);
-    return unless $cell;
-    return unless $cell->is_tower;
+    return unless $cell && $cell->is_tower;
     my $tower = $cell->contents;
     $tower->set_selected;
     return $tower;
@@ -100,8 +99,7 @@ sub select_tower {
 sub unselect_tower {
     my ($self, $tower) = @_;
     my $cell = $self->get_cell(@{$tower->xy});
-    return unless $cell;
-    return unless $cell->is_tower;
+    return unless $cell && $cell->is_tower;
     $tower->set_unselected;
     return $tower;
 }

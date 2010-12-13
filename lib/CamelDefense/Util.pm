@@ -4,7 +4,17 @@ use strict;
 use warnings;
 use base 'Exporter';
 
-our @EXPORT_OK = qw(analyze_right_angle_line distance can_tower_hit_creep);
+our @EXPORT_OK = qw(
+    analyze_right_angle_line distance can_tower_hit_creep is_in_rect
+);
+
+sub is_in_rect {
+    my ($x, $y, $left, $top, $w, $h) = @_;
+    return
+        ($x >= $left && $x <= $w) &&
+        ($y >= $top  && $y <= $h);
+}
+
 
 sub analyze_right_angle_line {
     my ($x1, $y1, $x2, $y2) = @_;

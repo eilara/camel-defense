@@ -7,6 +7,7 @@ package CamelDefense::World::EventHandler;
 use Moose;
 use MooseX::Types::Moose qw(Int);
 use SDL::Events;
+use CamelDefense::Util qw(is_in_rect);
 use aliased 'CamelDefense::World::State';
 use aliased 'CamelDefense::Cursor';
 
@@ -27,11 +28,16 @@ sub handle_event {
             $state->handle_event(init_build => $k - SDLK_1);
         } 
 
-    } elsif ($e->type == SDL_MOUSEMOTION) {
-        $state->handle_event('mouse_motion');
-
-    } elsif ($e->type == SDL_MOUSEBUTTONUP) {
-        $state->handle_event('mouse_up');
+    } else {
+        my $is_in_world = is_in_rect(
+            $e->motion_x, $e->motion_y, 0, 0, $self->w, $self->h
+        );
+        if ($e->type == SDL_MOUSEMOTION) {
+            $state->handle_event('mouse_motion');
+        } elsif ($e->type == SDL_MOUSEBUTTONUP) {
+            $state->handle_event('mouse_up')
+                if $is_in_world;
+        }
     }
 
 }

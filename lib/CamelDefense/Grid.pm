@@ -23,7 +23,7 @@ has cells => (
 # a grid has markers which show the grid lines and handle translation xy -> cells
 with 'MooseX::Role::BuildInstanceOf' => {target => Markers, prefix => 'marks'};
 has '+marks' => (handles => [qw(
-    grid_color
+    grid_color w h
     row_marks col_marks
     find_cell compute_cell_center
 )]);

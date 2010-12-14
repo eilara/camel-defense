@@ -5,16 +5,23 @@ use warnings;
 use base 'Exporter';
 
 our @EXPORT_OK = qw(
-    analyze_right_angle_line distance can_tower_hit_creep is_in_rect
+    analyze_right_angle_line distance can_tower_hit_creep
+    is_in_rect is_my_event
 );
+
+sub is_my_event {
+    my ($e, $left, $top, $has_width_height) = @_;
+    my ($x, $y) = ($e->motion_x, $e->motion_y);
+    my ($w, $h) = ($has_width_height->w, $has_width_height->h);
+    return is_in_rect($x, $y, $left, $top, $w, $h);
+}
 
 sub is_in_rect {
     my ($x, $y, $left, $top, $w, $h) = @_;
     return
-        ($x >= $left && $x <= $w) &&
-        ($y >= $top  && $y <= $h);
+        ($x >= $left && $x <= $left + $w) &&
+        ($y >= $top  && $y <= $top + $h);
 }
-
 
 sub analyze_right_angle_line {
     my ($x1, $y1, $x2, $y2) = @_;

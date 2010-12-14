@@ -36,6 +36,10 @@ around merge_app_args => sub {
 # the game has a UI
 with 'MooseX::Role::BuildInstanceOf' =>
     {target => UI, prefix => 'game_ui'};
+around merge_game_ui_args => sub {
+    my ($orig, $self) = @_;
+    return (cursor => $self->cursor, $self->$orig);
+};
 
 has worlds => (is => 'ro', required => 1, isa => ArrayRef[HashRef]);
 
@@ -43,7 +47,7 @@ has current_world => (
     is         => 'rw',
     lazy_build => 1,
     isa        => World,
-    handles    => [qw(render_cursor start_wave)],
+    handles    => [qw(render_cursor start_wave cursor)],
 );
 
 sub _build_current_world { shift->build_world(0) }
@@ -75,7 +79,6 @@ sub BUILD {
     SDL::Mouse::show_cursor(SDL_DISABLE); # for some reason must be
                                           # done AFTER handlers are added
     $self->game_ui->xy([0, $self->h - 48]); # ui height
-#    use Data::Dumper;print Dumper $self->game_ui;exit;
 }
 
 sub add_app_handlers {
@@ -105,6 +108,8 @@ sub handle_event {
     } elsif($e->type == SDL_KEYUP && $e->key_sym == SDLK_SPACE) { 
         $self->current_world->start_wave;
     }
+
+    $self->game_ui->handle_event($e);
 }
 
 sub render {

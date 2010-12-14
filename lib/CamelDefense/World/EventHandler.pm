@@ -7,7 +7,7 @@ package CamelDefense::World::EventHandler;
 use Moose;
 use MooseX::Types::Moose qw(Int);
 use SDL::Events;
-use CamelDefense::Util qw(is_in_rect);
+use CamelDefense::Util qw(is_my_event);
 use aliased 'CamelDefense::World::State';
 use aliased 'CamelDefense::Cursor';
 
@@ -25,13 +25,11 @@ sub handle_event {
             $state->handle_event('cancel_action');
         } elsif ($k >= SDLK_1 && $k <= SDLK_9) {
             # init_build events get the index of the tower type def to be built
-            $state->handle_event(init_build => $k - SDLK_1);
+            $state->handle_event(init_build => $k - SDLK_1, $e);
         } 
 
     } else {
-        return unless is_in_rect(
-            $e->motion_x, $e->motion_y, 0, 0, $self->w, $self->h
-        );
+        return unless is_my_event($e, 0, 0, $self);
 
         if ($e->type == SDL_MOUSEMOTION) {
             $state->handle_event('mouse_motion');

@@ -6,6 +6,7 @@ package CamelDefense::World::State;
 # calls build tower when tower is built
 
 use Moose;
+use CamelDefense::Util qw(is_in_rect);
 use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::StateMachine';
 use aliased 'CamelDefense::Cursor';
@@ -75,6 +76,10 @@ sub _build_state {
         return 'tower_selected';
     };
 
+    my $is_mine = sub {
+        is_in_rect(@{$cursor->xy}, 0, 0, $grid->w, $grid->h);
+    };
+
     return StateMachine->new(
         cursor => $cursor,
         states => {
@@ -106,7 +111,7 @@ sub _build_state {
                 },
             },
             place_tower => {
-                cursor => 'place_tower',
+                cursor => sub { $is_mine->()? 'place_tower': 'default' },
                 events => {
                     init_build => {
                         next_state => $init_build,
@@ -124,7 +129,7 @@ sub _build_state {
                 },
             },
             cant_place_tower => {
-                cursor => 'cant_place_tower',
+                cursor => sub { $is_mine->()? 'cant_place_tower': 'default' },
                 events => {
                     init_build => {
                         next_state => $init_build,

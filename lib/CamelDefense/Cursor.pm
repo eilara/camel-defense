@@ -45,6 +45,8 @@ sub handle_event {
     }
 }
 
+sub set_default { shift->change_to('default') }
+
 sub change_to {
     my ($self, $new_state) = @_;
     $self->state($new_state);

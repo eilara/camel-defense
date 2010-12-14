@@ -17,7 +17,12 @@ sub init_image_def {{
 sub handle_event {
     my ($self, $e) = @_;
     return unless is_my_event($e, 0, $self->y, $self);
-    $self->cursor->set_default;
+
+    $self->cursor->set_default; # dont want build cursor on toolbar
+    # route the event to the correct button
+    if ($e->type == SDL_MOUSEMOTION) {
+    } elsif ($e->type == SDL_MOUSEBUTTONUP) {
+    }
 }
 
 1;

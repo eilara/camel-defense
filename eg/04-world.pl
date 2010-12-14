@@ -131,6 +131,7 @@ sub show_handler {
         $y += 13;
     }
 
+    $world->render_cursor_shadow($app);
     $world->render_cursor($app);
     $app->update;
 }

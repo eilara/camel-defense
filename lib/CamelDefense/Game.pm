@@ -115,6 +115,7 @@ sub handle_event {
 sub render {
     my $self = shift;
     my $app = $self->app;
+    $self->cursor->render_shadow($self->app);
     $self->game_ui->render($app);
     $self->render_cursor($app);
     $app->update;

@@ -148,5 +148,10 @@ sub render_cursor {
     $self->cursor->render($self->app);
 }
 
+sub render_cursor_shadow {
+    my $self = shift;
+    $self->cursor->render_shadow($self->app);
+}
+
 1;
 

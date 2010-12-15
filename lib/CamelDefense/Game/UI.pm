@@ -10,7 +10,7 @@ has cursor => (is => 'ro', required => 1, isa => Cursor);
 with 'CamelDefense::Role::Sprite';
 
 sub init_image_def {{
-    image     => '../data/ui.png',
+    image     => '../data/ui_toolbar.png',
     size      => [640, 48],
 }}
 

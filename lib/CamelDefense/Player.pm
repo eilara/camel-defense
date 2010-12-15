@@ -3,8 +3,8 @@ package CamelDefense::Player;
 use Moose;
 use MooseX::Types::Moose qw(Bool Num);
 
-has gold     => (is => 'rw', required => 1, isa => Num , default => 40);
 has hp       => (is => 'rw', required => 1, isa => Num , default => 100);
+has gold     => (is => 'rw', required => 1, isa => Num , default => 40);
 has is_alive => (is => 'rw', required => 1, isa => Bool, default => 1);
 
 has start_hp => (is => 'rw', isa => Num);
@@ -21,6 +21,11 @@ sub hit {
     $self->hp($hp);
     unless ($hp > 0) {
     }
+}
+
+sub gain_gold {
+    my ($self, $gold) = @_;
+    $self->gold( $self->gold + $gold );
 }
 
 sub hp_ratio {

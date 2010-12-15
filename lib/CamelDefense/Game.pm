@@ -47,7 +47,7 @@ has current_world => (
     is         => 'rw',
     lazy_build => 1,
     isa        => World,
-    handles    => [qw(render_cursor start_wave cursor)],
+    handles    => [qw(render_cursor render_cursor_shadow start_wave cursor)],
 );
 
 sub _build_current_world { shift->build_world(0) }
@@ -115,7 +115,7 @@ sub handle_event {
 sub render {
     my $self = shift;
     my $app = $self->app;
-    $self->cursor->render_shadow($self->app);
+    $self->render_cursor_shadow($self->app);
     $self->game_ui->render($app);
     $self->render_cursor($app);
     $app->update;

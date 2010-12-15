@@ -25,6 +25,8 @@ has v         => (is => 'rw', required => 1, isa => Num, default => 10);
 has idx       => (is => 'ro', required => 1, isa => Int); # index in wave
 has waypoints => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
 has hp        => (is => 'rw', required => 1, isa => Num, default => 10);
+has damage    => (is => 'rw', required => 1, isa => Num, default => 10);
+has gold      => (is => 'rw', required => 1, isa => Num, default => 1);
 
 has start_hp  => (is => 'rw', isa => Num);
 

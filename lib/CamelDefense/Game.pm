@@ -2,6 +2,7 @@ package CamelDefense::Game;
 
 use Moose;
 use MooseX::Types::Moose qw(ArrayRef HashRef);
+use SDL;
 use SDL::Mouse;
 use SDL::Events;
 use aliased 'SDLx::App';

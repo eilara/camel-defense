@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use lib '../lib';
+use SDL;
 use SDL::Mouse;
 use SDL::Events;
 use CamelDefense::Time qw(pause_resume);

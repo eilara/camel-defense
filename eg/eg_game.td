@@ -13,11 +13,11 @@
                 marks_args => [
                     spacing    => 24,
                     grid_color => 0x1F1F1FFF,
-                    bg_color   => 0x6F6F6FFF,
+                    bg_color   => 0x7F7F7FFF,
                 ],
                 waypoint_list_args => [
-                    waypoint_color => 0x9F9F9FFF,
-                    path_color     => 0x7F7F7FFF,
+                    waypoint_color => 0xAFAFAFFF,
+                    path_color     => 0x9F9F9FFF,
                 ],
             ],
 

@@ -67,6 +67,7 @@ sub resume() {
 # TODO these are horrible names
 #      surely someone somewhere has named these things before
 
+# TODO: bug- pause during sleep
 sub work_while {
     my (%args)    = @_;
     my $sleep     = $args{sleep};
@@ -94,6 +95,7 @@ sub repeat_work(%) {
     }
 }
 
+# TODO: bug- pause during sleep
 sub poll(%) {
     my (%args)    = @_;
     my $sleep     = $args{sleep} || 0.1;

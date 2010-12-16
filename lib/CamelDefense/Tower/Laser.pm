@@ -31,6 +31,7 @@ sub attack {
     my $target = $self->current_target;
     my $damage = $self->damage_per_sec * $sleep;
     my @range  = (@{ $self->xy }, $self->range);
+# TODO: weaken target?
     work_while
         sleep     => $sleep,
         work      => sub { $target->hit($damage) },

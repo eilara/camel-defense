@@ -39,7 +39,7 @@ with 'MooseX::Role::BuildInstanceOf' =>
     {target => UI, prefix => 'game_ui'};
 around merge_game_ui_args => sub {
     my ($orig, $self) = @_;
-    return (cursor => $self->cursor, $self->$orig);
+    return (cursor => $self->cursor, handler => $self, $self->$orig);
 };
 
 has worlds => (is => 'ro', required => 1, isa => ArrayRef[HashRef]);
@@ -107,7 +107,7 @@ sub handle_event {
         pause_resume;
 
     } elsif($e->type == SDL_KEYUP && $e->key_sym == SDLK_SPACE) { 
-        $self->current_world->start_wave;
+        $self->start_wave;
     }
 
     $self->game_ui->handle_event($e);

@@ -4,15 +4,23 @@ use Moose;
 use SDL::Events;
 use CamelDefense::Util qw(is_my_event);
 use aliased 'CamelDefense::Cursor';
+use aliased 'CamelDefense::Game::UI::Button';
 
-has cursor => (is => 'ro', required => 1, isa => Cursor);
+has cursor   => (is => 'ro', required   => 1, isa => Cursor);
+has btn_next => (is => 'ro', lazy_build => 1, isa => Button);
+
+sub _build_btn_next { Button->new(
+    icon => '../data/ui_button_next.png', # 41x48
+)}
 
 with 'CamelDefense::Role::Sprite';
 
-sub init_image_def {{
-    image     => '../data/ui_toolbar.png',
-    size      => [640, 48],
-}}
+sub init_image_def { '../data/ui_toolbar.png' } # 640x48
+
+sub BUILD {
+    my $self = shift;
+    $self->btn_next->xy([598, 481]);
+}
 
 sub handle_event {
     my ($self, $e) = @_;
@@ -24,6 +32,11 @@ sub handle_event {
     } elsif ($e->type == SDL_MOUSEBUTTONUP) {
     }
 }
+
+after render => sub {
+    my ($self, $surface) = @_;
+    $self->btn_next->render($surface);
+};
 
 1;
 

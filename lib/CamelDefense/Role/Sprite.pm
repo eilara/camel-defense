@@ -44,6 +44,7 @@ has image_def => (
         my $self = shift;
         my $image_def = $self->image_def;
         $self->load( $image_def->{image} );
+        # TODO: bug- this should only happen for animated sprites
         $self->sprite->set_sequences( @{ $image_def->{sequences} } );
         $self->sequence_animation($self->state);
     },

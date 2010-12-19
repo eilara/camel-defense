@@ -25,7 +25,7 @@ sub mouseup {
     my $self = shift;
     return unless $self->is_pressed;
     $self->depress;
-    $self->click->();
+    $self->click->($self);
 }
 
 sub mouseleave {

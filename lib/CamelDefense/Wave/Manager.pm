@@ -43,6 +43,8 @@ around merge_wave_args => sub {
     );
 };
 
+sub no_more_waves { !@{ shift->wave_defs } }
+
 after handle_child_not_shown => sub {
     my $self = shift;
     # when no more wave defs or waves

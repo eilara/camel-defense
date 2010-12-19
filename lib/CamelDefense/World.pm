@@ -50,7 +50,7 @@ around merge_grid_args => sub {
 # the world has a wave manager
 with 'MooseX::Role::BuildInstanceOf' =>
     {target => WaveManager, prefix => 'wave_manager'};
-has '+wave_manager' => (handles => [qw(start_wave aim is_level_complete)]);
+has '+wave_manager' => (handles => [qw(start_wave aim is_level_complete no_more_waves)]);
 around merge_wave_manager_args => sub {
     my ($orig, $self) = @_;
     my %args = $self->$orig;

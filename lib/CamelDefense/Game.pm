@@ -48,7 +48,11 @@ has current_world => (
     is         => 'rw',
     lazy_build => 1,
     isa        => World,
-    handles    => [qw(render_cursor render_cursor_shadow start_wave cursor)],
+    handles    => [qw(
+        cursor
+        render_cursor render_cursor_shadow
+        start_wave no_more_waves
+    )],
 );
 
 sub _build_current_world { shift->build_world(0) }

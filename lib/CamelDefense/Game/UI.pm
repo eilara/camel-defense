@@ -11,7 +11,9 @@ my $BTN_NEXT_X  = 597;
 my $BTN_PAUSE_X = 551;
 
 has cursor  => (is => 'ro', required => 1, isa => Cursor);
-has handler => (is => 'ro', required => 1, weak_ref => 1);
+has handler => (is => 'ro', required => 1, weak_ref => 1, handles => [qw(
+        start_wave no_more_waves
+)]);
 
 has [qw(btn_next btn_pause)] =>
     (is => 'ro', lazy_build => 1, isa => Button);
@@ -21,7 +23,11 @@ has hover => (is => 'rw'); # if currently hovering
 sub _build_btn_next {
     my $self = shift;
     return Button->new(
-        click => sub { $self->handler->start_wave },
+        click => sub {
+            my $btn = shift;
+            return if $self->no_more_waves;
+            $self->start_wave;
+        },
         icon  => '../data/ui_button_next.png', # 43x44
     );
 }

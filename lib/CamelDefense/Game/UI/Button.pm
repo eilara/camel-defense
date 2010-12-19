@@ -5,8 +5,9 @@ use MooseX::Types::Moose qw(CodeRef);
 
 with 'CamelDefense::Role::Sprite';
 
-has icon  => (is => 'ro', required => 1); # my image def
-has click => (is => 'ro', required => 1, isa => CodeRef);
+has icon       => (is => 'ro', required => 1); # my image def
+has click      => (is => 'ro', required => 1, isa => CodeRef);
+has is_pressed => (is => 'rw', required => 1, default => 0);
 
 sub init_image_def { shift->icon }
 
@@ -16,15 +17,35 @@ sub mousemove {
 
 sub mousedown {
     my $self = shift;
-    my ($x, $y) = @{ $self->xy };
-    $self->xy([$x, $y + 1]);
+    return if $self->is_pressed;
+    $self->press;
 }
 
 sub mouseup {
     my $self = shift;
+    return unless $self->is_pressed;
+    $self->depress;
+    $self->click->();
+}
+
+sub mouseleave {
+    my $self = shift;
+    return unless $self->is_pressed;
+    $self->depress;
+}
+
+sub press {
+    my $self = shift;
+    my ($x, $y) = @{ $self->xy };
+    $self->xy([$x, $y + 1]);
+    $self->is_pressed(1);
+}
+
+sub depress {
+    my $self = shift;
     my ($x, $y) = @{ $self->xy };
     $self->xy([$x, $y - 1]);
-    $self->click->();
+    $self->is_pressed(0);
 }
 
 1;

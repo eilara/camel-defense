@@ -6,12 +6,13 @@ use CamelDefense::Util qw(is_my_event);
 use aliased 'CamelDefense::Cursor';
 use aliased 'CamelDefense::Game::UI::Button';
 
-my $BTN_Y      = 482;
 my $BTN_NEXT_X = 597;
 
 has cursor   => (is => 'ro', required   => 1, isa => Cursor);
 has handler  => (is => 'ro', required   => 1, weak_ref => 1);
+
 has btn_next => (is => 'ro', lazy_build => 1, isa => Button);
+has hover    => (is => 'rw'); # if currently hovering
 
 sub _build_btn_next {
     my $self = shift;
@@ -27,34 +28,52 @@ sub init_image_def { '../data/ui_toolbar.png' } # 640x48
 
 sub BUILD {
     my $self = shift;
-    $self->btn_next->xy([$BTN_NEXT_X, $BTN_Y]);
+    $self->btn_next->x($BTN_NEXT_X);
 }
+
+after xy => sub {
+    my $self = shift;
+    return unless @_;
+    $self->btn_next->y($self->y + 2);
+};
 
 sub handle_event {
     my ($self, $e) = @_;
-    return unless is_my_event($e, 0, $self->y, $self);
+    my ($x, $y) = @{ $self->cursor->xy };
+    my $is_mine = $y >= $self->y + 2;
+    my $hover = $self->hover;
 
-    $self->cursor->set_default; # dont want build cursor on toolbar
-    # route the event to the correct button
-    my ($x, $y) = @{ $self->cursor->xy }; 
-    return unless $y >= $BTN_Y;
+    unless ($is_mine) {
+        if ($hover) {
+           $hover->mouseleave;
+           $self->hover(undef);
+        }
+        return;
+    }
 
-    $self->forward_event($e, $x);
-}
+    # dont want build cursor on toolbar or when capturing
+    $self->cursor->set_default;
 
-sub forward_event {
-    my ($self, $e, $x) = @_;
     my $type = $e->type;
+    if ($type == SDL_APPMOUSEFOCUS && $e->active_gain && $hover) {
+        $hover->mouseleave;
+        $self->hover(undef);
+        return;
+    }
 
-    my $method = $type == SDL_MOUSEMOTION    ? 'mousemove':
-                 $type == SDL_MOUSEBUTTONUP  ? 'mouseup':
+    my $method = $type == SDL_MOUSEBUTTONUP  ? 'mouseup':
                  $type == SDL_MOUSEBUTTONDOWN? 'mousedown':
+                 $type == SDL_MOUSEMOTION    ? 'mousemove':
                  return;
 
-    my $btn = $x >= $BTN_NEXT_X - 2? $self->btn_next:
-              return;
+    my $btn = 
+        $x >= $BTN_NEXT_X - 2? $self->btn_next:
+        undef;
 
-    $btn->$method();
+    $hover->mouseleave if $hover && (!$btn || $btn ne $hover);
+    $self->hover($btn);
+
+    $btn->$method if $btn;
 }
 
 after render => sub {

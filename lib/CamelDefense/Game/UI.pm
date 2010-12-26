@@ -12,7 +12,7 @@ my $BTN_PAUSE_X = 551;
 
 has cursor  => (is => 'ro', required => 1, isa => Cursor);
 has handler => (is => 'ro', required => 1, weak_ref => 1, handles => [qw(
-        start_wave no_more_waves
+    start_wave no_more_waves add_waves_complete_listener
 )]);
 
 has [qw(btn_next btn_pause)] =>
@@ -56,6 +56,13 @@ sub BUILD {
     my $self = shift;
     $self->btn_next-> x($BTN_NEXT_X);
     $self->btn_pause->x($BTN_PAUSE_X);
+    $self->add_waves_complete_listener($self);
+}
+
+sub waves_complete {
+    my $self = shift;
+    $self->btn_next->disable;
+    $self->btn_next->load('../data/ui_button_next_disabled.png');
 }
 
 after xy => sub {
@@ -100,8 +107,10 @@ sub handle_event {
         undef;
 
     $hover->mouseleave if $hover && (!$btn || $btn ne $hover);
-    $self->hover($btn);
 
+    return if !$btn || $btn->is_disabled;
+
+    $self->hover($btn);
     $btn->$method if $btn;
 }
 

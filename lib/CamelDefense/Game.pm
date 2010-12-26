@@ -51,7 +51,7 @@ has current_world => (
     handles    => [qw(
         cursor
         render_cursor render_cursor_shadow
-        start_wave no_more_waves
+        start_wave no_more_waves add_waves_complete_listener
     )],
 );
 

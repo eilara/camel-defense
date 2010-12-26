@@ -67,7 +67,7 @@ around merge_wave_manager_args => sub {
         $self->state->handle_event('cancel_action');
         $self->level_complete;
     };
-    $args{waves_complete} = sub {
+    $args{waves_complete_handler} = sub {
         # brutaly escape whatever the user is doing
         $self->state->handle_event('cancel_action');
         $self->waves_complete;

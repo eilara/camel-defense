@@ -22,7 +22,7 @@ has wave_defs => (
     default  => sub { [] },
 );
 
-has level_complete_handler =>
+has [qw(level_complete_handler no_more_waves_handler)] =>
     (is => 'ro', required => 1, isa => CodeRef, default => sub { sub {} });
 
 # the wave manager creates and manages waves
@@ -61,6 +61,7 @@ sub start_wave {
     my $self = shift;
     return unless @{ $self->wave_defs };
     push @{ $self->children }, $self->wave;
+    $self->no_more_waves_handler->() if $self->no_more_waves;
 }
 
 sub aim {

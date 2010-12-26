@@ -31,6 +31,7 @@ Requires:
    Moose
    MooseX::Types
    MooseX::Role::BuildInstanceOf
+   MooseX::Role::Listenable
    EV
    Coro
    SDLx::Controller::Coro
@@ -45,6 +46,7 @@ Credit:
 -------------------------------------notes--------------------------------------
 
 TODO
+    move handlers to listeners
     range circles make rendering slow
     check why bg layer refresh trick dont work
     checks for creeps in range using better ds than list
@@ -152,6 +154,66 @@ how to connect renderer to visual objects:
 next wave
 pause
 
+# icons are 43x44
+my $Commands = {
+
+    next_wave => {
+        icon       => 'ui_button_next',
+        key        => SDLK_SPACE,
+        disable_on => 'waves_complete',
+        execute    => sub {
+            my ($cmd, $processor, $world) = @_;
+            $world->start_wave unless $world->no_more_waves;
+        },
+    },
+
+    pause => {
+        icon     => 'ui_button_pause',
+        disabled => 1,
+        execute  => sub {
+            my ($cmd, $processor) = @_;
+            return unless is_paused;
+            pause_game;
+            $cmd->disable;
+            $processor->command('resume')->enable;
+        },
+    },
+
+    resume => {
+        icon    => 'ui_button_resume',
+        execute => sub {
+            my ($cmd, $processor) = @_;
+            return if is_paused;
+            resume_game;
+            $cmd->disable;
+            $processor->command('pause')->enable;
+        },
+    },
+
+    pause_resume => {
+        key     => SDLK_p,
+        execute => sub {
+            my ($cmd, $processor) = @_;
+            pause_resume;
+            my @cmds =
+                ($processor->command('pause'), $processor->command('resume'));
+            @cmds = reverse @cmds unless is_paused;
+            $cmds[0]->disable;
+            $cmds[1]->enable;
+        },
+    },
+
+    init_build_tower => {
+        key     => [SDLK_1..SDLK_9],
+        execute => sub {
+            my ($cmd, $processor, $world, $key) = @_;
+            # event handler requires idx of tower to be built
+            $world->handle_event(init_build_tower => $key - SDLK_1);
+        },
+    },
+
+
+
 
 seconds, and then every $repeat seconds. The timer does his best not
         to drift, but it will not invoke the timer more often then once per
@@ -186,4 +248,117 @@ http://www.zakie.fsnet.co.uk/ChatRoomsStuff/Help/wingdingsfontchart.htm
     pause
     next wave
 
-    naming and eyes
+    naming and eyes and edelic
+
+World
+
+    Grid
+        Grid::Markers
+            Grid::Axis
+        Waypoints (Grid::Markers)
+
+    Wave::Manager (Grid)
+        Wave
+            Creep
+
+    Cursor (Grid)
+        Cursor::Tower (Grid, Tower::Laser)
+     
+    Tower::Manager (Wave::Manager, Cursor, Grid)
+        Tower::Base and subclasses (Wave::Manager, Grid, Creep)
+
+    State (Cursor, Grid, Tower::Manager)
+    
+    EventHandler (State, Cursor)    
+    
+    
+  sprite
+    animated sprite
+
+  
+pause
+resume
+pause_reumse
+init_build $tower_type
+build_tower
+cancel_action
+select_tower
+unselect_tower
+
+
+motion
+down
+up
+key
+visibility
+
+cursor
+ui
+
+user action state machine
+
+
+
+pause resume pause_resume quit next_wave
+    commands on buttons
+
+motion
+    cursor
+
+o can listen to own events with is_mine
+    cursor motion, button mouse over, world mouse over
+
+--------------------------------------------------------------------------------
+
+
+focus
+    cursor
+        sets visibility
+    ui
+        unhover mouseleave
+
+keys - global
+    q
+        c-quit
+    p
+        c-pause_resume
+    space
+        c-start_wave
+    1-9
+    enter
+    esc
+        player action sm cancel_action trans
+
+motion
+    cursor
+        sets xy
+    ui
+        not_mine? unhover: hover
+        change cursor to default when mine to clear shadow
+    player action state machine        
+        can_build state trans if in can built states
+
+down
+    ui
+        press
+        unhover mouseleave
+
+
+up
+    ui
+        unhover mouseleave
+    build tower $i
+        if pressed init build else cancel action
+
+
+
+
+    
+player state machine is for side effecs?
+
+
+
+
+todo- role attributes build
+event handler role
+

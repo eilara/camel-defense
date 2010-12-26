@@ -36,7 +36,6 @@ my $world = World->new(
     app               => $app,
     controller        => $controller,
     wave_manager_args => [
-        level_complete_handler => sub { $game_over = 1 },
         wave_defs => [
             {
                 creep_count      => 10,

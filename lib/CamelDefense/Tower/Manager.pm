@@ -16,8 +16,11 @@ use CamelDefense::Tower::Slow;
 
 has wave_manager => (is => 'ro', required => 1, isa => WaveManager);
 
-has cursor => (is => 'ro', required => 1, isa => Cursor);
-has grid   => (is => 'ro', required => 1, isa => Grid, handles => [qw(
+has cursor => (is => 'ro', required => 1, isa => Cursor, handles => [qw(
+    tower_def        
+)]);
+
+has grid   => (is => 'ro', required => 1, isa => Grid  , handles => [qw(
     grid_color add_tower
 )]);
 
@@ -52,7 +55,7 @@ sub is_tower_available {
 sub configure_next_tower {
     my ($self, $tower_def_idx) = @_;
     $self->tower_def_idx($tower_def_idx);
-    $self->cursor->tower_def($self->current_tower_def);
+    $self->tower_def($self->current_tower_def);
 }
 
 sub current_tower_def {

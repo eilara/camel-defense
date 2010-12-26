@@ -11,6 +11,7 @@ use MooseX::Types::Moose qw(Num Str HashRef);
 use aliased 'CamelDefense::Grid';
 use CamelDefense::Tower::Laser;
 
+# grid compute_cell_center is required for GridAlignedSprite
 has grid  => (is => 'ro', required => 1, isa => Grid, handles => [qw(compute_cell_center)]);
 has state => (is => 'rw', required => 1, isa => Str, default => 'place_tower');
 
@@ -37,7 +38,7 @@ sub init_image_def {
     return $self->tower_type->merge_image_def($self->tower_def);
 }
 
-# what is clss of currently defined tower?
+# what is class of currently defined tower?
 sub tower_type { shift->tower_def->{type} || 'CamelDefense::Tower::Laser' }
 
 sub change_to {

@@ -11,9 +11,9 @@ use CamelDefense::Util qw(is_my_event);
 use aliased 'CamelDefense::World::State';
 use aliased 'CamelDefense::Cursor';
 
-has w      => (is => 'ro', required => 1, isa => Int);
-has h      => (is => 'ro', required => 1, isa => Int);
-has state  => (is => 'ro', required => 1, isa => State);
+has w     => (is => 'ro', required => 1, isa => Int);
+has h     => (is => 'ro', required => 1, isa => Int);
+has state => (is => 'ro', required => 1, isa => State);
 
 sub handle_event {
     my ($self, $e) = @_;
@@ -25,7 +25,7 @@ sub handle_event {
             $state->handle_event('cancel_action');
         } elsif ($k >= SDLK_1 && $k <= SDLK_9) {
             # init_build events get the index of the tower type def to be built
-            $state->handle_event(init_build => $k - SDLK_1, $e);
+            $state->handle_event(init_build => $k - SDLK_1);
         } 
 
     } else {

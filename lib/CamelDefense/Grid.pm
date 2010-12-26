@@ -1,8 +1,9 @@
 package CamelDefense::Grid;
 
 # the grid:
-#    * shows gridlines
-#    * shows waypoints
+#    * handles finding cells by xy
+#    * shows gridlines (Grid::Markers)
+#    * shows waypoints and path (Waypoints)
 #    * keeps the grid cells and answers the questions "can I build on a cell?"
 #      and "does this cell have a tower that I can select?"
 #    * updates grid cells with items that are placed in them: waypoints,

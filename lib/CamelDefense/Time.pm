@@ -16,7 +16,7 @@ use base 'Exporter';
 
 our @EXPORT_OK = qw(
     animate interval poll repeat_work work_while move
-    pause_resume cleanup_thread is_paused
+    pause_game resume_game pause_resume is_paused cleanup_thread
 );
 
 my $Timers         = {};  # cleaned by cleanup_thread
@@ -48,17 +48,17 @@ sub cleanup_thread($) {
     delete $Timers->{$Coro::current};
 }
 
-sub pause_resume() { if ($Is_Paused) { resume() } else { pause() } }
+sub pause_resume() { if ($Is_Paused) { resume_game() } else { pause_game() } }
 
 sub is_paused() { $Is_Paused }
 
-sub pause() {
+sub pause_game() {
     $Is_Paused = 1;
     $_->invoke for values %$Timers;
     $Timers = {};
 }
 
-sub resume() {
+sub resume_game() {
     $Is_Paused = 0;
     $_->send for $Resume_Signals->elements;
     $Resume_Signals->clear;

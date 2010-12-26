@@ -21,6 +21,12 @@ has waypoints  => (is => 'ro', required => 1);
 has w          => (is => 'ro', required => 1, lazy => 1, default => sub { shift->app->w });
 has h          => (is => 'ro', required => 1, lazy => 1, default => sub { shift->app->h });
 
+# you can listen to a world and get an event when level is complete
+# when there are no more waves and TODO: when creeps are killed or
+# pass through the defenses
+with 'MooseX::Role::Listenable' => {event => 'level_complete'};
+with 'MooseX::Role::Listenable' => {event => 'waves_complete'};
+
 has cursor     => (is => 'ro', lazy_build => 1, isa => Cursor);
 has bg_surface => (is => 'ro', lazy_build => 1, isa => Surface);
 
@@ -50,16 +56,21 @@ around merge_grid_args => sub {
 # the world has a wave manager
 with 'MooseX::Role::BuildInstanceOf' =>
     {target => WaveManager, prefix => 'wave_manager'};
-has '+wave_manager' => (handles => [qw(start_wave aim is_level_complete no_more_waves)]);
+has '+wave_manager' =>
+    (handles => [qw(start_wave aim is_level_complete no_more_waves)]);
 around merge_wave_manager_args => sub {
     my ($orig, $self) = @_;
     my %args = $self->$orig;
-    my $level_complete_handler = $args{level_complete_handler} || sub {};
     weaken $self; # so that callback will not keep a strong ref to self
     $args{level_complete_handler} = sub {
         # brutaly escape whatever the user is doing
         $self->state->handle_event('cancel_action');
-        $level_complete_handler->();
+        $self->level_complete;
+    };
+    $args{waves_complete} = sub {
+        # brutaly escape whatever the user is doing
+        $self->state->handle_event('cancel_action');
+        $self->waves_complete;
     };
     return (grid => $self->grid, %args);
 };

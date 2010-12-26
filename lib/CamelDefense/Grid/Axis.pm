@@ -15,12 +15,6 @@ has marks => (
     isa        => ArrayRef[Int],
 );
 
-has type => (
-    is         => 'ro',
-    lazy_build => 1,
-    isa        => ArrayRef[Int],
-);
-
 sub _build_marks {
     my $self  = shift;
     my $s     = $self->size;

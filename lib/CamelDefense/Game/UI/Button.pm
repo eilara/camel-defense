@@ -5,7 +5,7 @@ use MooseX::Types::Moose qw(CodeRef);
 
 with 'CamelDefense::Role::Sprite';
 
-has icon        => (is => 'ro', required => 1); # my image def
+has icon        => (is => 'rw', required => 1); # my image def
 has click       => (is => 'ro', required => 1, isa => CodeRef);
 has is_pressed  => (is => 'rw', required => 1, default => 0);
 has is_disabled => (is => 'rw', required => 1, default => 0);
@@ -52,11 +52,19 @@ sub depress {
 sub disable {
     my $self = shift;
     $self->is_disabled(1);
+    my $icon = $self->icon;
+    $icon =~ s/\.png$/_disabled.png/;
+    $self->load($icon);
+    $self->icon($icon);
 }
 
 sub enable {
     my $self = shift;
     $self->is_disabled(0);
+    my $icon = $self->icon;
+    $icon =~ s/_disabled\.png$/.png/;
+    $self->load($icon);
+    $self->icon($icon);
 }
 
 1;

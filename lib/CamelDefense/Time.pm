@@ -1,3 +1,10 @@
+package CamelDefense::Time::PauseResumeListenable;
+
+use Moose;
+
+with 'MooseX::Role::Listenable' => {event => 'game_paused'};
+with 'MooseX::Role::Listenable' => {event => 'game_resumed'};
+
 package CamelDefense::Time;
 
 use strict;
@@ -17,11 +24,23 @@ use base 'Exporter';
 our @EXPORT_OK = qw(
     animate interval poll repeat_work work_while move
     pause_game resume_game pause_resume is_paused cleanup_thread
+    add_pause_listener add_resume_listener
 );
 
-my $Timers         = {};  # cleaned by cleanup_thread
-my $Resume_Signals = set; # cleaned by resume
-my $Is_Paused      = 0;
+my $Timers          = {};  # cleaned by cleanup_thread
+my $Resume_Signals  = set; # cleaned by resume
+my $Is_Paused       = 0;
+my $PauseListenable = CamelDefense::Time::PauseResumeListenable->new;
+
+sub add_pause_listener {
+    my $listener = shift;
+    $PauseListenable->add_game_paused_listener($listener);
+}
+
+sub add_resume_listener {
+    my $listener = shift;
+    $PauseListenable->add_game_resumed_listener($listener);
+}
 
 sub rest {
     my $sleep = shift;
@@ -54,12 +73,14 @@ sub is_paused() { $Is_Paused }
 
 sub pause_game() {
     $Is_Paused = 1;
+    $PauseListenable->game_paused;
     $_->invoke for values %$Timers;
     $Timers = {};
 }
 
 sub resume_game() {
     $Is_Paused = 0;
+    $PauseListenable->game_resumed;
     $_->send for $Resume_Signals->elements;
     $Resume_Signals->clear;
 }

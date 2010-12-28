@@ -9,7 +9,6 @@ use aliased 'SDLx::App';
 use aliased 'SDLx::Controller::Coro' => 'Controller';
 use CamelDefense::Time qw(pause_resume);
 use aliased 'CamelDefense::World';
-use aliased 'CamelDefense::Player';
 use aliased 'CamelDefense::Game::UI';
 
 sub run {

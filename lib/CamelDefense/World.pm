@@ -8,6 +8,7 @@ use aliased 'CamelDefense::Grid';
 use aliased 'CamelDefense::Cursor';
 use aliased 'CamelDefense::World::State';
 use aliased 'CamelDefense::World::EventHandler';
+use aliased 'CamelDefense::Player';
 use aliased 'CamelDefense::Tower::Manager' => 'TowerManager';
 use aliased 'CamelDefense::Wave::Manager'  => 'WaveManager';
 use aliased 'SDLx::Controller::Coro'       => 'Controller';
@@ -35,6 +36,9 @@ sub _build_bg_surface {
     return Surface->new(width => $self->w, height => $self->h);
 }
 
+# the world has a player
+with 'MooseX::Role::BuildInstanceOf' => {target => Player};
+
 # the world has a grid
 with 'MooseX::Role::BuildInstanceOf' => {target => Grid};
 has '+grid' => (handles => [qw(
@@ -61,6 +65,11 @@ has '+wave_manager' =>
 around merge_wave_manager_args => sub {
     my ($orig, $self) = @_;
     my %args = $self->$orig;
+
+    my %wave_args = @{ $args{wave_args} ||= [] };
+    push @{ $wave_args{creep_args} ||= [] }, (player => $self->player);
+    $args{wave_args} = [%wave_args];
+
     weaken $self; # so that callback will not keep a strong ref to self
     $args{level_complete_handler} = sub {
         # brutaly escape whatever the user is doing

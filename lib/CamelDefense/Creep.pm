@@ -6,16 +6,15 @@ package CamelDefense::Creep;
 # - before enter animation, creep is_shown=1, is_alive=0
 # - after enter animation, creep is_shown=1, is_alive=1
 #   now it can be hit
-# - before leave animation, creep is_shown=1, is_alive=0
-# - after leave animation, creep is_shown=0, is_alive=0
-# - before starting death animation: is_shown=1, is_alive=0
-# - after death animation: is_shown=0, is_alive=0
+# - before leave/death animations, creep is_shown=1, is_alive=0
+# - after leave/death animations, creep is_shown=0, is_alive=0
 
 use Moose;
 use Coro;
 use MooseX::Types::Moose qw(Num Int Str ArrayRef);
 use CamelDefense::Util qw(distance);
 use CamelDefense::Time qw(move);
+use aliased 'CamelDefense::Player';
 
 extends 'CamelDefense::Living::Base';
 
@@ -23,6 +22,7 @@ extends 'CamelDefense::Living::Base';
 has kind      => (is => 'ro', required => 1, isa => Str, default => 'normal');
 has v         => (is => 'rw', required => 1, isa => Num, default => 10);
 has idx       => (is => 'ro', required => 1, isa => Int); # index in wave
+has player    => (is => 'ro', required => 1, isa => Player);
 has waypoints => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
 has hp        => (is => 'rw', required => 1, isa => Num, default => 10);
 has damage    => (is => 'rw', required => 1, isa => Num, default => 10);
@@ -103,7 +103,7 @@ sub hit {
     unless ($hp > 0) {
         $self->is_alive(0);
         $self->deactivate; # stop moving
-        
+ 
         async {
             $self->animate_sprite(death => 7, 0.06);
             $self->is_shown(0);

@@ -3,7 +3,7 @@ A very simple Perl SDL tower defense game.
 To run:
 
 > cd camel-defense/eg # or images will not be found
-> perl 04-world.pl
+> perl 05-game.pl
 
 What works:
 
@@ -14,6 +14,7 @@ What works:
     3- 3 types of fully operational towers that can be placed using the cursor
     4- a world object that lets you configure all of the above in its
        constructor
+    5- a UI with buttons to pause, resume, and start next wave
 
 Next tasks:
 

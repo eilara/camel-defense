@@ -38,6 +38,10 @@ sub _build_bg_surface {
 
 # the world has a player
 with 'MooseX::Role::BuildInstanceOf' => {target => Player};
+has '+player' => (handles => [qw(
+    add_player_hp_changed_listener add_player_gold_changed_listener
+    player_hp player_gold
+)]);
 
 # the world has a grid
 with 'MooseX::Role::BuildInstanceOf' => {target => Grid};

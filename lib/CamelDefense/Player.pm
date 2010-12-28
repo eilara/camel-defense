@@ -9,6 +9,9 @@ has is_alive => (is => 'rw', required => 1, isa => Bool, default => 1);
 
 has start_hp => (is => 'rw', isa => Num);
 
+with 'MooseX::Role::Listenable' => {event => 'player_hp_changed'};
+with 'MooseX::Role::Listenable' => {event => 'player_gold_changed'};
+
 sub BUILD {
     my $self = shift;
     $self->start_hp($self->hp);
@@ -19,19 +22,22 @@ sub hit {
     my $hp = $self->hp - $damage;
     $hp = 0 if $hp < 0;
     $self->hp($hp);
-    unless ($hp > 0) {
-    }
+    $self->player_hp_changed;
 }
 
 sub gain_gold {
     my ($self, $gold) = @_;
     $self->gold( $self->gold + $gold );
+    $self->player_gold_changed;
 }
 
 sub hp_ratio {
     my $self = shift;
     return $self->hp / $self->start_hp;
 }
+
+sub player_hp   { shift->hp }
+sub player_gold { shift->gold }
 
 1;
 

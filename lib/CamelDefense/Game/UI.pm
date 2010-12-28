@@ -16,6 +16,8 @@ my $BTN_RESUME_X = $BTN_PAUSE_X - 46;
 has cursor  => (is => 'ro', required => 1, isa => Cursor);
 has handler => (is => 'ro', required => 1, weak_ref => 1, handles => [qw(
     start_wave no_more_waves add_waves_complete_listener
+    add_player_hp_changed_listener add_player_gold_changed_listener
+    player_hp player_gold
 )]);
 
 has [qw(btn_next btn_pause btn_resume)] =>
@@ -69,6 +71,8 @@ sub BUILD {
 sub add_world_listeners {
     my $self = shift;
     $self->add_waves_complete_listener($self);
+    $self->add_player_hp_changed_listener($self);
+    $self->add_player_gold_changed_listener($self);
 }
 
 sub waves_complete { shift->btn_next->disable }
@@ -83,6 +87,18 @@ sub game_paused {
     my $self = shift;
     $self->btn_pause->disable;
     $self->btn_resume->enable;
+}
+
+sub player_hp_changed {
+    my $self = shift;
+    my $hp = $self->player_hp;
+    # TODO: show blood
+}
+
+sub player_gold_changed {
+    my $self = shift;
+    my $gold = $self->player_gold;
+    # TODO: show sparkles
 }
 
 after xy => sub {
@@ -139,6 +155,9 @@ after render => sub {
     my ($self, $surface) = @_;
     $_->render($surface) for
         $self->btn_next, $self->btn_pause, $self->btn_resume;
+    my ($x, $y) = @{$self->xy};
+    $surface->draw_gfx_text([$x + 68, $y + 20], 0xFFFF00FF, $self->player_gold);
+    $surface->draw_gfx_text([$x + 191, $y + 20], 0xFFFF00FF, $self->player_hp);
 };
 
 1;

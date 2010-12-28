@@ -73,6 +73,7 @@ sub start {
     }
 
     $self->is_alive(0);
+    $self->player->hit($self->damage);
     $self->animate_sprite(leave_grid => 7, 0.06);
     $self->is_shown(0);
 }
@@ -103,7 +104,8 @@ sub hit {
     unless ($hp > 0) {
         $self->is_alive(0);
         $self->deactivate; # stop moving
- 
+        $self->player->gain_gold($self->gold);
+
         async {
             $self->animate_sprite(death => 7, 0.06);
             $self->is_shown(0);

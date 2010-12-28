@@ -26,7 +26,6 @@ sub hit {
 sub gain_gold {
     my ($self, $gold) = @_;
     $self->gold( $self->gold + $gold );
-    print "gained: $gold\n";
 }
 
 sub hp_ratio {

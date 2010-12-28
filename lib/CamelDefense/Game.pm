@@ -51,6 +51,8 @@ has current_world => (
         cursor
         render_cursor render_cursor_shadow
         start_wave no_more_waves add_waves_complete_listener
+        add_player_hp_changed_listener add_player_gold_changed_listener
+        player_hp player_gold
     )],
 );
 
@@ -66,6 +68,13 @@ sub build_world {
         h          => $self->h - 48, # UI height
         %$def,
     );
+}
+
+sub switch_world {
+    my ($self, $idx) = @_;
+    my $world = $self->build_world($idx);
+    $self->current_world($world);
+    $self->ui->add_world_listeners;
 }
 
 has controller => (

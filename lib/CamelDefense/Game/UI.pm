@@ -61,9 +61,14 @@ sub BUILD {
     $self->btn_next->  x($BTN_NEXT_X);
     $self->btn_pause-> x($BTN_PAUSE_X);
     $self->btn_resume->x($BTN_RESUME_X);
-    $self->add_waves_complete_listener($self);
     add_pause_listener($self);
     add_resume_listener($self);
+    $self->add_world_listeners;
+}
+
+sub add_world_listeners {
+    my $self = shift;
+    $self->add_waves_complete_listener($self);
 }
 
 sub waves_complete { shift->btn_next->disable }

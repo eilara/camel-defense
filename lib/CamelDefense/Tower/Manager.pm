@@ -8,6 +8,7 @@ use Moose;
 use MooseX::Types::Moose qw(Bool Int ArrayRef HashRef);
 use aliased 'CamelDefense::Cursor';
 use aliased 'CamelDefense::Grid';
+use aliased 'CamelDefense::Player';
 use aliased 'CamelDefense::Tower::Base'   => 'BaseTower';
 use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 use CamelDefense::Tower::Laser;
@@ -15,6 +16,7 @@ use CamelDefense::Tower::Splash;
 use CamelDefense::Tower::Slow;
 
 has wave_manager => (is => 'ro', required => 1, isa => WaveManager);
+has player       => (is => 'ro', required => 1, isa => Player, weak_ref => 1);
 
 has cursor => (is => 'ro', required => 1, isa => Cursor, handles => [qw(
     tower_def        
@@ -80,6 +82,7 @@ sub build_tower {
     $self->is_dirty(1);               # mark the bg layer as needing redraw
 
     push @{ $self->towers }, $tower;
+    $self->player->spend_gold( $tower->price );
     return $tower;
 }
 

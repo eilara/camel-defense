@@ -97,6 +97,7 @@ around merge_tower_manager_args => sub {
         wave_manager => $self->wave_manager,
         grid         => $self->grid,
         cursor       => $self->cursor,
+        player       => $self->player,
         $self->$orig,
     );
 };

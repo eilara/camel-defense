@@ -4,7 +4,7 @@ use Moose;
 use MooseX::Types::Moose qw(Bool Num);
 
 has hp       => (is => 'rw', required => 1, isa => Num , default => 100);
-has gold     => (is => 'rw', required => 1, isa => Num , default => 40);
+has gold     => (is => 'rw', required => 1, isa => Num , default => 100);
 has is_alive => (is => 'rw', required => 1, isa => Bool, default => 1);
 
 has start_hp => (is => 'rw', isa => Num);
@@ -28,6 +28,14 @@ sub hit {
 sub gain_gold {
     my ($self, $gold) = @_;
     $self->gold( $self->gold + $gold );
+    $self->player_gold_changed;
+}
+
+sub spend_gold {
+    my ($self, $gold) = @_;
+    my $new_gold = $self->gold - $gold;
+    $new_gold = 0 if $new_gold < 0;
+    $self->gold($new_gold);
     $self->player_gold_changed;
 }
 

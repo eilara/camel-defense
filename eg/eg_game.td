@@ -64,12 +64,14 @@
                     {
                         type           => 'CamelDefense::Tower::Laser',
                         range          => 110,
+                        price          => 5,
                         damage_per_sec => 3,
                         laser_color    => 0x501265FF,
                     },
                     {
                         type            => 'CamelDefense::Tower::Splash',
                         range           => 70,
+                        price           => 20,
                         cool_off_period => 1.0,
                         projectile_args => [
                             v      => 300,
@@ -81,6 +83,7 @@
                     {
                         type            => 'CamelDefense::Tower::Slow',
                         range           => 50,
+                        price           => 30,
                         cool_off_period => 1.0,
                         slow_percent    => 13,
                     },

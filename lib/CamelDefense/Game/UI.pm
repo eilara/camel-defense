@@ -156,7 +156,7 @@ after render => sub {
     $_->render($surface) for
         $self->btn_next, $self->btn_pause, $self->btn_resume;
     my ($x, $y) = @{$self->xy};
-    $surface->draw_gfx_text([$x + 68, $y + 20], 0xFFFF00FF, $self->player_gold);
+    $surface->draw_gfx_text([$x + 60, $y + 20], 0xFFFF00FF, $self->player_gold);
     $surface->draw_gfx_text([$x + 191, $y + 20], 0xFFFF00FF, $self->player_hp);
 };
 

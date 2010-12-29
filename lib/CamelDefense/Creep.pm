@@ -22,7 +22,7 @@ extends 'CamelDefense::Living::Base';
 has kind      => (is => 'ro', required => 1, isa => Str, default => 'normal');
 has v         => (is => 'rw', required => 1, isa => Num, default => 10);
 has idx       => (is => 'ro', required => 1, isa => Int); # index in wave
-has player    => (is => 'ro', required => 1, isa => Player);
+has player    => (is => 'ro', required => 1, isa => Player, weak_ref => 1);
 has waypoints => (is => 'ro', required => 1, isa => ArrayRef[ArrayRef[Int]]);
 has hp        => (is => 'rw', required => 1, isa => Num, default => 10);
 has damage    => (is => 'rw', required => 1, isa => Num, default => 10);

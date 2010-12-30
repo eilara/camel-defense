@@ -21,6 +21,9 @@ sub handle_event {
     my $event = $events->{$event_name};
     return unless $event; # do nothing, event not defined
 
+    my $code = $event->{code};
+    $code->(@args) if $code;
+
     my $next_state_name = $event->{next_state};
     $next_state_name = $next_state_name->(@args) if ref $next_state_name eq 'CODE';
     my $states = $self->states;
@@ -30,9 +33,6 @@ sub handle_event {
         $self->current_state($next_state);
     }
     
-    my $code = $event->{code};
-    $code->(@args) if $code;
-
     # update cursor AFTER running code, because running
     # code could have changed its state
     if ($next_state_name) {

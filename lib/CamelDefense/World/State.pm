@@ -28,7 +28,7 @@ sub _build_state {
     my $cursor      = $self->cursor;
     my $grid        = $self->grid;
 
-    my $selected_tower;
+    my ($selected_tower, $current_tower_idx);
 
     my $build_tower = sub { $self->tower_manager->build_tower };
 
@@ -41,10 +41,16 @@ sub _build_state {
 
     my $init_build = sub {
         my $tower_def_idx = shift;
-        return undef unless # if no such tower then do nothing
+        return undef unless # if no such tower, or too expensive, then do nothing
             $self->tower_manager->is_tower_available($tower_def_idx);
+        $current_tower_idx = $tower_def_idx;
         $self->tower_manager->configure_next_tower($tower_def_idx);
         return $can_build->();
+    };
+
+    my $build_tower_again = sub {
+        return $self->tower_manager->is_tower_available($current_tower_idx)?
+            'cant_place_tower': 'init';
     };
 
     my $init_select = sub {
@@ -123,7 +129,7 @@ sub _build_state {
                         next_state => $can_build,
                     },
                     mouse_up => {
-                        next_state => 'cant_place_tower',
+                        next_state => $build_tower_again,
                         code       => $build_tower,
                     },
                 },

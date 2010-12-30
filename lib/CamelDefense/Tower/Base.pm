@@ -45,6 +45,12 @@ sub merge_range {
            $class->meta->find_attribute_by_name("range")->default;
 }
 
+sub merge_price {
+    my ($class, $def) = @_;
+    return $def->{price} ||
+           $class->meta->find_attribute_by_name("price")->default;
+}
+
 sub set_selected {
     my $self = shift;
     $self->is_selected(1);

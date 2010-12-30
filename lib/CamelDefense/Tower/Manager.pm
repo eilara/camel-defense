@@ -16,7 +16,9 @@ use CamelDefense::Tower::Splash;
 use CamelDefense::Tower::Slow;
 
 has wave_manager => (is => 'ro', required => 1, isa => WaveManager);
-has player       => (is => 'ro', required => 1, isa => Player, weak_ref => 1);
+has player       => (is => 'ro', required => 1, isa => Player, weak_ref => 1, handles => [qw(
+    player_gold
+)]);
 
 has cursor => (is => 'ro', required => 1, isa => Cursor, handles => [qw(
     tower_def        
@@ -50,7 +52,11 @@ has towers => (
 
 sub is_tower_available {
     my ($self, $tower_def_idx) = @_;
-    return $self->tower_defs->[ $tower_def_idx ]? 1: 0;
+    my $def = $self->tower_defs->[ $tower_def_idx ];
+    return unless $def;
+    my $type = $def->{type} || 'CamelDefense::Tower::Laser';
+    my $price = $type->merge_price($def);
+    return $self->player_gold >= $price;
 }
 
 # configure next tower to be built

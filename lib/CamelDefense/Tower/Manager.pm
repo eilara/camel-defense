@@ -34,7 +34,7 @@ has is_dirty => (is => 'rw', required => 1, isa => Bool, default => 1);
 # index in tower defs on next tower to build
 has tower_def_idx => (is => 'rw', isa => Int, default => 0);
 
-# array of tower definitions, each a has of tower constructor args
+# array ref of tower definitions, each is a hash ref of tower constructor args
 has tower_defs => (
     is       => 'ro',
     required => 1,
@@ -54,8 +54,7 @@ sub is_tower_available {
     my ($self, $tower_def_idx) = @_;
     my $def = $self->tower_defs->[ $tower_def_idx ];
     return unless $def;
-    my $type = $def->{type} || 'CamelDefense::Tower::Laser';
-    my $price = $type->merge_price($def);
+    my $price = $def->{price};
     return $self->player_gold >= $price;
 }
 
@@ -71,11 +70,16 @@ sub current_tower_def {
     return $self->tower_defs->[ $self->tower_def_idx ];
 }
 
+sub tower_icons {
+    my $self = shift;
+    return map { $_->{type}->icon } @{ $self->tower_defs };
+}
+
 sub build_tower {
     my $self    = shift;
     my ($x, $y) = @{$self->cursor->xy};
     my %def     = %{ $self->current_tower_def };
-    my $type    = delete($def{type}) || 'CamelDefense::Tower::Laser';
+    my $type    = delete($def{type});
 
     my $tower = $type->new(
         grid         => $self->grid,

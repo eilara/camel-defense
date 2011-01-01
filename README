@@ -2,8 +2,8 @@ A very simple Perl SDL tower defense game.
 
 To run:
 
-> cd camel-defense/eg # or images will not be found
-> perl 05-game.pl
+> cd camel-defense/bin # or images will not be found
+> perl camel-defense.pl
 
 What works:
 
@@ -116,6 +116,8 @@ Ideas
     Tie::RangeHash QuadTree Array::IntSpan for keeping relationship between towers and creeps
     http://search.cpan.org/~tels/Games-Console-0.04/lib/Games/Console.pm
     http://conal.net/fran/tutorial.htm fran examples
+    checkout cool flash effects:
+        http://www.supertowerdefense.com/towerdefensegames/Prison-Planet.php
 
 Layers:
     1 - bg - redrawn every tower build/sell/upgrade

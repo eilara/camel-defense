@@ -28,18 +28,12 @@ has tower_def => (is => 'rw', required => 1, isa => HashRef, trigger => sub {
 with 'CamelDefense::Role::GridAlignedSprite';
 with 'CamelDefense::Role::AnimatedSprite';
 
-sub _build_range {
-    my $self = shift;
-    $self->tower_type->merge_range($self->tower_def);
-}
+sub _build_range { shift->tower_def->{range} }
 
-sub init_image_def {
-    my $self = shift;
-    return $self->tower_type->merge_image_def($self->tower_def);
-}
+sub init_image_def { shift->tower_type->init_image_def }
 
 # what is class of currently defined tower?
-sub tower_type { shift->tower_def->{type} || 'CamelDefense::Tower::Laser' }
+sub tower_type { shift->tower_def->{type} }
 
 sub change_to {
     my ($self, $new_state) = @_;

@@ -91,6 +91,7 @@ around merge_wave_manager_args => sub {
 # the world has a tower manager
 with 'MooseX::Role::BuildInstanceOf' =>
     {target => TowerManager, prefix => 'tower_manager'};
+has '+tower_manager' => (handles => [qw(tower_icons)]);
 around merge_tower_manager_args => sub {
     my ($orig, $self) = @_;
     return (

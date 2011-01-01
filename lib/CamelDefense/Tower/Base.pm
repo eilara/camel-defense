@@ -8,8 +8,8 @@ use aliased 'CamelDefense::Wave::Manager' => 'WaveManager';
 
 has wave_manager => (is => 'ro', required => 1, isa => WaveManager, handles => [qw(find_creeps_in_range)]);
 has grid         => (is => 'ro', required => 1, isa => Grid, handles => [qw(compute_cell_center)]);
-has range        => (is => 'ro', required => 1, isa => Num, default => 100); # in pixels
-has price        => (is => 'ro', required => 1, isa => Num, default => 20); # in gold
+has range        => (is => 'ro', required => 1, isa => Num); # in pixels
+has price        => (is => 'ro', required => 1, isa => Num); # in gold
 
 has current_target => (is => 'rw');
 
@@ -24,31 +24,10 @@ with 'CamelDefense::Role::AnimatedSprite'; # needs sprite() from CenteredSprite
 sub init_image_def { die "Abstract" }
 sub start          { die "Abstract" }
 
-# the following two merges are used by the cursor shadow to show
-# the shadow of the correct tower class, while honoring any overrides
-# in some tower definition hash
-# note they are class functions, the cursor shadow has only the class
-# of the tower to be built, as it is unbuilt yet. The class comes from
-# tower definition, given to the tower by the world state machine
-# when it enters the place_tower state
-
-# given this tower class defaults and a hash, what is the merged image def?
-sub merge_image_def {
-    my ($class, $def) = @_;
-    return $def->{image_def} || $class->init_image_def;
-}
-
-# given this tower class defaults and a hash, what is the merged range?
-sub merge_range {
-    my ($class, $def) = @_;
-    return $def->{range} ||
-           $class->meta->find_attribute_by_name("range")->default;
-}
-
-sub merge_price {
-    my ($class, $def) = @_;
-    return $def->{price} ||
-           $class->meta->find_attribute_by_name("price")->default;
+sub icon {
+    my $class = shift;
+    $class = lc((split /::/, $class)[-1]);
+    return "../data/ui_button_tower_$class.png";
 }
 
 sub set_selected {

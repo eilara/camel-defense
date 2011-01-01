@@ -53,6 +53,7 @@ has current_world => (
         start_wave no_more_waves add_waves_complete_listener
         add_player_hp_changed_listener add_player_gold_changed_listener
         player_hp player_gold
+        tower_icons
     )],
 );
 

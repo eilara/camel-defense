@@ -1,6 +1,7 @@
 package CamelDefense::Game::UI;
 
 use Moose;
+use MooseX::Types::Moose qw(ArrayRef);
 use SDL::Events;
 use CamelDefense::Util qw(is_my_event);
 use aliased 'CamelDefense::Cursor';
@@ -9,19 +10,23 @@ use CamelDefense::Time qw(
     pause_game resume_game is_paused add_pause_listener add_resume_listener
 );
 
+my $BTN_WIDTH    = 46;
 my $BTN_NEXT_X   = 597;
-my $BTN_PAUSE_X  = $BTN_NEXT_X  - 46;
-my $BTN_RESUME_X = $BTN_PAUSE_X - 46;
+my $BTN_PAUSE_X  = $BTN_NEXT_X  - $BTN_WIDTH;
+my $BTN_RESUME_X = $BTN_PAUSE_X - $BTN_WIDTH;
 
 has cursor  => (is => 'ro', required => 1, isa => Cursor);
 has handler => (is => 'ro', required => 1, weak_ref => 1, handles => [qw(
     start_wave no_more_waves add_waves_complete_listener
     add_player_hp_changed_listener add_player_gold_changed_listener
-    player_hp player_gold
+    player_hp player_gold tower_icons
 )]);
 
 has [qw(btn_next btn_pause btn_resume)] =>
     (is => 'ro', lazy_build => 1, isa => Button);
+
+has [qw(tower_buttons all_buttons)] =>
+    (is => 'ro', lazy_build => 1, isa => ArrayRef[Button]);
 
 has hover => (is => 'rw'); # if currently hovering
 
@@ -54,15 +59,40 @@ sub _build_btn_resume {
     );
 }
 
+sub _build_tower_buttons {
+    my $self = shift;
+    my $i = 0;
+    my @icons = $self->tower_icons;
+    my $cnt = @icons;
+    return [map {
+        my $icon = $_;
+        my $idx = $cnt - $i++ - 1;
+        Button->new(
+            click => sub { print "$idx\n" },
+            icon  => $icon,
+        );
+    } reverse @icons];
+}
+
+sub _build_all_buttons {
+    my $self = shift;
+    return [
+        $self->btn_next, $self->btn_pause, $self->btn_resume,
+        @{ $self->tower_buttons },
+    ];
+}
+
 with 'CamelDefense::Role::Sprite';
 
 sub init_image_def { '../data/ui_toolbar.png' } # 640x48
 
 sub BUILD {
     my $self = shift;
-    $self->btn_next->  x($BTN_NEXT_X);
-    $self->btn_pause-> x($BTN_PAUSE_X);
-    $self->btn_resume->x($BTN_RESUME_X);
+    my $x = $BTN_NEXT_X;
+    for my $b (@{ $self->all_buttons }) {
+        $b->x($x);
+        $x -= $BTN_WIDTH;
+    }
     add_pause_listener($self);
     add_resume_listener($self);
     $self->add_world_listeners;
@@ -105,7 +135,7 @@ after xy => sub {
     my $self = shift;
     return unless @_;
     my $y = $self->y + 2;
-    $_->y($y) for $self->btn_next, $self->btn_pause, $self->btn_resume;
+    $_->y($y) for @{ $self->all_buttons };
 };
 
 sub handle_event {
@@ -137,11 +167,10 @@ sub handle_event {
                  $type == SDL_MOUSEMOTION    ? 'mousemove':
                  return;
 
-    my $btn = 
-        $x >= $BTN_NEXT_X   - 2? $self->btn_next:
-        $x >= $BTN_PAUSE_X  - 2? $self->btn_pause:
-        $x >= $BTN_RESUME_X - 2? $self->btn_resume:
-        undef;
+    my $idx = int( ($x - scalar(@{$self->all_buttons}) * $BTN_WIDTH) / $BTN_WIDTH ) - 1;
+    return if $idx < 1;
+
+    my $btn = $self->all_buttons->[-$idx];
 
     $hover->mouseleave if $hover && (!$btn || $btn ne $hover);
 
@@ -153,8 +182,7 @@ sub handle_event {
 
 after render => sub {
     my ($self, $surface) = @_;
-    $_->render($surface) for
-        $self->btn_next, $self->btn_pause, $self->btn_resume;
+    $_->render($surface) for @{ $self->all_buttons };
     my ($x, $y) = @{$self->xy};
     $surface->draw_gfx_text([$x + 60, $y + 20], 0xFFFF00FF, $self->player_gold);
     $surface->draw_gfx_text([$x + 191, $y + 20], 0xFFFF00FF, $self->player_hp);

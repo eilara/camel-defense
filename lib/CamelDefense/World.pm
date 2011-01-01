@@ -153,6 +153,11 @@ sub BUILD {
     $c->add_show_handler(sub { $self->render($app, @_) });
 }
 
+sub init_build {
+    my ($self, $tower_idx) = @_;
+    $self->state->handle_event(init_build => $tower_idx);
+}
+
 sub render {
     my ($self, $surface) = @_;
     $self->refresh_bg($surface);

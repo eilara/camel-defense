@@ -19,7 +19,7 @@ has cursor  => (is => 'ro', required => 1, isa => Cursor);
 has handler => (is => 'ro', required => 1, weak_ref => 1, handles => [qw(
     start_wave no_more_waves add_waves_complete_listener
     add_player_hp_changed_listener add_player_gold_changed_listener
-    player_hp player_gold tower_icons
+    player_hp player_gold tower_icons init_build
 )]);
 
 has [qw(btn_next btn_pause btn_resume)] =>
@@ -68,7 +68,7 @@ sub _build_tower_buttons {
         my $icon = $_;
         my $idx = $cnt - $i++ - 1;
         Button->new(
-            click => sub { print "$idx\n" },
+            click => sub { $self->init_build($idx) },
             icon  => $icon,
         );
     } reverse @icons];
@@ -168,13 +168,13 @@ sub handle_event {
                  return;
 
     my $idx = int( ($x - scalar(@{$self->all_buttons}) * $BTN_WIDTH) / $BTN_WIDTH ) - 1;
-    return if $idx < 1;
+    my $is_hit = $idx >= 1;
 
     my $btn = $self->all_buttons->[-$idx];
 
-    $hover->mouseleave if $hover && (!$btn || $btn ne $hover);
+    $hover->mouseleave if $hover && (!$is_hit || $btn ne $hover);
 
-    return if !$btn || $btn->is_disabled;
+    return if !$is_hit || $btn->is_disabled;
 
     $self->hover($btn);
     $btn->$method if $btn;

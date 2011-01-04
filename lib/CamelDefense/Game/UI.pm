@@ -10,10 +10,8 @@ use CamelDefense::Time qw(
     pause_game resume_game is_paused add_pause_listener add_resume_listener
 );
 
-my $BTN_WIDTH    = 46;
-my $BTN_NEXT_X   = 597;
-my $BTN_PAUSE_X  = $BTN_NEXT_X  - $BTN_WIDTH;
-my $BTN_RESUME_X = $BTN_PAUSE_X - $BTN_WIDTH;
+my $BTN_WIDTH  = 46;
+my $BTN_NEXT_X = 597;
 
 has cursor  => (is => 'ro', required => 1, isa => Cursor);
 has handler => (is => 'ro', required => 1, weak_ref => 1, handles => [qw(
@@ -167,9 +165,11 @@ sub handle_event {
                  $type == SDL_MOUSEMOTION    ? 'mousemove':
                  return;
 
-    my $idx = int( ($x - scalar(@{$self->all_buttons}) * $BTN_WIDTH) / $BTN_WIDTH ) - 1;
+    my $idx = int(
+        ($x - scalar(@{$self->all_buttons}) * $BTN_WIDTH) /
+        $BTN_WIDTH
+    ) - 1;
     my $is_hit = $idx >= 1;
-
     my $btn = $self->all_buttons->[-$idx];
 
     $hover->mouseleave if $hover && (!$is_hit || $btn ne $hover);

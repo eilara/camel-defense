@@ -38,14 +38,14 @@ sub mouseleave {
 sub press {
     my $self = shift;
     my ($x, $y) = @{ $self->xy };
-    $self->xy([$x, $y + 1]);
+    $self->xy([$x, $y + 2]);
     $self->is_pressed(1);
 }
 
 sub depress {
     my $self = shift;
     my ($x, $y) = @{ $self->xy };
-    $self->xy([$x, $y - 1]);
+    $self->xy([$x, $y - 2]);
     $self->is_pressed(0);
 }
 

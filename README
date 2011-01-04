@@ -365,3 +365,11 @@ player state machine is for side effecs?
 todo- role attributes build
 event handler role
 
+
+normal
+disabled
+pressed
+hover
+pushed
+
+normal -> down -> pressed

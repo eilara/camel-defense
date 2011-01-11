@@ -27,7 +27,6 @@ Next tasks:
 Requires:
 
    aliased
-   Data::Average
    SDL
    Moose
    MooseX::Types
@@ -373,3 +372,6 @@ hover
 pushed
 
 normal -> down -> pressed
+
+
+

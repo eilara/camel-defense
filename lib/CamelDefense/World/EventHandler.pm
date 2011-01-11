@@ -2,14 +2,12 @@ package CamelDefense::World::EventHandler;
 
 # the world event handler translates events in the world into
 # transitions on the world state machine
-# and updates the cursor position from the mouse
 
 use Moose;
 use MooseX::Types::Moose qw(Int);
 use SDL::Events;
 use CamelDefense::Util qw(is_my_event);
 use aliased 'CamelDefense::World::State';
-use aliased 'CamelDefense::Cursor';
 
 has w     => (is => 'ro', required => 1, isa => Int);
 has h     => (is => 'ro', required => 1, isa => Int);

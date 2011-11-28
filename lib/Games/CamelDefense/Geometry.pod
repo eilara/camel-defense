@@ -1,0 +1,27 @@
+
+=head1 NAME
+
+Games::CamelDefense::Geometry - geometry roles and utils
+
+
+=head1 DESCRIPTION
+
+2D games have 2D game objects and they all need some geometry code: keeping
+position/width state, computing distance, etc.
+
+All vectors are L<Math::Vector::Real> objects, so they are also arrays.
+
+
+=head1 PACKAGES
+
+=over 4
+
+=item *
+
+L<Games::CamelDefense::Geometry::Positionable> - A role for positionable things
+
+=back
+
+
+=cut
+

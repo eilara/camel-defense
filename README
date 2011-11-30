@@ -1,6 +1,6 @@
 
-A very simple Perl SDL tower defense game.
+A simple Perl SDL tower defense game.
 
-under major refresh, not working at all
+Under major refresh, not working at all.
 
-
+Chdir into eg/ dir to run demos.

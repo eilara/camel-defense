@@ -1,0 +1,69 @@
+
+=head1 NAME
+
+Games::CamelDefense::Event - event handling roles
+
+
+=head1 DESCRIPTION
+
+L<SDLx::Controller> lets you add event handlers. In this namespace you will
+find some improvements on that mechanism:
+
+=over 4
+
+=item *
+
+Sometimes you dont want to deal with adding/removing the event handler and
+dispatching maunally according to the event type. Consume the role 
+L<Games::CamelDefense::Event::Handler::SDL>, and your game object will
+automatically get all SDL events. A different method will be called for
+each event type with event args as params, so no need to deconstruct
+and dispatch the event. Your GOB will be cleared from the event handler
+list automatically when it is destroyed.
+
+=item *
+
+Sometimes you dont want a GOB to get all mouse events, but only those 
+mouse events that occur when the cursor is inside the GOB. A UI button,
+for example, should only get its own clicks. To get this feature, setup
+an event routing tree on your scene graph. Consume
+L<Games::CamelDefense::Event::Handler::Rectangular> in your GOB and you
+will get all SDL events as method calls, and also mouse_enter/leave,
+unique to rectangular event handlers. Place the GOB inside an
+L<Games::CamelDefense::Event::Router>, such as 
+L<Games::CamelDefense::UI::Panel::Box>. Place the box inside a top level
+event router container, such as L<Games::CamelDefense::UI::Window>. Your
+GOB will now only receive events inside its rectangular area.
+
+=back
+
+
+=head1 PACKAGES
+
+=over 4
+
+=item *
+
+L<Games::CamelDefense::Event::Handler> - A role for SDL event listeners with a
+method for each event type
+
+=item *
+
+L<Games::CamelDefense::Event::Handler::SDL> - A role for SDL event listeners
+that get all global SDL events
+
+=item *
+
+L<Games::CamelDefense::Event::Handler::Rectangular> - A role for SDL event
+listeners that listen for events in an area of the screen
+
+=item *
+
+L<Games::CamelDefense::Event::Router> - A role for SDL rectangular event
+listeners that route events to their rectangular children
+
+=back
+
+
+=cut
+

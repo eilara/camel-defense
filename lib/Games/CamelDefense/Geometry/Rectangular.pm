@@ -2,7 +2,7 @@ package Games::CamelDefense::Geometry::Rectangular;
 
 use Moose::Role;
 use MooseX::Types::Moose qw(Bool);
-use Games::CamelDefense::Types qw(Vector2D);
+use Games::CamelDefense::MooseX::Types qw(Vector2D);
 
 has size     => (is => 'ro', isa => Vector2D, required => 1, coerce => 1);
 has centered => (is => 'ro', isa => Bool    , default  => 0);

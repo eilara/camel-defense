@@ -1,4 +1,4 @@
-package Games::CamelDefense::Types;
+package Games::CamelDefense::MooseX::Types;
 
 use strict;
 use warnings;

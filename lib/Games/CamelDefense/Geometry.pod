@@ -20,6 +20,11 @@ All vectors are L<Math::Vector::Real> objects, so they are also arrays.
 
 L<Games::CamelDefense::Geometry::Positionable> - A role for positionable things
 
+=item *
+
+L<Games::CamelDefense::Geometry::Rectangular> - A role for positionable things
+with width and height, and which can be centered
+
 =back
 
 

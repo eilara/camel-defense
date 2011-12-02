@@ -1,0 +1,29 @@
+
+=head1 NAME
+
+Games::CamelDefense::Game - game infrastructure packages
+
+
+=head1 DESCRIPTION
+
+Internal packages used by the L<Games::CamelDefense::App> object.
+
+
+=head1 PACKAGES
+
+=over 4
+
+=item *
+
+L<Games::CamelDefense::Game::Resources> - a central place to load game
+resources
+
+=item *
+
+L<Games::CamelDefense::Game::Controller> - the game loop
+
+=back
+
+
+=cut
+

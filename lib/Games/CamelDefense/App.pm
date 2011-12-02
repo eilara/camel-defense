@@ -5,7 +5,12 @@ use MooseX::Types::Moose qw(Bool Int Str ArrayRef);
 use SDL;
 use SDL::Rect;
 use SDL::Events;
+use SDLx::App;
 use Games::CamelDefense::MooseX::Compose;
+use Games::CamelDefense::Event::Handler::SDL;
+use Games::CamelDefense::Game::Resources;
+use Games::CamelDefense::Render::Paintable;
+use aliased 'Games::CamelDefense::Render::LayerManager' => 'LayerManager';
 
 my $Instance;
 sub import { # copied from Avenger
@@ -39,6 +44,10 @@ compose_from 'SDLx::App',
         );
     };
 
+compose_from LayerManager,
+    prefix => 'layer_manager',
+    has    => {handles => [qw(paint)]};
+
 sub w { shift->size->[0] }
 sub h { shift->size->[1] }
 
@@ -46,11 +55,11 @@ sub BUILD {
     my $self = shift;
 
     # must be called before creating paintables or sdl event handlers
-    GameFrame::Role::SDLEventHandler::Set_SDL_Event_Observable($self);
-#    GameFrame::Role::Paintable::Set_Layer_Manager($self->layer_manager);
-#    GameFrame::Role::Paintable::Set_SDL_Main_Surface($self->sdl);
-#    GameFrame::ResourceManager::Set_Path($self->resources)
-#        if defined $self->resources;
+    Games::CamelDefense::Event::Handler::SDL::Set_SDL_Event_Observable($self);
+    Games::CamelDefense::Render::Paintable::Set_Layer_Manager($self->layer_manager);
+
+    Games::CamelDefense::Game::Resources::Set_Path($self->resources)
+        if defined $self->resources;
 }
 
 #sub run {
@@ -80,8 +89,11 @@ Games::CamelDefense::App - game application object
 
   # only once in your code
   use Games::CamelDefense::App
-       title => 'window title here',
-       size  => [640,480];
+       title       => 'window title here',
+       size        => [640,480],
+       hide_cursor => 1,
+       resources   => "$Bin/my_image_dir",
+       layers      => [qw(trees path enemies)];
 
   # as many times as you want
   use Games::CamelDefense::App;
@@ -90,6 +102,7 @@ Games::CamelDefense::App - game application object
   my $h     = App->h;
   my $size  = App->size;   # 2D array ref of w,h
   my $title = App->title;
+  my $title = App->resources;
   
 
 =head1 DESCRIPTION

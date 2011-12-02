@@ -1,0 +1,27 @@
+
+=head1 NAME
+
+Games::CamelDefense::Render - rendering kernal
+
+
+=head1 PACKAGES
+
+=over 4
+
+=item *
+
+L<Games::CamelDefense::Render::Paintable> - role for paintable objects
+
+=item *
+
+L<Games::CamelDefense::Render::Layer> - a layer of paintables
+
+=item *
+
+L<Games::CamelDefense::Render::LayerManager> - the layer list
+
+=back
+
+
+=cut
+

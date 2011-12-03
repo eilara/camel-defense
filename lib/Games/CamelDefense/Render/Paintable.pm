@@ -4,19 +4,10 @@ use Moose::Role;
 use MooseX::Types::Moose qw(Bool Str);
 
 # set these two before creating any paintables
-my ($Layer_Manager, $SDL_Main_Surface);
-sub Set_Layer_Manager    { $Layer_Manager     = shift }
-sub Set_SDL_Main_Surface { $SDL_Main_Surface  = shift }
+my $Layer_Manager;
+sub Set_Layer_Manager { $Layer_Manager = shift }
 
 requires 'paint';
-
-has surface => (
-    is         => 'ro',
-    weak_ref   => 1,
-    lazy_build => 1,
-    handles    => [qw(draw_gfx_text draw_circle draw_circle_filled
-                      draw_line draw_rect)],
-);
 
 has layer => ( # layer name
     is       => 'ro',
@@ -39,8 +30,6 @@ has auto_paint => (
 
 sub show { shift->is_visible(1) }
 sub hide { shift->is_visible(0) }
-
-sub _build_surface { $SDL_Main_Surface }
 
 sub sdl_paint {
     my ($self, $surface) = @_;

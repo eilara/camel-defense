@@ -11,6 +11,7 @@ use Games::CamelDefense::Event::Handler::SDL;
 use Games::CamelDefense::Game::Resources;
 use Games::CamelDefense::Render::Paintable;
 use aliased 'Games::CamelDefense::Render::LayerManager' => 'LayerManager';
+use aliased 'Games::CamelDefense::Game::Controller'     => 'Controller';
 
 my $Instance;
 sub import { # copied from Avenger
@@ -32,7 +33,7 @@ with 'MooseX::Role::Listenable' => {event => 'sdl_event'};
 
 compose_from 'SDLx::App',
     prefix => 'sdl',
-    has    => {handles => [qw(update run)]},
+    has    => {handles => ['update']},
     inject => sub {
         my $self = shift;
         return (
@@ -40,13 +41,14 @@ compose_from 'SDLx::App',
             h     => $self->h,
             title => $self->title,
             flags => SDL_DOUBLEBUF|SDL_HWSURFACE,
-            eoq   => 1  ,
         );
     };
 
 compose_from LayerManager,
     prefix => 'layer_manager',
-    has    => {handles => [qw(paint)]};
+    has    => {handles => ['paint']};
+
+compose_from Controller;
 
 sub w { shift->size->[0] }
 sub h { shift->size->[1] }
@@ -62,20 +64,29 @@ sub BUILD {
         if defined $self->resources;
 }
 
-#sub run {
-#    my $self = shift;
-#    my $sdl = $self->sdl; # must be created before controller add_event_handler
-#    my $c = $self->controller;
-#    $c->paint_cb(sub { $self->sdl_paint_handler });
-#    $c->event_cb(sub { $self->sdl_event_handler(@_) });
-#    SDL::Mouse::show_cursor(SDL_DISABLE) if $self->hide_cursor;
-#    $c->run; # blocks
-#}
+sub run {
+    my $self = shift;
+    my $sdl = $self->sdl; # must be created before controller add_event_handler
+    my $c = $self->controller;
+    $c->paint_cb(sub { $self->sdl_paint_handler });
+    $c->event_cb(sub { $self->sdl_event_handler(@_) });
+    SDL::Mouse::show_cursor(SDL_DISABLE) if $self->hide_cursor;
+    $c->run; # blocks
+}
 
 sub sdl_event_handler {
     my ($self, $e) = @_;
     exit if $e->type == SDL_QUIT;
     $self->sdl_event($e);
+}
+
+sub sdl_paint_handler {
+    my $self = shift;
+    my $surface = $self->sdl;
+    my $c = $self->bg_color;
+    $surface->draw_rect(undef, $c) if defined $c;
+    $self->paint($surface);
+    $self->update;
 }
 
 1;

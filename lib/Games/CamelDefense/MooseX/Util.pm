@@ -22,6 +22,8 @@ sub import_helpers {
 
 package $caller;
 use MooseX::Types::Moose qw(Bool Int Num Str ArrayRef HashRef);
+use Scalar::Util qw(weaken);
+use Games::CamelDefense::MooseX::Compose;
 use Games::CamelDefense::MooseX::Types qw(Vector2D);
 
 IMPORTS

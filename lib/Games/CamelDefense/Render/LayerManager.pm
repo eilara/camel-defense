@@ -1,7 +1,6 @@
 package Games::CamelDefense::Render::LayerManager;
 
-use Moose;
-use MooseX::Types::Moose qw(Str ArrayRef HashRef);
+use Games::CamelDefense::Class;
 use aliased 'Games::CamelDefense::Render::Layer';
 
 # layer names in order from front to back

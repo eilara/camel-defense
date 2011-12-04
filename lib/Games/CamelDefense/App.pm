@@ -1,12 +1,10 @@
 package Games::CamelDefense::App;
 
-use Moose;
-use MooseX::Types::Moose qw(Bool Int Str ArrayRef);
+use Games::CamelDefense::Class;
 use SDL;
 use SDL::Rect;
 use SDL::Events;
 use SDLx::App;
-use Games::CamelDefense::MooseX::Compose;
 use Games::CamelDefense::Event::Handler::SDL;
 use Games::CamelDefense::Game::Resources;
 use Games::CamelDefense::Render::Paintable;

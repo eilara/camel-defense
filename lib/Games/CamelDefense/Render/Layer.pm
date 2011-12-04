@@ -1,7 +1,6 @@
 package Games::CamelDefense::Render::Layer;
 
-use Moose;
-use Scalar::Util qw(weaken);
+use Games::CamelDefense::Class;
 
 has children => (is => 'rw', default => sub { [] });
 

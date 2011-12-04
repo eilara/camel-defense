@@ -1,7 +1,6 @@
 package Games::CamelDefense::Render::Paintable;
 
-use Moose::Role;
-use MooseX::Types::Moose qw(Bool Str);
+use Games::CamelDefense::Role;
 
 # set these two before creating any paintables
 my $Layer_Manager;

@@ -1,12 +1,12 @@
 package Games::CamelDefense::Event::Router;
 
-use Moose::Role;
+use Games::CamelDefense::Role;
 
 requires 'find_child_at';
 
 has active_mouse_sink => (is => 'rw');
 
-with 'Games::CamelDefense::Event::Handler::Rectangular';
+consume 'Event::Handler::Rectangular';
 
 # child events handled before parent events
 

@@ -1,6 +1,6 @@
 package Games::CamelDefense::Event::Handler::SDL;
 
-use Moose::Role;
+use Games::CamelDefense::Role;
 use SDL::Events;
 
 # set this before creating any sdl event handlers
@@ -14,7 +14,7 @@ has sdl_event_observable => (
     default  => sub { shift->_build_sdl_event_observable },
 );
 
-with 'Games::CamelDefense::Event::Handler';
+consume 'Event::Handler';
 
 sub _build_sdl_event_observable {
     my $self = shift;

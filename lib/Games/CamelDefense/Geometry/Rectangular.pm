@@ -1,15 +1,14 @@
 package Games::CamelDefense::Geometry::Rectangular;
 
-use Moose::Role;
-use MooseX::Types::Moose qw(Bool);
-use Games::CamelDefense::MooseX::Types qw(Vector2D);
+use Games::CamelDefense::Role;
 
 has size     => (is => 'ro', isa => Vector2D, required => 1, coerce => 1);
 has centered => (is => 'ro', isa => Bool    , default  => 0);
 
 # TBD: should centered be default?
 
-with 'Games::CamelDefense::Geometry::Positionable';
+consume 'Geometry::Positionable';
+#with 'Games::CamelDefense::Geometry::Positionable';
 
 around BUILDARGS => sub {
     my ($orig, $class, %args) = @_;
@@ -38,7 +37,7 @@ sub h { shift->size->[1] }
 Games::CamelDefense::Geometry::Rectangular - role for rectangular things
 
 
-=head1 DESCRIPTION
+=head1 SYNOPSIS
 
   package MyGob;
   with 'Games::CamelDefense::Geometry::Rectangular';

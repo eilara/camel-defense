@@ -1,6 +1,6 @@
 package Games::CamelDefense::Event::Handler;
 
-use Moose::Role;
+use Games::CamelDefense::Role;
 
 sub on_mouse_motion            {}
 sub on_mouse_button_up         {}

@@ -2,17 +2,22 @@ package Games::CamelDefense::Demo;
 
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
-use strict;
-use warnings;
+use Moose;
+use Moose::Util;
+use Games::CamelDefense::MooseX::Util;
 
 sub import {
-    my $class   = shift;
-
-      strict->import;
-    warnings->import;
-
+    my ($class, %args) = @_;
+    my $caller = caller;
     require feature;
     feature->import(':5.10');
+    strict->import;
+    warnings->import;
+
+    eval "package $caller;use Moose";
+    die "Importing Moose error: $@" if @$;
+    
+    import_helpers($caller);
 }
 
 1;

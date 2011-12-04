@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 
 package Games::CamelDefense::eg_Paintable;
-use Moose;
 use Games::CamelDefense::Demo;
 
-with 'Games::CamelDefense::Render::Paintable';
+consume 'Render::Paintable';
 
 sub paint {
     my ($self, $surface) = @_;

@@ -1,7 +1,6 @@
 package Games::CamelDefense::Geometry::Positionable;
 
-use Moose::Role;
-use Games::CamelDefense::MooseX::Types qw(Vector2D);
+use Games::CamelDefense::Role;
 
 has _xy    => (is => 'ro', isa => Vector2D, required => 1, coerce => 1);
 has offset => (is => 'ro', isa => Vector2D, required => 1, coerce => 1,

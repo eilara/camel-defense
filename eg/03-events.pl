@@ -1,14 +1,13 @@
 #!/usr/bin/perl
 
-package Games::CamelDefense::eg::Events;
+package Games::CamelDefense::eg_Events;
 use Games::CamelDefense::Demo;
 
-last_click => (is => 'rw', default => sub { [0, 0] });
+has last_click => (is => 'rw', default => sub { [0, 0] });
 
-
-with qw(
-    Games::CamelDefense::Render::Paintable
-    Games::CamelDefense::Event::Handler::SDL
+consume qw(
+    Render::Paintable
+    Event::Handler::SDL
 );
 
 sub on_mouse_button_up {
@@ -17,18 +16,15 @@ sub on_mouse_button_up {
 }
 
 sub paint {
-    my $self = shift;
-    $self->draw_rect(undef, 0x000000FF); # undef means color entire surface
+    my ($self, $surface) = @_;
     my $text = join ',', @{ $self->last_click };
-    $self->draw_gfx_text([100, 100], 0xFFFFFFFF, $text);
-}
-
-sub paint {
-    shift->draw_gfx_text([100, 100], 0xFFFFFFFF, 'I can be painted');
+    $surface->draw_gfx_text([100, 100], 0xFFFFFFFF, $text);
 }
 
 package main;
 use Games::CamelDefense::Demo;
-use Games::CamelDefense::App title => 'Paintable';
+use Games::CamelDefense::App title => 'Events';
+
+my $paintable = Games::CamelDefense::eg_Events->new;
 
 App->run;

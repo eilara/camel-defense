@@ -1,8 +1,8 @@
 package Games::CamelDefense::Event::Handler::Rectangular;
 
-use Moose::Role;
+use Games::CamelDefense::Role;
 
-with 'Games::CamelDefense::Event::Handler';
+consume 'Event::Handler';
 
 sub on_mouse_enter {}
 sub on_mouse_leave {}

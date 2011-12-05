@@ -7,7 +7,7 @@ use Moose::Util;
 use Games::CamelDefense::MooseX::Util;
 
 sub import {
-    my ($class, %args) = @_;
+    my ($class, @args) = @_;
     my $caller = caller;
     require feature;
     feature->import(':5.10');
@@ -17,7 +17,7 @@ sub import {
     eval "package $caller;use Moose";
     die "Importing Moose error: $@" if @$;
     
-    import_helpers($caller);
+    import_helpers($caller, @args);
 }
 
 1;

@@ -17,14 +17,18 @@ sub consume {
 }
 
 sub import_helpers {
-    my ($caller) = @_;
+    my ($caller, @args) = @_;
     eval <<"IMPORTS";
 
 package $caller;
-use MooseX::Types::Moose qw(Bool Int Num Str ArrayRef HashRef);
 use Scalar::Util qw(weaken);
+use Math::Vector::Real;
+use MooseX::Types::Moose qw(Bool Int Num Str ArrayRef HashRef);
 use Games::CamelDefense::MooseX::Compose;
 use Games::CamelDefense::MooseX::Types qw(Vector2D);
+${\( join qq{\n}, map {qq{
+use aliased 'Games::CamelDefense::$_';
+}} @args )}
 
 IMPORTS
     die "Importing Moose error: $@" if @$;

@@ -1,8 +1,8 @@
 
 package Games::CamelDefense::t_Geometry_Rectangular;
-use Moose;
+use Games::CamelDefense::Class;
 
-with 'Games::CamelDefense::Geometry::Rectangular';
+consume 'Geometry::Rectangular';
 
 package main;
 use strict;

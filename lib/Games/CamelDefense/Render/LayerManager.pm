@@ -1,7 +1,6 @@
 package Games::CamelDefense::Render::LayerManager;
 
-use Games::CamelDefense::Class;
-use aliased 'Games::CamelDefense::Render::Layer';
+use Games::CamelDefense::Class qw(Render::Layer);
 
 # layer names in order from front to back
 has layers => (

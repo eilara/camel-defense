@@ -1,15 +1,16 @@
 package Games::CamelDefense::App;
 
-use Games::CamelDefense::Class;
 use SDL;
 use SDL::Rect;
 use SDL::Events;
 use SDLx::App;
-use Games::CamelDefense::Event::Handler::SDL;
-use Games::CamelDefense::Game::Resources;
-use Games::CamelDefense::Render::Paintable;
-use aliased 'Games::CamelDefense::Render::LayerManager' => 'LayerManager';
-use aliased 'Games::CamelDefense::Game::Controller'     => 'Controller';
+use Games::CamelDefense::Class qw(
+    Event::Handler::SDL
+    Game::Resources
+    Render::Paintable
+    Render::LayerManager
+    Game::Controller
+);
 
 my $Instance;
 sub import { # copied from Avenger

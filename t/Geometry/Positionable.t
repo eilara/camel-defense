@@ -1,8 +1,8 @@
 
 package Games::CamelDefense::t_Geometry_Positionable;
-use Moose;
+use Games::CamelDefense::Class;
 
-with 'Games::CamelDefense::Geometry::Positionable';
+consume 'Geometry::Positionable';
 
 package main;
 use strict;

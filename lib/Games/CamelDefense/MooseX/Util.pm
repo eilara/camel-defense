@@ -2,6 +2,7 @@ package Games::CamelDefense::MooseX::Util;
 
 use Moose;
 use Moose::Util;
+use MooseX::Role::Listenable;
 
 sub import {
     my $class = shift;
@@ -9,6 +10,11 @@ sub import {
     {   no strict 'refs';
         *{"${caller}::import_helpers"} = \&import_helpers;
     }
+}
+
+sub has_event { 
+    Moose::Util::apply_all_roles
+        (scalar caller, 'MooseX::Role::Listenable', {event => shift});
 }
 
 sub consume { 
@@ -34,7 +40,8 @@ IMPORTS
     die "Importing Moose error: $@" if @$;
    
     {   no strict 'refs';
-        *{"${caller}::consume"} = \&consume;
+        *{"${caller}::consume"}   = \&consume;
+        *{"${caller}::has_event"} = \&has_event;
     }
 }
 

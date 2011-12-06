@@ -28,7 +28,7 @@ has bg_color    => (is => 'rw', isa => Int     , default => 0x000000FF);
 has hide_cursor => (is => 'ro', isa => Bool    , default => 0);
 has resources   => (is => 'ro', isa => Str);
 
-with 'MooseX::Role::Listenable' => {event => 'sdl_event'};
+has_event 'sdl_event';
 
 compose_from 'SDLx::App',
     prefix => 'sdl',
@@ -52,6 +52,13 @@ compose_from Controller;
 sub w { shift->size->[0] }
 sub h { shift->size->[1] }
 
+around BUILDARGS => sub {
+    my ($orig, $class, %args) = @_;
+    push(@{$args{layer_manager_args} ||= []}, layers => delete $args{layers})
+        if exists $args{layers};
+    return $class->$orig(%args);
+};
+
 sub BUILD {
     my $self = shift;
 
@@ -65,17 +72,19 @@ sub BUILD {
 
 sub run {
     my $self = shift;
-    my $sdl = $self->sdl; # must be created before controller add_event_handler
-    my $c = $self->controller;
+    my $sdl  = $self->sdl; # must be created before controller add_event_handler
+    my $c    = $self->controller;
+
     $c->paint_cb(sub { $self->sdl_paint_handler });
     $c->event_cb(sub { $self->sdl_event_handler(@_) });
+
     SDL::Mouse::show_cursor(SDL_DISABLE) if $self->hide_cursor;
     $c->run; # blocks
 }
 
 sub sdl_event_handler {
     my ($self, $e) = @_;
-    exit if $e->type == SDL_QUIT;
+    $self->controller->stop if $e->type == SDL_QUIT;
     $self->sdl_event($e);
 }
 

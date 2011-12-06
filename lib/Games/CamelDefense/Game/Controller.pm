@@ -16,6 +16,8 @@ my $FPS = 52;
 
 has [qw(paint_cb event_cb)] => (is => 'rw');
 
+has is_stopped => (is => 'rw', default => 0);
+
 sub run {
     my $self = shift;
     my $fps = SDLx::FPS->new(fps => $FPS);
@@ -26,7 +28,7 @@ sub run {
         my $event      = SDL::Event->new;
         my $tick_start = EV::time;
         my $is_slow;
-        while (1) {
+        while (!$self->is_stopped) {
             SDL::Events::pump_events();
             $event_cb->($event) while SDL::Events::poll_event($event);
 #    $update_cb->();
@@ -46,6 +48,8 @@ sub run {
 
     EV::loop;
 }
+
+sub stop { shift->is_stopped(1) }
 
 1;
 

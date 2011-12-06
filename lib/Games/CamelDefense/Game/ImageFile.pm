@@ -3,8 +3,8 @@ package Games::CamelDefense::Game::ImageFile;
 use Games::CamelDefense::Class qw(Game::Resources);
 use Imager;
 use aliased 'SDL::Rect';
-use aliased 'SDLx::Sprite';
-use aliased 'SDLx::Sprite::Animated';
+use aliased 'SDLx::Sprite'           => 'SDLxSprite';
+use aliased 'SDLx::Sprite::Animated' => 'SDLxAnimatedSprite';
 
 has file    => (is => 'ro', isa => Str , required => 1);
 has stretch => (is => 'ro', isa => Bool, default  => 0);

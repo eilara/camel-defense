@@ -21,7 +21,10 @@ sub paint {
 package Games::CamelDefense::eg_LayersEventHandler;
 use Games::CamelDefense::Demo;
 
-consume 'Event::Handler::SDL';
+consume qw(
+    Render::Paintable
+    Event::Handler::SDL
+);
 
 has circles => (is => 'ro', default => sub { [] });
 
@@ -33,6 +36,15 @@ sub on_mouse_button_up {
         xy    => \@pos,
         color => [0xFF0000EF, 0x00FF00EF, 0x0000FFEF]->[$rand],
         layer => [qw(red green blue)]->[$rand],
+    );
+}
+
+sub paint {
+    my ($self, $surface) = @_;
+    $surface->draw_gfx_text(
+        [200, 200],
+        0xFFFFFFFF,
+        'Click to place a Paintable GOB on one of 3 layers',
     );
 }
 

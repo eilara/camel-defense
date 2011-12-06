@@ -3,6 +3,7 @@ package Games::CamelDefense::App;
 use SDL;
 use SDL::Rect;
 use SDL::Events;
+use SDL::Mouse;
 use SDLx::App;
 use Games::CamelDefense::Class qw(
     Event::Handler::SDL

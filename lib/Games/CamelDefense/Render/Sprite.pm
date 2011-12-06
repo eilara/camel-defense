@@ -1,6 +1,6 @@
 package Games::CamelDefense::Render::Sprite;
 
-use Games::CamelDefense::Class qw(Game::ImageFile);
+use Games::CamelDefense::Role qw(Game::ImageFile);
 use Moose::Util::TypeConstraints;
 use aliased 'SDLx::Sprite' => 'SDLxSprite';
 
@@ -34,7 +34,7 @@ sub _build_sprite {
 # TODO optimize to less method calls on each paint
 sub paint {
     my ($self, $surface) = @_;
-    $self->draw_xy($surface, $self->pos);
+    $self->draw_xy($surface, @{$self->pos});
 }
 
 1;

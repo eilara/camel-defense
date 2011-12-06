@@ -30,6 +30,11 @@ around BUILDARGS => sub {
 sub w { shift->size->[0] }
 sub h { shift->size->[1] }
 
+sub rect {
+    my $self = shift;
+    return [@{$self->pos}, @{$self->size}];
+}
+
 1;
 
 =head1 NAME
@@ -54,6 +59,7 @@ Games::CamelDefense::Geometry::Rectangular - role for rectangular things
   $h           = $gob->w;
   $size        = $gob->size;               # returns Math::Vector::Real
   $is_centered = $gob->centered;           # returns bool
+  $rect        = $gob->rect;               # returns array ref of 4 values: x,y,w,h
 
 
 =head1 DESCRIPTION

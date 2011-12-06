@@ -12,7 +12,7 @@ use SDLx::FPS;
 use SDL::Event;
 use SDL::Events;
 
-my $FPS = 52;
+my $FPS = 100;
 
 has [qw(paint_cb event_cb)] => (is => 'rw');
 

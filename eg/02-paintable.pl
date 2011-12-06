@@ -7,8 +7,10 @@ consume 'Render::Paintable';
 
 sub paint {
     my ($self, $surface) = @_;
-    $surface->draw_gfx_text([100, 100], 0xFFFFFFFF, 'I can be painted');
+    $surface->draw_gfx_text([100, 100], 0xFFFFFFFF, 'A Paintable GOB');
 }
+
+# ------------------------------------------------------------------------------
 
 package main;
 use Games::CamelDefense::Demo;

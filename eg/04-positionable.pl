@@ -19,7 +19,14 @@ sub on_mouse_button_up {
 sub paint {
     my ($self, $surface) = @_;
     $surface->draw_circle($self->pos, 100, 0xFFFFFFFF, 1);
+    $surface->draw_gfx_text(
+        [@{ $self->xy - V(240, -120) }],
+        0xFFFFFFFF,
+        'A Paintable Positionable SDL Event Handler GOB: click to reposition',
+    );
 }
+
+# ------------------------------------------------------------------------------
 
 package main;
 use Games::CamelDefense::Demo;

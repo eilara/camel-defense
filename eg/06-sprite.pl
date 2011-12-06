@@ -3,12 +3,6 @@
 package Games::CamelDefense::eg_StickySprite;
 use Games::CamelDefense::Demo;
 
-# how to create sprites
-# move mouse around to move sprite
-# click to drop a sprite at current mouse position
-# note that StickySprites are created centered on xy
-# while MoveAroundSprite is created with xy at top left
-
 consume 'Render::Sprite';
 
 # ------------------------------------------------------------------------------
@@ -40,6 +34,14 @@ sub on_mouse_button_up {
         centered => 1,
     );
 }
+
+before paint => sub {
+    my ($self, $surface) = @_;
+    $surface->draw_gfx_text([260, 200], 0xFFFFFFFF,
+        'Click to place a sticky Sprite GOB');
+    $surface->draw_gfx_text([190, 220], 0xFFFFFFFF,
+        'Note sticky sprite is centered on mouse while cursor is not');
+};
 
 # ------------------------------------------------------------------------------
 

@@ -55,7 +55,7 @@ sub cell_center_xy {
     my ($self, $xy) = @_;
     my $pos    = V( @{ $self->compute_cell_pos($xy) } );
     my $s      = $self->spacing;
-    my $offset = $self->xy_vec;
+    my $offset = $self->xy;
     return [@{ $offset + $pos * $s + V($s/2, $s/2) }];
 }
 

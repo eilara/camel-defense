@@ -29,7 +29,7 @@ sub on_mouse_button_up {
     my $self = shift;
     push @{$self->children}, Games::CamelDefense::eg_StickySprite->new(
         rect     => $self->rect,
-        image    => 'arrow',
+        image    => $self->image,
         layer    => 'middle',
         centered => 1,
     );

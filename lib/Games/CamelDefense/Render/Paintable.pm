@@ -38,7 +38,7 @@ sub sdl_paint {
 
 # permonks stvn trick to get BUILD time action from roles
 sub BUILD {}
-before 'BUILD' => sub {
+before BUILD => sub {
     my $self = shift;
     $Layer_Manager->add_paintable_to_layer($self->layer, $self)
         if $self->auto_paint;

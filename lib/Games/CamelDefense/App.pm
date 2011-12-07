@@ -112,17 +112,19 @@ Games::CamelDefense::App - game application object
        title       => 'window title here',
        size        => [640,480],
        hide_cursor => 1,
+       bg_color    => 0xFF0000FF,
        resources   => "$Bin/my_image_dir",
        layers      => [qw(trees path enemies)];
 
   # as many times as you want
   use Games::CamelDefense::App;
 
-  my $w    =  App->w;
-  my $h     = App->h;
-  my $size  = App->size;   # 2D array ref of w,h
-  my $title = App->title;
-  my $title = App->resources;
+  $w         =  App->w;
+  $h         = App->h;
+  $size      = App->size;      # 2D array ref of w,h
+  $resources = App->resources; # resources dir path string
+  $title     = App->title;
+  $bg_color  = App->bg_color;
   
 
 =head1 DESCRIPTION
